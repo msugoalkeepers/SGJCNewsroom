@@ -3,2479 +3,1417 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Pressroom — Student Journalism Platform</title>
+<title>The Pressroom — SGJC Newsroom</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink: #0f0e0c;
-    --paper: #f5f2eb;
-    --cream: #ede9df;
-    --rule: #d4cfc3;
-    --accent: #c0392b;
-    --accent2: #2c6e49;
-    --amber: #e67e22;
-    --sky: #1a5276;
-    --muted: #7a7570;
-    --white: #ffffff;
-    --card: #faf8f3;
-    --shadow: 0 1px 3px rgba(15,14,12,0.08), 0 4px 16px rgba(15,14,12,0.05);
-    --shadow-lg: 0 8px 32px rgba(15,14,12,0.12);
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'IBM Plex Mono', monospace;
-    --radius: 4px;
-    --radius-lg: 8px;
-  }
+:root {
+  --ink:#0f0e0c;--paper:#f5f2eb;--cream:#ede9df;--rule:#d4cfc3;
+  --accent:#c0392b;--accent2:#2c6e49;--amber:#e67e22;--sky:#1a5276;
+  --muted:#7a7570;--white:#ffffff;
+  --shadow:0 1px 3px rgba(15,14,12,.08),0 4px 16px rgba(15,14,12,.05);
+  --shadow-lg:0 8px 32px rgba(15,14,12,.14);
+  --fd:'Playfair Display',Georgia,serif;
+  --fb:'DM Sans',sans-serif;--fm:'IBM Plex Mono',monospace;
+  --r:4px;--rl:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 15px; }
-  body {
-    font-family: var(--font-body);
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    line-height: 1.6;
-  }
+/* ── SPLASH ── */
+#splash{position:fixed;inset:0;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:9999}
+.splash-title{font-family:var(--fd);font-size:1.8rem;font-weight:700;color:var(--paper);letter-spacing:-.02em}
+.splash-spin{width:28px;height:28px;border:2px solid rgba(255,255,255,.15);border-top:2px solid var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 
-  /* ── LAYOUT ── */
-  .app { display: flex; height: 100vh; overflow: hidden; }
-  .sidebar {
-    width: 220px;
-    min-width: 220px;
-    background: var(--ink);
-    color: var(--paper);
-    display: flex;
-    flex-direction: column;
-    border-right: none;
-    overflow-y: auto;
-  }
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .topbar {
-    height: 56px;
-    background: var(--white);
-    border-bottom: 1px solid var(--rule);
-    display: flex;
-    align-items: center;
-    padding: 0 24px;
-    gap: 16px;
-    flex-shrink: 0;
-  }
-  .content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 28px 32px;
-  }
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:var(--ink);display:none;align-items:center;justify-content:center;z-index:9998}
+.login-card{background:var(--white);border-radius:12px;padding:44px 38px;width:400px;max-width:95vw;box-shadow:0 24px 64px rgba(0,0,0,.4);animation:fadeIn .3s ease}
+.login-masthead{font-family:var(--fd);font-size:1.85rem;font-weight:700;color:var(--ink);text-align:center;margin-bottom:3px}
+.login-sub{font-size:.62rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);text-align:center;margin-bottom:10px}
+.login-rule{width:36px;height:3px;background:var(--accent);margin:0 auto 28px;border-radius:2px}
+.login-err{background:#fdedec;color:#922b21;border:1px solid #f5b7b1;border-radius:var(--r);padding:10px 13px;font-size:.78rem;margin-bottom:13px;display:none;align-items:center;gap:7px}
+.login-err.on{display:flex}
+.login-lbl{display:block;font-size:.62rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px}
+.login-inp{width:100%;padding:10px 13px;border:1px solid var(--rule);border-radius:var(--r);font-family:var(--fb);font-size:.88rem;color:var(--ink);background:var(--paper);outline:none;transition:border .15s;margin-bottom:13px}
+.login-inp:focus{border-color:var(--ink)}
+.login-inp.err{border-color:var(--accent)}
+.pw-wrap{position:relative}
+.pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-65%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.72rem;font-family:var(--fm);padding:2px 4px}
+.g-btn{width:100%;padding:11px 18px;background:var(--white);color:var(--ink);border:1.5px solid var(--rule);border-radius:var(--r);font-family:var(--fb);font-size:.88rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .15s;box-shadow:var(--shadow);margin-bottom:18px}
+.g-btn:hover{box-shadow:var(--shadow-lg);border-color:var(--muted)}
+.g-btn:disabled{opacity:.6;cursor:not-allowed}
+.divider{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.divider-line{flex:1;height:1px;background:var(--rule)}
+.divider-txt{font-size:.62rem;font-family:var(--fm);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.login-btn{width:100%;padding:11px 18px;background:var(--muted);color:white;border:none;border-radius:var(--r);font-family:var(--fb);font-size:.88rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;margin-top:2px}
+.login-btn:hover{background:var(--ink)}
+.login-btn:disabled{opacity:.6;cursor:not-allowed}
+.login-spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top:2px solid white;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.forgot-link{display:block;text-align:center;margin-top:12px;font-size:.73rem;color:var(--muted);cursor:pointer;background:none;border:none;font-family:var(--fb);text-decoration:underline;text-underline-offset:2px}
+.login-footer{text-align:center;font-size:.67rem;color:var(--muted);margin-top:22px;line-height:1.5}
 
-  /* ── SIDEBAR ── */
-  .sidebar-logo {
-    padding: 20px 18px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .sidebar-logo .masthead {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    color: var(--paper);
-    line-height: 1.1;
-  }
-  .sidebar-logo .edition {
-    font-size: 0.65rem;
-    color: rgba(245,242,235,0.45);
-    font-family: var(--font-mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-  .sidebar-user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: white;
-    flex-shrink: 0;
-  }
-  .avatar.green { background: var(--accent2); }
-  .avatar.amber { background: var(--amber); }
-  .avatar.sky { background: var(--sky); }
-  .user-info { flex: 1; min-width: 0; }
-  .user-name {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--paper);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .user-role {
-    font-size: 0.65rem;
-    color: rgba(245,242,235,0.45);
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .sidebar-nav { padding: 12px 0; flex: 1; }
-  .nav-section-label {
-    font-size: 0.6rem;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(245,242,235,0.3);
-    padding: 12px 18px 4px;
-  }
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 18px;
-    font-size: 0.82rem;
-    color: rgba(245,242,235,0.65);
-    cursor: pointer;
-    transition: all 0.15s;
-    border-left: 2px solid transparent;
-    font-weight: 400;
-  }
-  .nav-item:hover { color: var(--paper); background: rgba(255,255,255,0.04); }
-  .nav-item.active {
-    color: var(--paper);
-    background: rgba(255,255,255,0.06);
-    border-left-color: var(--accent);
-  }
-  .nav-icon { width: 14px; text-align: center; font-size: 0.82rem; opacity: 0.7; }
-  .nav-badge {
-    margin-left: auto;
-    background: var(--accent);
-    color: white;
-    font-size: 0.6rem;
-    font-family: var(--font-mono);
-    padding: 1px 5px;
-    border-radius: 10px;
-    min-width: 16px;
-    text-align: center;
-  }
+/* ── APP LAYOUT ── */
+#app{display:none;height:100vh;overflow:hidden;flex-direction:row}
+.sidebar{width:220px;min-width:220px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;overflow-y:auto}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0}
+.content{flex:1;overflow-y:auto;padding:26px 30px;animation:fadeIn .2s ease}
 
-  /* ── TOPBAR ── */
-  .topbar-title {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--ink);
-    flex: 1;
-  }
-  .topbar-actions { display: flex; align-items: center; gap: 8px; }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border-radius: var(--radius);
-    font-family: var(--font-body);
-    font-size: 0.78rem;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.15s;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-  .btn-primary:hover { background: #a93226; border-color: #a93226; }
-  .btn-outline {
-    background: transparent;
-    color: var(--ink);
-    border-color: var(--rule);
-  }
-  .btn-outline:hover { background: var(--cream); }
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: none;
-    padding: 7px 10px;
-  }
-  .btn-ghost:hover { color: var(--ink); background: var(--cream); }
+/* ── SIDEBAR ── */
+.sb-logo{padding:18px 17px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-masthead{font-family:var(--fd);font-size:1.2rem;font-weight:700;color:var(--paper);letter-spacing:-.01em;line-height:1.1}
+.sb-edition{font-size:.6rem;color:rgba(245,242,235,.4);font-family:var(--fm);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+.sb-user{display:flex;align-items:center;gap:9px;padding:13px 17px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-avatar{width:29px;height:29px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:600;color:white;flex-shrink:0}
+.sb-name{font-size:.78rem;font-weight:500;color:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-role{font-size:.6rem;color:rgba(245,242,235,.4);font-family:var(--fm);text-transform:uppercase;letter-spacing:.05em}
+.sb-section-lbl{font-size:.58rem;font-family:var(--fm);letter-spacing:.1em;text-transform:uppercase;color:rgba(245,242,235,.28);padding:11px 17px 3px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 17px;font-size:.8rem;color:rgba(245,242,235,.6);cursor:pointer;transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--paper);background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--paper);background:rgba(255,255,255,.06);border-left-color:var(--accent)}
+.nav-icon{width:13px;text-align:center;font-size:.8rem;opacity:.7}
+.nav-badge{margin-left:auto;background:var(--accent);color:white;font-size:.58rem;font-family:var(--fm);padding:1px 5px;border-radius:10px;min-width:16px;text-align:center}
+.sb-bottom{padding:10px 13px;border-top:1px solid rgba(255,255,255,.08);margin-top:auto}
+.signout-btn{width:100%;padding:7px 13px;background:transparent;color:rgba(245,242,235,.35);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);font-family:var(--fb);font-size:.72rem;cursor:pointer;transition:all .15s}
+.signout-btn:hover{color:rgba(245,242,235,.7);border-color:rgba(255,255,255,.2)}
 
-  /* ── VIEWS ── */
-  .view { display: none; }
-  .view.active { display: block; }
+/* ── TOPBAR ── */
+.tb-title{font-family:var(--fd);font-size:1.05rem;font-weight:600;color:var(--ink);flex:1}
+.tb-date{font-size:.7rem;font-family:var(--fm);color:var(--muted)}
+.notif-wrap{position:relative}
+.notif-btn{background:none;border:none;cursor:pointer;font-size:.95rem;color:var(--muted);padding:6px 8px;border-radius:var(--r)}
+.notif-dot{position:absolute;top:3px;right:3px;width:14px;height:14px;background:var(--accent);color:white;font-size:.5rem;font-family:var(--fm);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.notif-drop{position:absolute;top:38px;right:0;background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);width:290px;box-shadow:var(--shadow-lg);z-index:500;animation:fadeIn .15s ease;display:none}
+.notif-drop.open{display:block}
+.notif-hdr{padding:9px 13px;border-bottom:1px solid var(--rule);font-size:.62rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.notif-item{padding:10px 13px;border-bottom:1px solid var(--cream);font-size:.76rem;cursor:pointer;line-height:1.45}
+.notif-item:hover{background:var(--paper)}
+.notif-item:last-child{border-bottom:none}
+.notif-time{font-size:.6rem;color:var(--muted);font-family:var(--fm);margin-top:2px}
+.notif-empty{padding:18px 13px;text-align:center;color:var(--muted);font-size:.78rem}
 
-  /* ── DASHBOARD ── */
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-  .stat-card {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    padding: 18px 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-  .stat-card.red::before { background: var(--accent); }
-  .stat-card.green::before { background: var(--accent2); }
-  .stat-card.amber::before { background: var(--amber); }
-  .stat-card.sky::before { background: var(--sky); }
-  .stat-label {
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .stat-num {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--ink);
-    line-height: 1;
-  }
-  .stat-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block}
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .section-title {
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--ink);
-  }
-  .section-rule {
-    border: none;
-    border-top: 1px solid var(--rule);
-    margin-bottom: 20px;
-  }
+/* ── SHARED COMPONENTS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r);font-family:var(--fb);font-size:.76rem;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:white;border-color:var(--accent)}
+.btn-primary:hover{background:#a93226}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-outline{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn-outline:hover{background:var(--cream)}
+.btn-ghost{background:transparent;color:var(--muted);border:none;padding:6px 9px}
+.btn-ghost:hover{color:var(--ink);background:var(--cream)}
+.btn-danger{background:#fdedec;color:var(--accent);border-color:#f5b7b1}
+.btn-danger:hover{background:#fbd7d5}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:.62rem;font-family:var(--fm);font-weight:500;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.badge-assigned{background:#e8f4fd;color:#1a5276}
+.badge-draft{background:#fef9e7;color:#7d6608}
+.badge-review{background:#fdf2e9;color:#784212}
+.badge-published{background:#eafaf1;color:#1e8449}
+.badge-section{background:var(--cream);color:var(--muted)}
+.badge-eic{background:#fdedec;color:#922b21}
+.badge-editor{background:#fdf2e9;color:#784212}
+.badge-reporter{background:var(--cream);color:var(--muted)}
+.card{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);overflow:hidden}
+.panel{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);margin-bottom:12px;overflow:hidden}
+.panel-hdr{padding:9px 13px;background:var(--cream);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:.62rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.panel-body{padding:12px 13px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.section-title{font-family:var(--fd);font-size:1rem;font-weight:600}
+.section-rule{border:none;border-top:1px solid var(--rule);margin-bottom:18px}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,14,12,.5);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:var(--rl);width:520px;max-width:95vw;box-shadow:var(--shadow-lg);overflow:hidden;animation:fadeIn .15s ease;max-height:90vh;overflow-y:auto}
+.modal-hdr{padding:18px 22px 14px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+.modal-title{font-family:var(--fd);font-size:1.05rem;font-weight:600}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.95rem;padding:3px 6px}
+.modal-body{padding:18px 22px}
+.modal-footer{padding:12px 22px;border-top:1px solid var(--rule);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--white)}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:.62rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.form-input,.form-select,.form-textarea{width:100%;padding:8px 11px;border:1px solid var(--rule);border-radius:var(--r);font-family:var(--fb);font-size:.83rem;color:var(--ink);background:var(--paper);outline:none;transition:border .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--ink)}
+.form-textarea{resize:vertical;min-height:76px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.toast-container{position:fixed;bottom:18px;right:18px;display:flex;flex-direction:column;gap:7px;z-index:9000}
+.toast{background:var(--ink);color:var(--paper);padding:10px 15px;border-radius:var(--rl);font-size:.78rem;box-shadow:var(--shadow-lg);animation:slideIn .2s ease;display:flex;align-items:center;gap:7px;max-width:300px}
+.toast.success{border-left:3px solid var(--accent2)}
+.toast.error{border-left:3px solid var(--accent)}
+.toast.info{border-left:3px solid var(--sky)}
+.spinner{width:20px;height:20px;border:2px solid var(--rule);border-top:2px solid var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 20px;text-align:center;color:var(--muted)}
+.empty-icon{font-size:2rem;opacity:.3;margin-bottom:12px}
+.empty-title{font-family:var(--fd);font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:4px}
+.empty-sub{font-size:.8rem;max-width:260px;margin-bottom:16px}
+tbl{width:100%;border-collapse:collapse}
+table{width:100%;border-collapse:collapse}
+th{background:var(--cream);font-size:.62rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:9px 15px;text-align:left;border-bottom:1px solid var(--rule);font-weight:500}
+td{padding:11px 15px;font-size:.8rem;border-bottom:1px solid var(--cream);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--paper)}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:white;flex-shrink:0}
 
-  /* ── ASSIGNMENT TABLE ── */
-  .table-wrap {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    margin-bottom: 28px;
-  }
-  table { width: 100%; border-collapse: collapse; }
-  th {
-    background: var(--cream);
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    padding: 10px 16px;
-    text-align: left;
-    border-bottom: 1px solid var(--rule);
-    font-weight: 500;
-  }
-  td {
-    padding: 12px 16px;
-    font-size: 0.82rem;
-    border-bottom: 1px solid var(--cream);
-    vertical-align: middle;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--paper); }
-  .story-title-cell {
-    font-weight: 500;
-    color: var(--ink);
-    cursor: pointer;
-    max-width: 280px;
-  }
-  .story-title-cell:hover { color: var(--accent); }
-  .story-section {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    color: var(--muted);
-    margin-top: 2px;
-  }
+/* ── DASHBOARD ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:16px 18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.red::before{background:var(--accent)}
+.stat-card.green::before{background:var(--accent2)}
+.stat-card.amber::before{background:var(--amber)}
+.stat-card.sky::before{background:var(--sky)}
+.stat-lbl{font-size:.62rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px}
+.stat-num{font-family:var(--fd);font-size:1.9rem;font-weight:700;line-height:1}
+.stat-sub{font-size:.7rem;color:var(--muted);margin-top:3px}
+.progress-bar{height:4px;background:var(--rule);border-radius:4px;overflow:hidden;margin-top:5px}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.activity-item{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--cream);font-size:.76rem}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.58rem;color:white;margin-top:1px}
 
-  /* ── BADGES ── */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-  .badge-assigned { background: #e8f4fd; color: #1a5276; }
-  .badge-draft { background: #fef9e7; color: #7d6608; }
-  .badge-review { background: #fdf2e9; color: #784212; }
-  .badge-published { background: #eafaf1; color: #1e8449; }
-  .badge-overdue { background: #fdedec; color: #922b21; }
-  .badge-section { background: var(--cream); color: var(--muted); }
+/* ── KANBAN ── */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+.kanban-col{background:var(--cream);border-radius:var(--rl);padding:11px;min-height:380px}
+.kanban-col-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;padding:0 3px}
+.kanban-col-title{font-size:.67rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.kanban-count{background:var(--rule);color:var(--muted);font-size:.58rem;font-family:var(--fm);padding:1px 6px;border-radius:10px}
+.kanban-card{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:11px 13px;margin-bottom:7px;cursor:grab;transition:all .15s;border-left:3px solid transparent;user-select:none}
+.kanban-card:active{cursor:grabbing;opacity:.8}
+.kanban-card.dragging{opacity:.5;transform:scale(.98)}
+.kanban-card.drag-over{border-color:var(--accent);background:var(--paper)}
+.kanban-card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.kanban-card.col-assigned{border-left-color:var(--sky)}
+.kanban-card.col-draft{border-left-color:var(--amber)}
+.kanban-card.col-review{border-left-color:var(--accent)}
+.kanban-card.col-published{border-left-color:var(--accent2)}
+.kanban-card-title{font-size:.8rem;font-weight:500;line-height:1.4;margin-bottom:7px}
+.kanban-card-meta{display:flex;align-items:center;justify-content:space-between;gap:5px}
+.kanban-card-reporter{display:flex;align-items:center;gap:5px;font-size:.66rem;color:var(--muted)}
+.kanban-deadline{font-size:.6rem;font-family:var(--fm);color:var(--muted)}
+.kanban-deadline.overdue{color:var(--accent)}
+.kanban-drop-zone{border:2px dashed var(--rule);border-radius:var(--rl);padding:18px 10px;text-align:center;font-size:.7rem;color:var(--muted);transition:all .2s;min-height:60px}
+.kanban-drop-zone.drag-over{border-color:var(--accent);background:#fdf2e9;color:var(--accent)}
 
-  /* ── KANBAN ── */
-  .kanban-board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    align-items: start;
-  }
-  .kanban-col {
-    background: var(--cream);
-    border-radius: var(--radius-lg);
-    padding: 12px;
-    min-height: 400px;
-  }
-  .kanban-col-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 0 4px;
-  }
-  .kanban-col-title {
-    font-size: 0.7rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    font-weight: 500;
-  }
-  .kanban-count {
-    background: var(--rule);
-    color: var(--muted);
-    font-size: 0.6rem;
-    font-family: var(--font-mono);
-    padding: 1px 6px;
-    border-radius: 10px;
-  }
-  .kanban-card {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    padding: 12px 14px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    border-left: 3px solid transparent;
-  }
-  .kanban-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
-  .kanban-card.red { border-left-color: var(--accent); }
-  .kanban-card.green { border-left-color: var(--accent2); }
-  .kanban-card.amber { border-left-color: var(--amber); }
-  .kanban-card.sky { border-left-color: var(--sky); }
-  .kanban-card-title {
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-  .kanban-card-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-  }
-  .kanban-card-reporter {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.68rem;
-    color: var(--muted);
-  }
-  .mini-avatar {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.55rem;
-    color: white;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-  .mini-avatar.green { background: var(--accent2); }
-  .mini-avatar.amber { background: var(--amber); }
-  .mini-avatar.sky { background: var(--sky); }
-  .kanban-deadline {
-    font-size: 0.62rem;
-    font-family: var(--font-mono);
-    color: var(--muted);
-  }
-  .kanban-deadline.overdue { color: var(--accent); }
+/* ── EDITOR ── */
+.editor-layout{display:grid;grid-template-columns:1fr 272px;gap:18px}
+.editor-title-input{font-family:var(--fd);font-size:1.35rem;font-weight:700;border:none;outline:none;width:100%;background:transparent;color:var(--ink);margin-bottom:5px;line-height:1.3}
+.editor-title-input::placeholder{color:var(--rule)}
+.editor-deck-input{font-family:var(--fb);font-size:.88rem;color:var(--muted);border:none;outline:none;width:100%;background:transparent;font-style:italic}
+.editor-deck-input::placeholder{color:var(--rule)}
+.toolbar{background:var(--cream);border:1px solid var(--rule);border-bottom:none;padding:7px 13px;display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.toolbar-btn{padding:4px 7px;background:transparent;border:1px solid transparent;border-radius:var(--r);font-size:.76rem;cursor:pointer;color:var(--ink);font-family:var(--fb);transition:all .1s}
+.toolbar-btn:hover{background:var(--white);border-color:var(--rule)}
+.toolbar-btn.active{background:var(--ink);color:var(--white)}
+.toolbar-sep{width:1px;height:16px;background:var(--rule);margin:0 3px}
+.editor-body{background:var(--white);border:1px solid var(--rule);border-top:none;border-radius:0 0 var(--rl) var(--rl);min-height:400px;padding:18px 22px}
+#story-content{outline:none;min-height:360px;font-size:.88rem;line-height:1.8;color:var(--ink)}
+#story-content h2{font-family:var(--fd);font-size:1.15rem;font-weight:600;margin:18px 0 7px}
+#story-content h3{font-family:var(--fd);font-size:.98rem;margin:14px 0 5px}
+#story-content p{margin-bottom:11px}
+#story-content blockquote{border-left:3px solid var(--accent);padding-left:15px;color:var(--muted);font-style:italic;margin:14px 0}
+.save-status{display:flex;align-items:center;gap:5px;font-size:.62rem;font-family:var(--fm);color:var(--muted)}
+.save-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2)}
+.save-dot.saving{background:var(--amber);animation:pulse .8s infinite}
+.upload-progress{background:var(--cream);border:1px solid var(--rule);border-bottom:none;padding:5px 13px}
+.upload-bar{height:3px;background:var(--rule);border-radius:3px;overflow:hidden}
+.upload-fill{height:100%;background:var(--accent2);border-radius:3px;transition:width .2s}
+.comment{padding:9px 0;border-bottom:1px solid var(--cream)}
+.comment:last-child{border-bottom:none}
+.comment-hdr{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.comment-body{font-size:.76rem;line-height:1.5}
+.version-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--cream);font-size:.73rem}
+.version-item:last-child{border-bottom:none}
+.version-dot{width:8px;height:8px;border-radius:50%;background:var(--rule);margin-top:3px;flex-shrink:0}
+.version-dot.current{background:var(--accent2)}
+.locked-banner{background:#fdf2e9;border:1px solid #f0a070;border-radius:var(--r);padding:8px 12px;font-size:.76rem;color:#784212;display:flex;align-items:center;gap:8px;margin-bottom:11px}
 
-  /* ── EDITOR VIEW ── */
-  .editor-layout { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
-  .editor-main { }
-  .editor-sidebar { }
-  .editor-header {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    padding: 16px 20px;
-    border-bottom: none;
-  }
-  .editor-title-input {
-    font-family: var(--font-display);
-    font-size: 1.4rem;
-    font-weight: 700;
-    border: none;
-    outline: none;
-    width: 100%;
-    background: transparent;
-    color: var(--ink);
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-  .editor-title-input::placeholder { color: var(--rule); }
-  .editor-deck-input {
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    color: var(--muted);
-    border: none;
-    outline: none;
-    width: 100%;
-    background: transparent;
-    font-style: italic;
-  }
-  .editor-deck-input::placeholder { color: var(--rule); }
-  .editor-toolbar {
-    background: var(--cream);
-    border: 1px solid var(--rule);
-    border-bottom: none;
-    padding: 8px 14px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-  }
-  .toolbar-btn {
-    padding: 4px 8px;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    font-size: 0.78rem;
-    cursor: pointer;
-    color: var(--ink);
-    font-family: var(--font-body);
-    transition: all 0.1s;
-  }
-  .toolbar-btn:hover { background: var(--white); border-color: var(--rule); }
-  .toolbar-btn.active { background: var(--ink); color: var(--white); }
-  .toolbar-sep { width: 1px; height: 18px; background: var(--rule); margin: 0 4px; }
-  .editor-body {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-top: none;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    min-height: 420px;
-    padding: 20px 24px;
-  }
-  .editor-body [contenteditable] {
-    outline: none;
-    min-height: 380px;
-    font-size: 0.9rem;
-    line-height: 1.8;
-    color: var(--ink);
-    font-family: var(--font-body);
-  }
-  .editor-body [contenteditable] h2 {
-    font-family: var(--font-display);
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 20px 0 8px;
-    color: var(--ink);
-  }
-  .editor-body [contenteditable] h3 {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    margin: 16px 0 6px;
-  }
-  .editor-body [contenteditable] p { margin-bottom: 12px; }
-  .editor-body [contenteditable] blockquote {
-    border-left: 3px solid var(--accent);
-    padding-left: 16px;
-    color: var(--muted);
-    font-style: italic;
-    margin: 16px 0;
-  }
-  .editor-body [contenteditable] strong { font-weight: 600; }
+/* ── MEDIA ── */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:14px}
+.media-card{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .15s}
+.media-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.media-thumb{aspect-ratio:16/10;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;position:relative}
+.media-thumb img{width:100%;height:100%;object-fit:cover}
+.media-type-badge{position:absolute;bottom:3px;right:3px;background:rgba(15,14,12,.7);color:white;font-size:.52rem;font-family:var(--fm);padding:1px 4px;border-radius:2px;text-transform:uppercase}
+.media-info{padding:9px 11px}
+.media-name{font-size:.76rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.media-meta{font-size:.62rem;color:var(--muted);font-family:var(--fm)}
+.upload-zone{border:1.5px dashed var(--rule);border-radius:var(--rl);padding:32px 20px;text-align:center;cursor:pointer;transition:all .15s;font-size:.76rem;color:var(--muted)}
+.upload-zone:hover{border-color:var(--accent);color:var(--accent);background:#fdf8f8}
 
-  /* ── EDITOR SIDEBAR PANELS ── */
-  .panel {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-  .panel-header {
-    padding: 10px 14px;
-    background: var(--cream);
-    border-bottom: 1px solid var(--rule);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .panel-title {
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    font-weight: 500;
-  }
-  .panel-body { padding: 12px 14px; }
-  .meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--cream);
-    font-size: 0.78rem;
-  }
-  .meta-row:last-child { border-bottom: none; }
-  .meta-key { color: var(--muted); font-size: 0.72rem; }
-  .meta-val { color: var(--ink); font-weight: 500; text-align: right; max-width: 130px; }
+/* ── TEAM ── */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.team-card{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;position:relative}
+.team-stats{display:flex;gap:18px;margin-top:7px}
+.team-stat-num{font-family:var(--fd);font-size:1.05rem;font-weight:700}
+.team-stat-lbl{font-size:.58rem;font-family:var(--fm);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.invite-card{border:2px dashed var(--rule);background:transparent;cursor:pointer;color:var(--muted);min-height:190px;justify-content:center;transition:all .15s}
+.invite-card:hover{border-color:var(--accent);color:var(--accent)}
 
-  /* ── MEDIA PANEL ── */
-  .media-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  .media-thumb {
-    aspect-ratio: 16/10;
-    background: var(--cream);
-    border-radius: var(--radius);
-    border: 1px solid var(--rule);
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-  }
-  .media-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .media-thumb-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: var(--rule);
-  }
-  .media-type-badge {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    background: rgba(15,14,12,0.7);
-    color: white;
-    font-size: 0.55rem;
-    font-family: var(--font-mono);
-    padding: 1px 4px;
-    border-radius: 2px;
-    text-transform: uppercase;
-  }
-  .upload-zone {
-    border: 1px dashed var(--rule);
-    border-radius: var(--radius);
-    padding: 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-size: 0.72rem;
-    color: var(--muted);
-  }
-  .upload-zone:hover { border-color: var(--accent); color: var(--accent); background: #fdf0ef; }
+/* ── PREVIEW LIGHTBOX ── */
+#lightbox{position:fixed;inset:0;background:rgba(15,14,12,.88);display:none;align-items:center;justify-content:center;z-index:2000;cursor:zoom-out}
+#lightbox.open{display:flex}
+#lightbox img,#lightbox video{max-width:90vw;max-height:90vh;border-radius:var(--rl);box-shadow:0 24px 64px rgba(0,0,0,.4)}
+#lightbox audio{width:300px}
+.lightbox-pdf{background:var(--white);padding:28px;border-radius:var(--rl);text-align:center}
 
-  /* ── COMMENTS ── */
-  .comment {
-    padding: 10px 0;
-    border-bottom: 1px solid var(--cream);
-  }
-  .comment:last-child { border-bottom: none; }
-  .comment-header {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 5px;
-  }
-  .comment-author { font-size: 0.75rem; font-weight: 500; }
-  .comment-time { font-size: 0.65rem; color: var(--muted); font-family: var(--font-mono); }
-  .comment-body { font-size: 0.78rem; color: var(--ink); line-height: 1.5; }
-  .comment-input-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-    align-items: flex-end;
-  }
-  .comment-input {
-    flex: 1;
-    border: 1px solid var(--rule);
-    border-radius: var(--radius);
-    padding: 7px 10px;
-    font-size: 0.78rem;
-    font-family: var(--font-body);
-    resize: none;
-    outline: none;
-    background: var(--paper);
-    color: var(--ink);
-  }
-  .comment-input:focus { border-color: var(--ink); }
-
-  /* ── VERSION HISTORY ── */
-  .version-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 7px 0;
-    border-bottom: 1px solid var(--cream);
-    font-size: 0.75rem;
-  }
-  .version-item:last-child { border-bottom: none; }
-  .version-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--rule);
-    margin-top: 4px;
-    flex-shrink: 0;
-  }
-  .version-dot.current { background: var(--accent2); }
-  .version-label { color: var(--ink); font-weight: 500; }
-  .version-meta { color: var(--muted); font-size: 0.65rem; font-family: var(--font-mono); }
-
-  /* ── MEDIA VIEW ── */
-  .media-library {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
-  }
-  .media-card {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .media-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-  .media-card-thumb {
-    aspect-ratio: 16/10;
-    background: var(--cream);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    color: var(--rule);
-  }
-  .media-card-info { padding: 10px 12px; }
-  .media-card-name { font-size: 0.78rem; font-weight: 500; color: var(--ink); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .media-card-meta { font-size: 0.65rem; color: var(--muted); font-family: var(--font-mono); }
-
-  /* ── TEAM VIEW ── */
-  .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
-  .team-card {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 8px;
-  }
-  .team-avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: white;
-    font-weight: 700;
-    font-family: var(--font-display);
-  }
-  .team-name { font-weight: 600; font-size: 0.88rem; }
-  .team-role { font-size: 0.65rem; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .team-section { font-size: 0.72rem; color: var(--muted); }
-  .team-stats { display: flex; gap: 16px; margin-top: 8px; }
-  .team-stat { text-align: center; }
-  .team-stat-num { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--ink); }
-  .team-stat-label { font-size: 0.6rem; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15,14,12,0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(2px);
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    width: 520px;
-    max-width: 95vw;
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-  }
-  .modal-header {
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--rule);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .modal-title {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-  .modal-body { padding: 20px 24px; }
-  .modal-footer {
-    padding: 14px 24px;
-    border-top: 1px solid var(--rule);
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-  .form-group { margin-bottom: 16px; }
-  .form-label {
-    display: block;
-    font-size: 0.72rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    margin-bottom: 5px;
-  }
-  .form-input, .form-select, .form-textarea {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid var(--rule);
-    border-radius: var(--radius);
-    font-family: var(--font-body);
-    font-size: 0.84rem;
-    color: var(--ink);
-    background: var(--paper);
-    outline: none;
-    transition: border 0.15s;
-  }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--ink); }
-  .form-textarea { resize: vertical; min-height: 80px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  /* ── TOAST ── */
-  .toast-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    z-index: 2000;
-  }
-  .toast {
-    background: var(--ink);
-    color: var(--paper);
-    padding: 10px 16px;
-    border-radius: var(--radius-lg);
-    font-size: 0.8rem;
-    box-shadow: var(--shadow-lg);
-    animation: slideIn 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .toast.success { border-left: 3px solid var(--accent2); }
-  .toast.info { border-left: 3px solid var(--sky); }
-  @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: none; opacity: 1; } }
-
-  /* ── ACTIVITY FEED ── */
-  .activity-feed { display: flex; flex-direction: column; gap: 0; }
-  .activity-item {
-    display: flex;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--cream);
-    font-size: 0.78rem;
-  }
-  .activity-item:last-child { border-bottom: none; }
-  .activity-dot {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.6rem;
-    color: white;
-    margin-top: 1px;
-  }
-  .activity-text { flex: 1; line-height: 1.5; }
-  .activity-text strong { font-weight: 500; }
-  .activity-time { font-size: 0.62rem; font-family: var(--font-mono); color: var(--muted); }
-
-  /* ── PROGRESS BAR ── */
-  .progress-bar { height: 4px; background: var(--rule); border-radius: 4px; overflow: hidden; margin-top: 6px; }
-  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-
-  /* scrollbar */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
-
-  /* tag chip */
-  .chip {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 0.62rem;
-    font-family: var(--font-mono);
-    background: var(--cream);
-    color: var(--muted);
-    border: 1px solid var(--rule);
-    margin: 2px;
-  }
-
-  .autosave {
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .autosave-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent2);
-  }
-  .autosave-dot.saving {
-    background: var(--amber);
-    animation: pulse 0.8s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  .word-count {
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    color: var(--muted);
-    margin-left: auto;
-  }
-
-  /* deadline warning strip */
-  .deadline-strip {
-    background: #fdf2e9;
-    border: 1px solid #f0a070;
-    border-radius: var(--radius);
-    padding: 8px 12px;
-    font-size: 0.78rem;
-    color: #784212;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-
-  /* ── LOGIN SCREEN ── */
-  .login-screen {
-    position: fixed;
-    inset: 0;
-    background: var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    animation: loginFadeIn 0.3s ease;
-  }
-  @keyframes loginFadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes loginFadeOut { from { opacity: 1; } to { opacity: 0; } }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .login-card {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 48px 40px;
-    width: 400px;
-    max-width: 95vw;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
-    animation: cardRise 0.35s cubic-bezier(0.16,1,0.3,1);
-  }
-  @keyframes cardRise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
-  .login-masthead {
-    font-family: var(--font-display);
-    font-size: 1.9rem;
-    font-weight: 700;
-    color: var(--ink);
-    text-align: center;
-    margin-bottom: 4px;
-    letter-spacing: -0.02em;
-  }
-  .login-sub {
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  .login-rule {
-    width: 40px;
-    height: 3px;
-    background: var(--accent);
-    margin: 0 auto 32px;
-    border-radius: 2px;
-  }
-  .login-label {
-    display: block;
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .login-input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--rule);
-    border-radius: var(--radius);
-    font-family: var(--font-body);
-    font-size: 0.88rem;
-    color: var(--ink);
-    background: var(--paper);
-    outline: none;
-    transition: border 0.15s, box-shadow 0.15s;
-    margin-bottom: 14px;
-  }
-  .login-input:focus {
-    border-color: var(--ink);
-    box-shadow: 0 0 0 3px rgba(15,14,12,0.06);
-  }
-  .login-input.error { border-color: var(--accent); }
-  .login-btn {
-    width: 100%;
-    padding: 12px 20px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: var(--radius);
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 4px;
-  }
-  .login-btn:hover { background: #a93226; }
-  .login-btn:active { transform: scale(0.99); }
-  .login-btn:disabled { background: var(--rule); cursor: not-allowed; }
-  .login-error {
-    background: #fdedec;
-    color: #922b21;
-    border: 1px solid #f5b7b1;
-    border-radius: var(--radius);
-    padding: 10px 14px;
-    font-size: 0.78rem;
-    margin-bottom: 14px;
-    display: none;
-    align-items: center;
-    gap: 8px;
-  }
-  .login-error.visible { display: flex; }
-  .login-footer {
-    text-align: center;
-    font-size: 0.68rem;
-    color: var(--muted);
-    margin-top: 24px;
-    line-height: 1.5;
-  }
-  .login-spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top: 2px solid white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Sidebar sign-out */
-  .signout-btn {
-    width: 100%;
-    padding: 7px 14px;
-    background: transparent;
-    color: rgba(245,242,235,0.35);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: var(--radius);
-    font-family: var(--font-body);
-    font-size: 0.72rem;
-    cursor: pointer;
-    margin-top: 6px;
-    transition: all 0.15s;
-  }
-  .signout-btn:hover { color: rgba(245,242,235,0.7); border-color: rgba(255,255,255,0.2); }
-
-  /* Password toggle */
-  .pw-wrap { position: relative; }
-  .pw-toggle {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-60%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--muted);
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
-    padding: 2px 4px;
-  }
-  .pw-toggle:hover { color: var(--ink); }
-
-  /* Session badge on sidebar */
-  .session-badge {
-    display: inline-block;
-    padding: 1px 5px;
-    background: rgba(44,110,73,0.2);
-    color: #5dbb86;
-    font-size: 0.55rem;
-    font-family: var(--font-mono);
-    border-radius: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-left: 4px;
-  }
-
+/* ── CONFIRM DIALOG ── */
+#confirm-overlay{position:fixed;inset:0;background:rgba(15,14,12,.5);display:none;align-items:center;justify-content:center;z-index:2000}
+#confirm-overlay.open{display:flex}
+.confirm-box{background:var(--white);border-radius:var(--rl);padding:26px;width:380px;max-width:95vw;box-shadow:var(--shadow-lg);animation:fadeIn .15s ease}
+.confirm-title{font-family:var(--fd);font-size:1rem;font-weight:600;margin-bottom:8px}
+.confirm-msg{font-size:.82rem;color:var(--muted);margin-bottom:20px;line-height:1.55}
+.confirm-btns{display:flex;justify-content:flex-end;gap:8px}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════
-     SPLASH — shown for ~1s while Firebase checks session
-     ══════════════════════════════════════════════════════ -->
-<div id="splash-screen" style="
-  position:fixed;inset:0;background:var(--ink);
-  display:flex;align-items:center;justify-content:center;
-  z-index:10000;flex-direction:column;gap:16px;">
-  <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--paper);letter-spacing:-0.02em;">
-    The Pressroom
-  </div>
-  <div style="width:32px;height:32px;border:2px solid rgba(255,255,255,0.15);border-top:2px solid var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-title">The Pressroom</div>
+  <div class="splash-spin"></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
-     LOGIN SCREEN — shown until user authenticates
-     ══════════════════════════════════════════════════════ -->
-<div class="login-screen" id="login-screen" style="display:none;">
+<!-- LOGIN -->
+<div id="login-screen">
   <div class="login-card">
     <div class="login-masthead">The Pressroom</div>
-    <div class="login-sub">Student Journalism Platform</div>
+    <div class="login-sub">SGJC Student Newsroom</div>
     <div class="login-rule"></div>
-
-    <!-- Error / success message -->
-    <div class="login-error" id="login-error">
-      <span>✕</span>
-      <span id="login-error-msg">Sign-in failed. Please try again.</span>
-    </div>
-
-    <!-- ── PRIMARY: Google sign-in button ── -->
-    <button id="google-btn" onclick="signInWithGoogle()" style="
-      width:100%;padding:12px 20px;
-      background:var(--white);color:var(--ink);
-      border:1.5px solid var(--rule);border-radius:var(--radius);
-      font-family:var(--font-body);font-size:0.9rem;font-weight:500;
-      cursor:pointer;display:flex;align-items:center;justify-content:center;
-      gap:10px;transition:all 0.15s;box-shadow:var(--shadow);
-      margin-bottom:20px;">
-      <!-- Google 'G' logo SVG -->
-      <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-      </svg>
-      <span id="google-btn-text">Continue with Google</span>
+    <div class="login-err" id="login-err"><span>✕</span><span id="login-err-msg"></span></div>
+    <button class="g-btn" id="g-btn" onclick="signInGoogle()">
+      <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <span id="g-btn-txt">Continue with Google</span>
     </button>
-
-    <!-- ── DIVIDER ── -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-      <div style="flex:1;height:1px;background:var(--rule);"></div>
-      <span style="font-size:0.68rem;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">or sign in with email</span>
-      <div style="flex:1;height:1px;background:var(--rule);"></div>
-    </div>
-
-    <!-- ── SECONDARY: Email + password ── -->
-    <label class="login-label" for="login-email">Email address</label>
-    <input
-      class="login-input"
-      type="email"
-      id="login-email"
-      placeholder="you@university.edu"
-      autocomplete="email"
-      onkeydown="if(event.key==='Enter') document.getElementById('login-password').focus()"
-    />
-
-    <label class="login-label" for="login-password">Password</label>
+    <div class="divider"><div class="divider-line"></div><span class="divider-txt">or email</span><div class="divider-line"></div></div>
+    <label class="login-lbl">Email address</label>
+    <input class="login-inp" type="email" id="li-email" placeholder="you@university.edu" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('li-pw').focus()">
+    <label class="login-lbl">Password</label>
     <div class="pw-wrap">
-      <input
-        class="login-input"
-        type="password"
-        id="login-password"
-        placeholder="••••••••"
-        autocomplete="current-password"
-        style="padding-right:52px;"
-        onkeydown="if(event.key==='Enter') attemptLogin()"
-      />
-      <button class="pw-toggle" type="button" onclick="togglePw()" id="pw-toggle-btn">Show</button>
+      <input class="login-inp" type="password" id="li-pw" placeholder="••••••••" autocomplete="current-password" style="padding-right:50px" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="pw-toggle" onclick="togglePw()">Show</button>
     </div>
-
-    <button class="login-btn" id="login-btn" onclick="attemptLogin()" style="background:var(--muted);">
-      <div class="login-spinner" id="login-spinner"></div>
-      <span id="login-btn-text">Sign in with email</span>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">
+      <div class="login-spin" id="login-spin"></div>
+      <span id="login-btn-txt">Sign in with email</span>
     </button>
-
-    <div style="text-align:center;margin-top:12px;">
-      <button onclick="forgotPassword()" style="
-        background:none;border:none;cursor:pointer;
-        font-family:var(--font-body);font-size:0.75rem;
-        color:var(--muted);text-decoration:underline;
-        text-underline-offset:2px;">
-        Forgot password?
-      </button>
-    </div>
-
-    <div class="login-footer">
-      Access is restricted to approved team members.<br>
-      Contact your editor-in-chief to be added to the system.
-    </div>
+    <button class="forgot-link" onclick="doForgot()">Forgot password?</button>
+    <div class="login-footer">Access restricted to approved team members.<br>Contact your editor-in-chief to be added.</div>
   </div>
 </div>
 
-<div class="app" id="main-app" style="display:none">
-
-  <!-- SIDEBAR -->
+<!-- APP -->
+<div id="app">
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="masthead">The Pressroom</div>
-      <div class="edition">Student Journalism Platform</div>
+    <div class="sb-logo">
+      <div class="sb-masthead">The Pressroom</div>
+      <div class="sb-edition">SGJC Student Newsroom</div>
     </div>
-    <div class="sidebar-user">
-      <div class="avatar">MR</div>
-      <div class="user-info">
-        <div class="user-name">Maya Rodriguez</div>
-        <div class="user-role">Editor-in-Chief</div>
+    <div class="sb-user">
+      <div class="avatar sb-avatar" id="sb-avatar" style="width:29px;height:29px;font-size:.68rem"></div>
+      <div>
+        <div class="sb-name" id="sb-name">Loading…</div>
+        <div class="sb-role" id="sb-role">reporter</div>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section-label">Newsroom</div>
-      <div class="nav-item active" onclick="showView('dashboard')">
-        <span class="nav-icon">◈</span> Dashboard
-      </div>
-      <div class="nav-item" onclick="showView('assignments')">
-        <span class="nav-icon">◻</span> Assignments
-        <span class="nav-badge">7</span>
-      </div>
-      <div class="nav-item" onclick="showView('board')">
-        <span class="nav-icon">⊞</span> Story Board
-      </div>
-      <div class="nav-item" onclick="showView('editor')">
-        <span class="nav-icon">✎</span> Write Story
-      </div>
-      <div class="nav-section-label">Assets</div>
-      <div class="nav-item" onclick="showView('media')">
-        <span class="nav-icon">⊡</span> Media Library
-      </div>
-      <div class="nav-section-label">Team</div>
-      <div class="nav-item" onclick="showView('team')">
-        <span class="nav-icon">◎</span> Team Members
-      </div>
+    <nav style="flex:1">
+      <div class="sb-section-lbl">Newsroom</div>
+      <div class="nav-item active" onclick="nav('dashboard')"><span class="nav-icon">◈</span>Dashboard</div>
+      <div class="nav-item" onclick="nav('assignments')"><span class="nav-icon">◻</span>Assignments<span class="nav-badge" id="nb-assign" style="display:none">0</span></div>
+      <div class="nav-item" onclick="nav('board')"><span class="nav-icon">⊞</span>Story Board</div>
+      <div class="nav-item" id="nav-editor" style="display:none" onclick="nav('editor')"><span class="nav-icon">✎</span>Story Editor</div>
+      <div class="sb-section-lbl">Assets</div>
+      <div class="nav-item" onclick="nav('media')"><span class="nav-icon">⊡</span>Media Library</div>
+      <div class="sb-section-lbl">Team</div>
+      <div class="nav-item" onclick="nav('team')"><span class="nav-icon">◎</span>Team</div>
     </nav>
-    <div style="padding: 10px 14px; border-top: 1px solid rgba(255,255,255,0.08);">
-      <button class="signout-btn" onclick="signOut()">Sign out</button>
+    <div class="sb-bottom">
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:6px" onclick="openModal('new-assign')" id="btn-new-assign">+ New Assignment</button>
+      <button class="signout-btn" onclick="doSignOut()">Sign out</button>
     </div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main">
     <header class="topbar">
-      <div class="topbar-title" id="topbar-title">Daily Briefing</div>
-      <div class="topbar-actions">
-        <span style="font-size:0.72rem;font-family:var(--font-mono);color:var(--muted)">Tue, Mar 24 2026</span>
-        <button class="btn btn-ghost">🔔</button>
-        <button class="btn btn-primary" onclick="openModal('new-assignment')">+ New Assignment</button>
+      <div class="tb-title" id="tb-title">Daily Briefing</div>
+      <div class="tb-date" id="tb-date"></div>
+      <div class="notif-wrap">
+        <button class="notif-btn" onclick="toggleNotifs()" id="notif-btn">🔔</button>
+        <div class="notif-dot" id="notif-dot" style="display:none">0</div>
+        <div class="notif-drop" id="notif-drop">
+          <div class="notif-hdr">Notifications</div>
+          <div id="notif-list"><div class="notif-empty">All caught up ✓</div></div>
+        </div>
       </div>
     </header>
 
     <div class="content">
-
-      <!-- ── DASHBOARD ── -->
+      <!-- DASHBOARD -->
       <div class="view active" id="view-dashboard">
-        <div class="stats-row">
-          <div class="stat-card red">
-            <div class="stat-label">Active Stories</div>
-            <div class="stat-num">12</div>
-            <div class="stat-sub">↑ 3 from last week</div>
-          </div>
-          <div class="stat-card amber">
-            <div class="stat-label">In Review</div>
-            <div class="stat-num">4</div>
-            <div class="stat-sub">2 need editor action</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Published</div>
-            <div class="stat-num">38</div>
-            <div class="stat-sub">this semester</div>
-          </div>
-          <div class="stat-card sky">
-            <div class="stat-label">Team Members</div>
-            <div class="stat-num">11</div>
-            <div class="stat-sub">across 4 sections</div>
-          </div>
+        <div class="stats-grid">
+          <div class="stat-card red"><div class="stat-lbl">Active Stories</div><div class="stat-num" id="ds-active">—</div><div class="stat-sub">in progress</div></div>
+          <div class="stat-card amber"><div class="stat-lbl">In Review</div><div class="stat-num" id="ds-review">—</div><div class="stat-sub">awaiting editor</div></div>
+          <div class="stat-card green"><div class="stat-lbl">Published</div><div class="stat-num" id="ds-pub">—</div><div class="stat-sub">this semester</div></div>
+          <div class="stat-card sky"><div class="stat-lbl">Team Members</div><div class="stat-num" id="ds-team">—</div><div class="stat-sub">active journalists</div></div>
         </div>
-
-        <div class="grid-3">
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:22px">
           <div>
-            <div class="section-header">
-              <div class="section-title">Recent Assignments</div>
-              <button class="btn btn-ghost" style="font-size:0.75rem" onclick="showView('assignments')">View all →</button>
-            </div>
+            <div class="section-hdr"><div class="section-title">Recent Assignments</div><button class="btn btn-ghost" style="font-size:.73rem" onclick="nav('assignments')">View all →</button></div>
             <hr class="section-rule">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Story</th>
-                    <th>Reporter</th>
-                    <th>Status</th>
-                    <th>Deadline</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr onclick="showView('editor')" style="cursor:pointer">
-                    <td>
-                      <div class="story-title-cell">Budget cuts threaten athletics program</div>
-                      <div class="story-section">Campus News</div>
-                    </td>
-                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar green">JL</div><span style="font-size:0.78rem">Jamie Lee</span></div></td>
-                    <td><span class="badge badge-review">In Review</span></td>
-                    <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent)">Mar 25 ⚠</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="story-title-cell">Student housing crisis: a year in numbers</div>
-                      <div class="story-section">Investigations</div>
-                    </td>
-                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar amber">TP</div><span style="font-size:0.78rem">Taylor Park</span></div></td>
-                    <td><span class="badge badge-draft">Draft</span></td>
-                    <td style="font-family:var(--font-mono);font-size:0.72rem">Mar 28</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="story-title-cell">Spring theatre showcase: preview</div>
-                      <div class="story-section">Arts & Culture</div>
-                    </td>
-                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar sky">AK</div><span style="font-size:0.78rem">Alex Kim</span></div></td>
-                    <td><span class="badge badge-assigned">Assigned</span></td>
-                    <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 2</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="story-title-cell">Poll: Students weigh in on new campus policy</div>
-                      <div class="story-section">Campus News</div>
-                    </td>
-                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar">SR</div><span style="font-size:0.78rem">Sam Rivera</span></div></td>
-                    <td><span class="badge badge-published">Published</span></td>
-                    <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">Mar 22 ✓</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="story-title-cell">New library renovation: what students think</div>
-                      <div class="story-section">Campus News</div>
-                    </td>
-                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar green">JL</div><span style="font-size:0.78rem">Jamie Lee</span></div></td>
-                    <td><span class="badge badge-draft">Draft</span></td>
-                    <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 5</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <div class="card"><table id="dash-table"><tbody><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)"><div class="spinner" style="margin:auto"></div></td></tr></tbody></table></div>
           </div>
-
           <div>
-            <div class="section-header">
-              <div class="section-title">Activity</div>
-            </div>
+            <div class="section-title" style="margin-bottom:13px">Section Progress</div>
             <hr class="section-rule">
-            <div class="panel" style="margin-bottom:16px">
-              <div class="panel-body" style="padding:14px">
-                <div class="activity-feed">
-                  <div class="activity-item">
-                    <div class="activity-dot" style="background:var(--accent2)">✓</div>
-                    <div>
-                      <div class="activity-text"><strong>Jamie Lee</strong> submitted draft for review</div>
-                      <div class="activity-time">12 min ago</div>
-                    </div>
-                  </div>
-                  <div class="activity-item">
-                    <div class="activity-dot" style="background:var(--amber)">✎</div>
-                    <div>
-                      <div class="activity-text"><strong>Maya R.</strong> left 3 comments on housing story</div>
-                      <div class="activity-time">1 hr ago</div>
-                    </div>
-                  </div>
-                  <div class="activity-item">
-                    <div class="activity-dot" style="background:var(--sky)">⊡</div>
-                    <div>
-                      <div class="activity-text"><strong>Alex Kim</strong> uploaded 4 photos to Media Library</div>
-                      <div class="activity-time">2 hrs ago</div>
-                    </div>
-                  </div>
-                  <div class="activity-item">
-                    <div class="activity-dot" style="background:var(--accent)">◈</div>
-                    <div>
-                      <div class="activity-text"><strong>Taylor Park</strong> created new assignment: Housing Crisis</div>
-                      <div class="activity-time">Yesterday</div>
-                    </div>
-                  </div>
-                  <div class="activity-item">
-                    <div class="activity-dot" style="background:var(--accent2)">✓</div>
-                    <div>
-                      <div class="activity-text"><strong>Sam Rivera</strong>'s story was published</div>
-                      <div class="activity-time">Yesterday</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="panel">
-              <div class="panel-header"><span class="panel-title">Section Progress</span></div>
-              <div class="panel-body">
-                <div style="margin-bottom:12px">
-                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px">
-                    <span>Campus News</span><span style="font-family:var(--font-mono);color:var(--muted)">5/7</span>
-                  </div>
-                  <div class="progress-bar"><div class="progress-fill" style="width:71%;background:var(--accent)"></div></div>
-                </div>
-                <div style="margin-bottom:12px">
-                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px">
-                    <span>Investigations</span><span style="font-family:var(--font-mono);color:var(--muted)">2/4</span>
-                  </div>
-                  <div class="progress-bar"><div class="progress-fill" style="width:50%;background:var(--sky)"></div></div>
-                </div>
-                <div style="margin-bottom:12px">
-                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px">
-                    <span>Arts & Culture</span><span style="font-family:var(--font-mono);color:var(--muted)">3/3</span>
-                  </div>
-                  <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--accent2)"></div></div>
-                </div>
-                <div>
-                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px">
-                    <span>Sports</span><span style="font-family:var(--font-mono);color:var(--muted)">1/4</span>
-                  </div>
-                  <div class="progress-bar"><div class="progress-fill" style="width:25%;background:var(--amber)"></div></div>
-                </div>
-              </div>
-            </div>
+            <div class="panel"><div class="panel-body" id="section-progress"><div class="spinner" style="margin:auto"></div></div></div>
+            <div class="section-title" style="margin-bottom:13px;margin-top:18px">Activity</div>
+            <hr class="section-rule">
+            <div class="panel"><div class="panel-body" id="activity-feed" style="padding:10px 13px"></div></div>
           </div>
         </div>
       </div>
 
-      <!-- ── ASSIGNMENTS ── -->
+      <!-- ASSIGNMENTS -->
       <div class="view" id="view-assignments">
-        <div class="section-header" style="margin-bottom:16px">
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <span class="badge badge-assigned" style="cursor:pointer;padding:5px 12px">All</span>
-            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Assigned</span>
-            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Draft</span>
-            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">In Review</span>
-            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Published</span>
+        <div class="section-hdr" style="margin-bottom:14px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="assign-filters">
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px;background:var(--ink);color:var(--paper);border-color:var(--ink)" onclick="filterAssign('all')">All</button>
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterAssign('assigned')">Assigned</button>
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterAssign('draft')">Draft</button>
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterAssign('review')">In Review</button>
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterAssign('published')">Published</button>
           </div>
-          <button class="btn btn-primary" onclick="openModal('new-assignment')">+ New Assignment</button>
+          <button class="btn btn-primary" onclick="openModal('new-assign')" id="btn-new-assign2">+ New Assignment</button>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Story Title</th>
-                <th>Section</th>
-                <th>Reporter</th>
-                <th>Status</th>
-                <th>Deadline</th>
-                <th>Words</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr onclick="showView('editor')" style="cursor:pointer">
-                <td><div class="story-title-cell">Budget cuts threaten athletics program</div></td>
-                <td><span class="badge badge-section">Campus News</span></td>
-                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar green">JL</div> Jamie Lee</div></td>
-                <td><span class="badge badge-review">In Review</span></td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent)">Mar 25</td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">842</td>
-                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px" onclick="event.stopPropagation();showView('editor')">Open</button></td>
-              </tr>
-              <tr>
-                <td><div class="story-title-cell">Student housing crisis: a year in numbers</div></td>
-                <td><span class="badge badge-section">Investigations</span></td>
-                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar amber">TP</div> Taylor Park</div></td>
-                <td><span class="badge badge-draft">Draft</span></td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">Mar 28</td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">1,204</td>
-                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
-              </tr>
-              <tr>
-                <td><div class="story-title-cell">Spring theatre showcase: preview</div></td>
-                <td><span class="badge badge-section">Arts</span></td>
-                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar sky">AK</div> Alex Kim</div></td>
-                <td><span class="badge badge-assigned">Assigned</span></td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 2</td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">0</td>
-                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
-              </tr>
-              <tr>
-                <td><div class="story-title-cell">Varsity soccer season preview</div></td>
-                <td><span class="badge badge-section">Sports</span></td>
-                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar">SR</div> Sam Rivera</div></td>
-                <td><span class="badge badge-draft">Draft</span></td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 4</td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">560</td>
-                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
-              </tr>
-              <tr>
-                <td><div class="story-title-cell">Student loan relief: what's changing</div></td>
-                <td><span class="badge badge-section">Campus News</span></td>
-                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar green">JL</div> Jamie Lee</div></td>
-                <td><span class="badge badge-assigned">Assigned</span></td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 6</td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">0</td>
-                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
-              </tr>
-              <tr>
-                <td><div class="story-title-cell">Faculty senate votes on grading reform</div></td>
-                <td><span class="badge badge-section">Campus News</span></td>
-                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar amber">TP</div> Taylor Park</div></td>
-                <td><span class="badge badge-review">In Review</span></td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent)">Mar 26</td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">990</td>
-                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
-              </tr>
-              <tr>
-                <td><div class="story-title-cell">Poll: Students weigh in on new campus policy</div></td>
-                <td><span class="badge badge-section">Campus News</span></td>
-                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar">SR</div> Sam Rivera</div></td>
-                <td><span class="badge badge-published">Published</span></td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">Mar 22 ✓</td>
-                <td style="font-family:var(--font-mono);font-size:0.72rem">720</td>
-                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">View</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <div class="card" id="assign-table-wrap"><div class="empty-state"><div class="spinner"></div></div></div>
       </div>
 
-      <!-- ── KANBAN BOARD ── -->
+      <!-- BOARD -->
       <div class="view" id="view-board">
-        <div class="kanban-board">
-          <!-- Assigned -->
-          <div class="kanban-col">
-            <div class="kanban-col-header">
-              <span class="kanban-col-title">Assigned</span>
-              <span class="kanban-count">3</span>
-            </div>
-            <div class="kanban-card sky" onclick="showView('editor')">
-              <div class="kanban-card-title">Spring theatre showcase: preview</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Arts</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar sky">AK</div> Alex Kim</div>
-                <span class="kanban-deadline">Apr 2</span>
-              </div>
-            </div>
-            <div class="kanban-card sky" onclick="showView('editor')">
-              <div class="kanban-card-title">Student loan relief: what's changing</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar green">JL</div> Jamie Lee</div>
-                <span class="kanban-deadline">Apr 6</span>
-              </div>
-            </div>
-            <div class="kanban-card sky" onclick="showView('editor')">
-              <div class="kanban-card-title">Homecoming parade coverage</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Sports</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar">SR</div> Sam Rivera</div>
-                <span class="kanban-deadline">Apr 10</span>
-              </div>
-            </div>
+        <div class="kanban" id="kanban-board">
+          <div class="kanban-col" id="col-assigned" ondragover="colDragOver(event,'assigned')" ondrop="colDrop(event,'assigned')" ondragleave="colDragLeave(event)">
+            <div class="kanban-col-hdr"><span class="kanban-col-title">Assigned</span><span class="kanban-count" id="kc-assigned">0</span></div>
+            <div id="cards-assigned"></div>
+            <div class="kanban-drop-zone" id="dz-assigned">Drop here</div>
           </div>
-          <!-- In Progress -->
-          <div class="kanban-col">
-            <div class="kanban-col-header">
-              <span class="kanban-col-title">In Progress</span>
-              <span class="kanban-count">4</span>
-            </div>
-            <div class="kanban-card amber" onclick="showView('editor')">
-              <div class="kanban-card-title">Student housing crisis: a year in numbers</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Investigations</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar amber">TP</div> Taylor Park</div>
-                <span class="kanban-deadline">Mar 28</span>
-              </div>
-            </div>
-            <div class="kanban-card amber" onclick="showView('editor')">
-              <div class="kanban-card-title">Varsity soccer season preview</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Sports</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar">SR</div> Sam Rivera</div>
-                <span class="kanban-deadline">Apr 4</span>
-              </div>
-            </div>
-            <div class="kanban-card amber" onclick="showView('editor')">
-              <div class="kanban-card-title">New library renovation: what students think</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar green">JL</div> Jamie Lee</div>
-                <span class="kanban-deadline">Apr 5</span>
-              </div>
-            </div>
-            <div class="kanban-card amber" onclick="showView('editor')">
-              <div class="kanban-card-title">Profile: Dean of Students on her first year</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar sky">AK</div> Alex Kim</div>
-                <span class="kanban-deadline">Apr 7</span>
-              </div>
-            </div>
+          <div class="kanban-col" id="col-draft" ondragover="colDragOver(event,'draft')" ondrop="colDrop(event,'draft')" ondragleave="colDragLeave(event)">
+            <div class="kanban-col-hdr"><span class="kanban-col-title">In Progress</span><span class="kanban-count" id="kc-draft">0</span></div>
+            <div id="cards-draft"></div>
+            <div class="kanban-drop-zone" id="dz-draft">Drop here</div>
           </div>
-          <!-- In Review -->
-          <div class="kanban-col">
-            <div class="kanban-col-header">
-              <span class="kanban-col-title">In Review</span>
-              <span class="kanban-count">2</span>
-            </div>
-            <div class="kanban-card red" onclick="showView('editor')">
-              <div class="kanban-card-title">Budget cuts threaten athletics program</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar green">JL</div> Jamie Lee</div>
-                <span class="kanban-deadline overdue">Mar 25 ⚠</span>
-              </div>
-            </div>
-            <div class="kanban-card red" onclick="showView('editor')">
-              <div class="kanban-card-title">Faculty senate votes on grading reform</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar amber">TP</div> Taylor Park</div>
-                <span class="kanban-deadline overdue">Mar 26 ⚠</span>
-              </div>
-            </div>
+          <div class="kanban-col" id="col-review" ondragover="colDragOver(event,'review')" ondrop="colDrop(event,'review')" ondragleave="colDragLeave(event)">
+            <div class="kanban-col-hdr"><span class="kanban-col-title">In Review</span><span class="kanban-count" id="kc-review">0</span></div>
+            <div id="cards-review"></div>
+            <div class="kanban-drop-zone" id="dz-review">Drop here</div>
           </div>
-          <!-- Published -->
-          <div class="kanban-col">
-            <div class="kanban-col-header">
-              <span class="kanban-col-title">Published</span>
-              <span class="kanban-count">3</span>
-            </div>
-            <div class="kanban-card green">
-              <div class="kanban-card-title">Poll: Students weigh in on new campus policy</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar">SR</div> Sam Rivera</div>
-                <span class="kanban-deadline">Mar 22</span>
-              </div>
-            </div>
-            <div class="kanban-card green">
-              <div class="kanban-card-title">End-of-semester mental health resources</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Features</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar amber">TP</div> Taylor Park</div>
-                <span class="kanban-deadline">Mar 18</span>
-              </div>
-            </div>
-            <div class="kanban-card green">
-              <div class="kanban-card-title">Campus café review: three new spots</div>
-              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Arts</span></div>
-              <div class="kanban-card-meta">
-                <div class="kanban-card-reporter"><div class="mini-avatar sky">AK</div> Alex Kim</div>
-                <span class="kanban-deadline">Mar 15</span>
-              </div>
-            </div>
+          <div class="kanban-col" id="col-published" ondragover="colDragOver(event,'published')" ondrop="colDrop(event,'published')" ondragleave="colDragLeave(event)">
+            <div class="kanban-col-hdr"><span class="kanban-col-title">Published</span><span class="kanban-count" id="kc-published">0</span></div>
+            <div id="cards-published"></div>
+            <div class="kanban-drop-zone" id="dz-published">Drop here</div>
           </div>
         </div>
       </div>
 
-      <!-- ── STORY EDITOR ── -->
+      <!-- EDITOR -->
       <div class="view" id="view-editor">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-          <span class="badge badge-review">In Review</span>
-          <span style="font-size:0.75rem;color:var(--muted)">Assigned to: <strong>Jamie Lee</strong></span>
-          <div style="flex:1"></div>
-          <div class="autosave"><div class="autosave-dot" id="save-dot"></div><span id="save-status">Saved 2 min ago</span></div>
-          <div class="word-count" id="word-count-display">842 words</div>
-          <button class="btn btn-outline" style="font-size:0.75rem" onclick="submitReview()">Submit for Review</button>
-          <button class="btn btn-primary" style="font-size:0.75rem" onclick="publishStory()">Approve &amp; Publish</button>
-        </div>
-
-        <div class="deadline-strip">
-          ⚠ Deadline: <strong>March 25, 2026</strong> — Due tomorrow. Editor review pending.
-        </div>
-
-        <div class="editor-layout">
-          <div class="editor-main">
-            <div class="editor-header">
-              <input class="editor-title-input" id="story-title" value="Budget cuts threaten athletics program, sources say" />
-              <input class="editor-deck-input" id="story-deck" value="University administrators confirm a 15% reduction, leaving coaches and student-athletes uncertain about the coming year." />
-            </div>
-            <div class="editor-toolbar">
-              <button class="toolbar-btn active" onclick="toggleFormat(this,'bold')"><strong>B</strong></button>
-              <button class="toolbar-btn" onclick="toggleFormat(this,'italic')"><em>I</em></button>
-              <button class="toolbar-btn" onclick="toggleFormat(this,'underline')"><u>U</u></button>
-              <div class="toolbar-sep"></div>
-              <button class="toolbar-btn" onclick="formatBlock('h2')">H2</button>
-              <button class="toolbar-btn" onclick="formatBlock('h3')">H3</button>
-              <button class="toolbar-btn" onclick="formatBlock('p')">P</button>
-              <div class="toolbar-sep"></div>
-              <button class="toolbar-btn" onclick="formatBlock('blockquote')">" Quote</button>
-              <div class="toolbar-sep"></div>
-              <button class="toolbar-btn" onclick="insertLink()">⌖ Link</button>
-              <button class="toolbar-btn" onclick="showToast('Photo inserted into story','info')">⊡ Photo</button>
-            </div>
-            <div class="editor-body">
-              <div id="story-content" contenteditable="true" oninput="handleEditorInput()">
-<p>University athletics officials confirmed Tuesday that the department will face a 15 percent budget reduction beginning next fall, a move administrators say is necessary to address broader financial shortfalls affecting multiple divisions.</p>
-
-<p>The cuts, which were quietly discussed in a January board meeting, would eliminate two junior varsity programs and reduce coaching staff by at least four full-time positions, according to three sources familiar with the deliberations who spoke on the condition of anonymity.</p>
-
-<h2>What's at stake</h2>
-
-<p>Head basketball coach Derek Monroe said his program would lose two assistant coaching positions under the proposed plan. "We're being asked to do more with less, and I'm not sure that's sustainable for our athletes," Monroe told The Pressroom in an interview Wednesday.</p>
-
-<blockquote>"The students who came here expecting a full athletic experience deserve better than this. We need answers, not budget lines." — student-athlete, junior</blockquote>
-
-<p>The women's volleyball and men's cross-country programs are among those facing potential elimination, sources said. The university's athletic director did not respond to multiple requests for comment.</p>
-
-<h2>Administrative response</h2>
-
-<p>Vice Provost for Finance Diane Chu said in a statement that the university is "exploring all options to maintain competitive programs while meeting our fiscal responsibilities." She declined to confirm specific cuts.</p>
-
-<p>The Student Government Association has called for an emergency town hall with university leadership, set for next Thursday at 5 p.m. in the Student Union.</p>
-              </div>
-            </div>
+        <div id="editor-loading" style="display:flex;justify-content:center;padding-top:60px"><div class="spinner"></div></div>
+        <div id="editor-inner" style="display:none">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px;flex-wrap:wrap">
+            <span class="badge" id="ed-status-badge">draft</span>
+            <span style="font-size:.73rem;color:var(--muted)">Reporter: <strong id="ed-reporter-name"></strong></span>
+            <div style="flex:1"></div>
+            <div class="save-status"><div class="save-dot" id="save-dot"></div><span id="save-status">Saved</span></div>
+            <span style="font-size:.62rem;font-family:var(--fm);color:var(--muted)" id="word-count">0 words</span>
+            <button class="btn btn-outline" id="btn-submit-review" onclick="submitForReview()" style="font-size:.73rem;display:none">Submit for Review</button>
+            <button class="btn btn-outline" id="btn-send-back" onclick="sendBack()" style="font-size:.73rem;display:none">↩ Send Back</button>
+            <button class="btn btn-primary" id="btn-publish" onclick="publishStory()" style="font-size:.73rem;display:none">Approve &amp; Publish</button>
+            <button class="btn btn-outline" id="btn-unlock" onclick="unlockStory()" style="font-size:.73rem;display:none">Unlock</button>
           </div>
-
-          <div class="editor-sidebar">
-            <!-- Story metadata -->
-            <div class="panel">
-              <div class="panel-header"><span class="panel-title">Story Details</span></div>
-              <div class="panel-body">
-                <div class="meta-row">
-                  <span class="meta-key">Section</span>
-                  <span class="meta-val"><span class="badge badge-section">Campus News</span></span>
-                </div>
-                <div class="meta-row">
-                  <span class="meta-key">Reporter</span>
-                  <span class="meta-val" style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div class="mini-avatar green" style="width:20px;height:20px;font-size:0.6rem">JL</div>Jamie Lee</span>
-                </div>
-                <div class="meta-row">
-                  <span class="meta-key">Editor</span>
-                  <span class="meta-val" style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div class="mini-avatar" style="width:20px;height:20px;font-size:0.6rem">MR</div>Maya Rodriguez</span>
-                </div>
-                <div class="meta-row">
-                  <span class="meta-key">Status</span>
-                  <span class="meta-val"><span class="badge badge-review">In Review</span></span>
-                </div>
-                <div class="meta-row">
-                  <span class="meta-key">Deadline</span>
-                  <span class="meta-val" style="color:var(--accent)">Mar 25, 2026</span>
-                </div>
-                <div class="meta-row">
-                  <span class="meta-key">Tags</span>
-                  <span class="meta-val"><span class="chip">budget</span><span class="chip">athletics</span></span>
-                </div>
+          <div class="locked-banner" id="locked-banner" style="display:none">🔒 This story is published and locked. Only an editor-in-chief can unlock it for editing.</div>
+          <div class="editor-layout">
+            <div>
+              <div class="card" style="border-bottom:none;border-radius:var(--rl) var(--rl) 0 0;padding:14px 18px">
+                <input class="editor-title-input" id="ed-title" placeholder="Headline…">
+                <input class="editor-deck-input" id="ed-deck" placeholder="Deck / subheadline…">
               </div>
+              <div class="toolbar">
+                <button class="toolbar-btn" onclick="fmt('bold')"><strong>B</strong></button>
+                <button class="toolbar-btn" onclick="fmt('italic')"><em>I</em></button>
+                <button class="toolbar-btn" onclick="fmt('underline')"><u>U</u></button>
+                <div class="toolbar-sep"></div>
+                <button class="toolbar-btn" onclick="fmtBlock('h2')">H2</button>
+                <button class="toolbar-btn" onclick="fmtBlock('h3')">H3</button>
+                <button class="toolbar-btn" onclick="fmtBlock('p')">P</button>
+                <div class="toolbar-sep"></div>
+                <button class="toolbar-btn" onclick="fmtBlock('blockquote')" title="Pull quote">" Quote</button>
+                <div class="toolbar-sep"></div>
+                <button class="toolbar-btn" onclick="fmtLink()">⌖ Link</button>
+                <label class="toolbar-btn" style="cursor:pointer" title="Insert photo">⊡ Photo<input type="file" accept="image/*" style="display:none" onchange="insertPhoto(this)"></label>
+              </div>
+              <div id="upload-progress-bar" style="display:none" class="upload-progress"><div class="upload-bar"><div class="upload-fill" id="upload-fill" style="width:0%"></div></div></div>
+              <div class="editor-body"><div id="story-content" contenteditable="true" oninput="onEditorInput()"></div></div>
             </div>
-
-            <!-- Media -->
-            <div class="panel">
-              <div class="panel-header">
-                <span class="panel-title">Media</span>
-                <button class="btn btn-ghost" style="font-size:0.65rem;padding:2px 6px" onclick="showToast('Media library opened','info')">Browse</button>
+            <div>
+              <div class="panel">
+                <div class="panel-hdr"><span class="panel-title">Story Details</span></div>
+                <div class="panel-body" id="ed-meta"></div>
               </div>
-              <div class="panel-body">
-                <div class="media-grid">
-                  <div class="media-thumb">
-                    <div class="media-thumb-placeholder">🏟</div>
-                    <span class="media-type-badge">JPG</span>
+              <div class="panel">
+                <div class="panel-hdr"><span class="panel-title">Media</span><label class="btn btn-ghost" style="font-size:.67rem;padding:2px 7px;cursor:pointer">+ Upload<input type="file" accept="image/*,video/*,audio/*,.pdf" multiple style="display:none" onchange="uploadStoryMedia(this)"></label></div>
+                <div class="panel-body" id="ed-media"></div>
+              </div>
+              <div class="panel">
+                <div class="panel-hdr"><span class="panel-title">Comments</span><span class="nav-badge" id="comment-count" style="display:none"></span></div>
+                <div class="panel-body">
+                  <div id="comment-list"></div>
+                  <div style="display:flex;gap:7px;margin-top:9px;align-items:flex-end">
+                    <textarea id="new-comment" rows="2" class="form-textarea" placeholder="Add a comment… (Enter to send)" style="flex:1;min-height:56px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment()}"></textarea>
+                    <button class="btn btn-primary" style="font-size:.72rem;padding:7px 10px;flex-shrink:0" onclick="postComment()">Send</button>
                   </div>
-                  <div class="media-thumb">
-                    <div class="media-thumb-placeholder">🎽</div>
-                    <span class="media-type-badge">JPG</span>
-                  </div>
-                </div>
-                <div class="upload-zone" onclick="showToast('Upload dialog opened','info')">
-                  + Drop files or click to upload
                 </div>
               </div>
-            </div>
-
-            <!-- Comments -->
-            <div class="panel">
-              <div class="panel-header"><span class="panel-title">Editor Comments</span><span class="nav-badge" style="background:var(--accent)">2</span></div>
-              <div class="panel-body">
-                <div class="comment">
-                  <div class="comment-header">
-                    <div class="mini-avatar" style="width:22px;height:22px;font-size:0.6rem">MR</div>
-                    <span class="comment-author">Maya R.</span>
-                    <span class="comment-time">1 hr ago</span>
-                  </div>
-                  <div class="comment-body">Great lede. Can you get a named source to confirm the specific programs being cut? Anonymous quotes are a last resort here.</div>
-                </div>
-                <div class="comment">
-                  <div class="comment-header">
-                    <div class="mini-avatar" style="width:22px;height:22px;font-size:0.6rem">MR</div>
-                    <span class="comment-author">Maya R.</span>
-                    <span class="comment-time">50 min ago</span>
-                  </div>
-                  <div class="comment-body">The SGA quote needs attribution. Also double-check the town hall date — I saw a conflict on the calendar.</div>
-                </div>
-                <div class="comment-input-row">
-                  <textarea class="comment-input" rows="2" placeholder="Add a comment…" id="new-comment"></textarea>
-                  <button class="btn btn-primary" style="font-size:0.72rem;padding:7px 10px;flex-shrink:0" onclick="addComment()">Send</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Version History -->
-            <div class="panel">
-              <div class="panel-header"><span class="panel-title">Version History</span></div>
-              <div class="panel-body">
-                <div class="version-item">
-                  <div class="version-dot current"></div>
-                  <div><div class="version-label">v4 — Current</div><div class="version-meta">Jamie Lee · 12 min ago</div></div>
-                </div>
-                <div class="version-item">
-                  <div class="version-dot"></div>
-                  <div><div class="version-label">v3 — Added SGA quote</div><div class="version-meta">Jamie Lee · 2 hrs ago</div></div>
-                </div>
-                <div class="version-item">
-                  <div class="version-dot"></div>
-                  <div><div class="version-label">v2 — First full draft</div><div class="version-meta">Jamie Lee · Yesterday</div></div>
-                </div>
-                <div class="version-item">
-                  <div class="version-dot"></div>
-                  <div><div class="version-label">v1 — Initial save</div><div class="version-meta">Jamie Lee · 2 days ago</div></div>
-                </div>
+              <div class="panel">
+                <div class="panel-hdr"><span class="panel-title">Version History</span></div>
+                <div class="panel-body" id="version-list"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ── MEDIA LIBRARY ── -->
+      <!-- MEDIA -->
       <div class="view" id="view-media">
-        <div class="section-header" style="margin-bottom:16px">
-          <div style="display:flex;gap:8px;align-items:center">
-            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--ink);color:var(--paper)">All</span>
-            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Photos</span>
-            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Videos</span>
-            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Documents</span>
+        <div class="section-hdr" style="margin-bottom:14px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="media-filters">
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px;background:var(--ink);color:var(--paper);border-color:var(--ink)" onclick="filterMedia('all')">All</button>
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterMedia('image')">Photos</button>
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterMedia('video')">Video</button>
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterMedia('audio')">Audio</button>
+            <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterMedia('document')">Docs</button>
           </div>
-          <button class="btn btn-primary" onclick="showToast('Upload dialog opened','info')">+ Upload Media</button>
+          <label class="btn btn-primary" style="cursor:pointer">+ Upload Media<input type="file" multiple accept="image/*,video/*,audio/*,.pdf" style="display:none" onchange="uploadLibraryMedia(this)"></label>
         </div>
-        <div class="media-library">
-          <div class="media-card" onclick="showToast('Opening preview…','info')">
-            <div class="media-card-thumb" style="font-size:2.5rem">🏟</div>
-            <div class="media-card-info">
-              <div class="media-card-name">stadium_exterior.jpg</div>
-              <div class="media-card-meta">JPG · 2.4 MB · Jamie Lee</div>
-            </div>
-          </div>
-          <div class="media-card" onclick="showToast('Opening preview…','info')">
-            <div class="media-card-thumb" style="font-size:2.5rem">🎽</div>
-            <div class="media-card-info">
-              <div class="media-card-name">soccer_practice.jpg</div>
-              <div class="media-card-meta">JPG · 3.1 MB · Jamie Lee</div>
-            </div>
-          </div>
-          <div class="media-card" onclick="showToast('Opening preview…','info')">
-            <div class="media-card-thumb" style="font-size:2.5rem">🎬</div>
-            <div class="media-card-info">
-              <div class="media-card-name">coach_interview.mp4</div>
-              <div class="media-card-meta">MP4 · 84 MB · Alex Kim</div>
-            </div>
-          </div>
-          <div class="media-card" onclick="showToast('Opening preview…','info')">
-            <div class="media-card-thumb" style="font-size:2.5rem">📸</div>
-            <div class="media-card-info">
-              <div class="media-card-name">theatre_rehearsal.jpg</div>
-              <div class="media-card-meta">JPG · 1.8 MB · Alex Kim</div>
-            </div>
-          </div>
-          <div class="media-card" onclick="showToast('Opening preview…','info')">
-            <div class="media-card-thumb" style="font-size:2.5rem">📄</div>
-            <div class="media-card-info">
-              <div class="media-card-name">budget_doc_2026.pdf</div>
-              <div class="media-card-meta">PDF · 420 KB · Taylor Park</div>
-            </div>
-          </div>
-          <div class="media-card" onclick="showToast('Opening preview…','info')">
-            <div class="media-card-thumb" style="font-size:2.5rem">🏠</div>
-            <div class="media-card-info">
-              <div class="media-card-name">housing_survey.jpg</div>
-              <div class="media-card-meta">JPG · 2.2 MB · Taylor Park</div>
-            </div>
-          </div>
-          <div class="media-card" onclick="showToast('Opening preview…','info')">
-            <div class="media-card-thumb" style="font-size:2.5rem">🎤</div>
-            <div class="media-card-info">
-              <div class="media-card-name">vp_finance_audio.mp3</div>
-              <div class="media-card-meta">MP3 · 12 MB · Jamie Lee</div>
-            </div>
-          </div>
-          <div class="media-card" onclick="showToast('Opening preview…','info')">
-            <div class="media-card-thumb" style="font-size:2.5rem">📸</div>
-            <div class="media-card-info">
-              <div class="media-card-name">crosscountry_team.jpg</div>
-              <div class="media-card-meta">JPG · 3.8 MB · Sam Rivera</div>
-            </div>
-          </div>
+        <div id="upload-status-global" style="display:none;margin-bottom:14px">
+          <div style="font-size:.76rem;color:var(--muted);margin-bottom:4px">Uploading… <span id="upload-pct">0</span>%</div>
+          <div class="upload-bar" style="height:5px"><div class="upload-fill" id="upload-fill-global" style="width:0%"></div></div>
         </div>
+        <div class="media-grid" id="media-library-grid"><div class="empty-state" style="grid-column:1/-1"><div class="spinner"></div></div></div>
       </div>
 
-      <!-- ── TEAM ── -->
+      <!-- TEAM -->
       <div class="view" id="view-team">
-        <div class="section-header" style="margin-bottom:16px">
-          <div class="section-title">Team Members</div>
+        <div class="section-hdr" style="margin-bottom:14px">
+          <div style="font-size:.8rem;color:var(--muted)" id="team-count">Loading…</div>
           <button class="btn btn-primary" onclick="openModal('invite')">+ Invite Member</button>
         </div>
-        <div class="team-grid">
-          <div class="team-card">
-            <div class="team-avatar" style="background:var(--accent)">MR</div>
-            <div class="team-name">Maya Rodriguez</div>
-            <div class="team-role">Editor-in-Chief</div>
-            <div class="team-section">All sections</div>
-            <div class="team-stats">
-              <div class="team-stat"><div class="team-stat-num">38</div><div class="team-stat-label">Published</div></div>
-              <div class="team-stat"><div class="team-stat-num">4</div><div class="team-stat-label">In Review</div></div>
-            </div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar" style="background:var(--accent2)">JL</div>
-            <div class="team-name">Jamie Lee</div>
-            <div class="team-role">Reporter</div>
-            <div class="team-section">Campus News · Investigations</div>
-            <div class="team-stats">
-              <div class="team-stat"><div class="team-stat-num">12</div><div class="team-stat-label">Published</div></div>
-              <div class="team-stat"><div class="team-stat-num">2</div><div class="team-stat-label">Active</div></div>
-            </div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar" style="background:var(--amber)">TP</div>
-            <div class="team-name">Taylor Park</div>
-            <div class="team-role">Reporter</div>
-            <div class="team-section">Investigations · Features</div>
-            <div class="team-stats">
-              <div class="team-stat"><div class="team-stat-num">9</div><div class="team-stat-label">Published</div></div>
-              <div class="team-stat"><div class="team-stat-num">3</div><div class="team-stat-label">Active</div></div>
-            </div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar" style="background:var(--sky)">AK</div>
-            <div class="team-name">Alex Kim</div>
-            <div class="team-role">Reporter</div>
-            <div class="team-section">Arts & Culture</div>
-            <div class="team-stats">
-              <div class="team-stat"><div class="team-stat-num">11</div><div class="team-stat-label">Published</div></div>
-              <div class="team-stat"><div class="team-stat-num">2</div><div class="team-stat-label">Active</div></div>
-            </div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar" style="background:var(--muted)">SR</div>
-            <div class="team-name">Sam Rivera</div>
-            <div class="team-role">Reporter</div>
-            <div class="team-section">Sports · Campus News</div>
-            <div class="team-stats">
-              <div class="team-stat"><div class="team-stat-num">6</div><div class="team-stat-label">Published</div></div>
-              <div class="team-stat"><div class="team-stat-num">2</div><div class="team-stat-label">Active</div></div>
-            </div>
-          </div>
-          <div class="team-card" style="border:2px dashed var(--rule);background:transparent;justify-content:center;gap:10px;cursor:pointer;color:var(--muted)" onclick="openModal('invite')">
-            <div style="font-size:1.8rem">+</div>
-            <div style="font-size:0.82rem;font-weight:500">Invite a journalist</div>
-            <div style="font-size:0.7rem">Send a Google sign-in link</div>
-          </div>
-        </div>
+        <div class="team-grid" id="team-grid"><div class="empty-state" style="grid-column:1/-1"><div class="spinner"></div></div></div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- ── NEW ASSIGNMENT MODAL ── -->
-<div class="modal-overlay" id="modal-new-assignment">
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-new-assign" onclick="if(event.target===this)closeModal('new-assign')">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">New Assignment</span>
-      <button class="btn btn-ghost" onclick="closeModal('new-assignment')">✕</button>
-    </div>
+    <div class="modal-hdr"><span class="modal-title">New Assignment</span><button class="modal-close" onclick="closeModal('new-assign')">✕</button></div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Story Headline</label>
-        <input class="form-input" placeholder="e.g. New parking policy draws student backlash" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Assignment Brief</label>
-        <textarea class="form-textarea" placeholder="What should the journalist cover? Key sources, angle, context…"></textarea>
+      <div class="form-group"><label class="form-label">Story Headline</label><input class="form-input" id="na-title" placeholder="e.g. Budget cuts threaten athletics program"></div>
+      <div class="form-group"><label class="form-label">Assignment Brief</label><textarea class="form-textarea" id="na-brief" placeholder="Key sources, angle, context, what to cover…"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Section</label><select class="form-select" id="na-section"><option>Campus News</option><option>Investigations</option><option>Arts &amp; Culture</option><option>Sports</option><option>Features</option><option>Opinion</option></select></div>
+        <div class="form-group"><label class="form-label">Assign To</label><select class="form-select" id="na-reporter"><option value="">— Select reporter —</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Section</label>
-          <select class="form-select">
-            <option>Campus News</option>
-            <option>Investigations</option>
-            <option>Arts & Culture</option>
-            <option>Sports</option>
-            <option>Features</option>
-            <option>Opinion</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Assign To</label>
-          <select class="form-select">
-            <option>Jamie Lee</option>
-            <option>Taylor Park</option>
-            <option>Alex Kim</option>
-            <option>Sam Rivera</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Deadline</label>
-          <input class="form-input" type="date" value="2026-04-08" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Word Count Target</label>
-          <input class="form-input" type="number" placeholder="600" />
-        </div>
+        <div class="form-group"><label class="form-label">Deadline</label><input class="form-input" type="date" id="na-deadline"></div>
+        <div class="form-group"><label class="form-label">Word Count Target</label><input class="form-input" type="number" id="na-words" placeholder="600"></div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('new-assignment')">Cancel</button>
-      <button class="btn btn-primary" onclick="createAssignment()">Create Assignment</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('new-assign')">Cancel</button><button class="btn btn-primary" onclick="createAssignment()">Create Assignment</button></div>
   </div>
 </div>
 
-<!-- ── INVITE MODAL ── -->
-<div class="modal-overlay" id="modal-invite">
+<div class="modal-overlay" id="modal-edit-assign" onclick="if(event.target===this)closeModal('edit-assign')">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Invite Team Member</span>
-      <button class="btn btn-ghost" onclick="closeModal('invite')">✕</button>
-    </div>
+    <div class="modal-hdr"><span class="modal-title">Edit Assignment</span><button class="modal-close" onclick="closeModal('edit-assign')">✕</button></div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Google Email Address</label>
-        <input class="form-input" type="email" placeholder="journalist@university.edu" />
+      <div class="form-group"><label class="form-label">Story Headline</label><input class="form-input" id="ea-title"></div>
+      <div class="form-group"><label class="form-label">Assignment Brief</label><textarea class="form-textarea" id="ea-brief"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Section</label><select class="form-select" id="ea-section"><option>Campus News</option><option>Investigations</option><option>Arts &amp; Culture</option><option>Sports</option><option>Features</option><option>Opinion</option></select></div>
+        <div class="form-group"><label class="form-label">Assign To</label><select class="form-select" id="ea-reporter"><option value="">— Select reporter —</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Role</label>
-          <select class="form-select">
-            <option>Reporter</option>
-            <option>Section Editor</option>
-            <option>Editor-in-Chief</option>
-            <option>Photographer</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Section</label>
-          <select class="form-select">
-            <option>Campus News</option>
-            <option>Investigations</option>
-            <option>Arts & Culture</option>
-            <option>Sports</option>
-            <option>All Sections</option>
-          </select>
-        </div>
-      </div>
-      <div style="background:var(--cream);border-radius:var(--radius);padding:12px;font-size:0.78rem;color:var(--muted)">
-        An invitation will be sent to their Google account. They'll sign in with Google — no separate password needed.
+        <div class="form-group"><label class="form-label">Deadline</label><input class="form-input" type="date" id="ea-deadline"></div>
+        <div class="form-group"><label class="form-label">Word Count Target</label><input class="form-input" type="number" id="ea-words"></div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('invite')">Cancel</button>
-      <button class="btn btn-primary" onclick="sendInvite()">Send Invite</button>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('edit-assign')">Cancel</button><button class="btn btn-primary" onclick="saveEditAssignment()">Save Changes</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-invite" onclick="if(event.target===this)closeModal('invite')">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Invite Team Member</span><button class="modal-close" onclick="closeModal('invite')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Their Email Address</label><input class="form-input" type="email" id="inv-email" placeholder="reporter@university.edu"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Role</label><select class="form-select" id="inv-role"><option value="reporter">Reporter</option><option value="editor">Section Editor</option><option value="editor-in-chief">Editor-in-Chief</option></select></div>
+        <div class="form-group"><label class="form-label">Section</label><select class="form-select" id="inv-section"><option>Campus News</option><option>Investigations</option><option>Arts &amp; Culture</option><option>Sports</option><option>Features</option><option>All Sections</option></select></div>
+      </div>
+      <div style="background:var(--cream);border-radius:var(--r);padding:11px 13px;font-size:.76rem;color:var(--muted);line-height:1.5">
+        Clicking Send Invite will open your email client with a pre-written invitation. They sign in with their Google account — no separate password needed.
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('invite')">Cancel</button><button class="btn btn-primary" onclick="sendInvite()">Send Invite</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-role" onclick="if(event.target===this)closeModal('role')">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Change Role</span><button class="modal-close" onclick="closeModal('role')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Member</label><input class="form-input" id="role-name" readonly></div>
+      <div class="form-group"><label class="form-label">New Role</label><select class="form-select" id="role-select"><option value="reporter">Reporter</option><option value="editor">Section Editor</option><option value="editor-in-chief">Editor-in-Chief</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('role')">Cancel</button><button class="btn btn-primary" onclick="saveRole()">Save Role</button></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()"><div id="lightbox-inner"></div></div>
+
+<!-- CONFIRM -->
+<div id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Are you sure?</div>
+    <div class="confirm-msg" id="confirm-msg"></div>
+    <div class="confirm-btns">
+      <button class="btn btn-outline" onclick="confirmResolve(false)">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok" onclick="confirmResolve(true)">Confirm</button>
     </div>
   </div>
 </div>
 
-</div><!-- /main-app -->
-
-<!-- ── TOAST CONTAINER ── -->
+<!-- TOAST -->
 <div class="toast-container" id="toast-container"></div>
 
-<!-- ── Firebase SDK (loaded as ES modules) ── -->
 <script type="module">
-  import { initializeApp }                        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'
-  import { getAuth, signInWithEmailAndPassword,
-           signInWithPopup, GoogleAuthProvider,
-           signOut as fbSignOut, onAuthStateChanged,
-           sendPasswordResetEmail }               from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'
-  import { getFirestore, doc, getDoc, setDoc,
-           serverTimestamp }                      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'
+import { initializeApp }                        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'
+import { getAuth, signInWithEmailAndPassword,
+         signInWithPopup, GoogleAuthProvider,
+         signOut as fbSignOut, onAuthStateChanged,
+         sendPasswordResetEmail }               from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'
+import { getFirestore, collection, doc, addDoc,
+         updateDoc, deleteDoc, getDoc, setDoc,
+         onSnapshot, query, where, orderBy,
+         serverTimestamp, arrayUnion, limit }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'
+import { getStorage, ref, uploadBytesResumable,
+         getDownloadURL, deleteObject }         from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js'
 
-  // ════════════════════════════════════════════════════════════
-  // ▼▼▼  PASTE YOUR FIREBASE CONFIG HERE  ▼▼▼
-  //
-  // 1. Go to console.firebase.google.com
-  // 2. Open your project → Project Settings → Your Apps → Web app
-  // 3. Copy the firebaseConfig object and replace the block below
-  //
-  const firebaseConfig = {
-    apiKey:            "AIzaSyAbiUhGY6pr8JWopViJx5pL7xF6jTeM_ow",
-    authDomain:        "sgjc-newsroom.firebaseapp.com",
-    projectId:         "sgjc-newsroom",
-    storageBucket:     "sgjc-newsroom.firebasestorage.app",
-    messagingSenderId: "534667392424",
-    appId:             "1:534667392424:web:d704b38c997043b895d99d",
-    measurementId:     "G-J6J0793TQ1",
-  }
-  // ▲▲▲  END OF CONFIG  ▲▲▲
-  // ════════════════════════════════════════════════════════════
+// ── FIREBASE CONFIG ────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyAbiUhGY6pr8JWopViJx5pL7xF6jTeM_ow",
+  authDomain:        "sgjc-newsroom.firebaseapp.com",
+  projectId:         "sgjc-newsroom",
+  storageBucket:     "sgjc-newsroom.firebasestorage.app",
+  messagingSenderId: "534667392424",
+  appId:             "1:534667392424:web:d704b38c997043b895d99d",
+  measurementId:     "G-J6J0793TQ1",
+}
+const fb       = initializeApp(firebaseConfig)
+const auth     = getAuth(fb)
+const db       = getFirestore(fb)
+const storage  = getStorage(fb)
+const gProvider = new GoogleAuthProvider()
+gProvider.setCustomParameters({ prompt: 'select_account' })
 
-  // ── Initialise Firebase ────────────────────────────────────
-  const app      = initializeApp(firebaseConfig)
-  const auth     = getAuth(app)
-  const db       = getFirestore(app)
-  const provider = new GoogleAuthProvider()
-  provider.setCustomParameters({ prompt: 'select_account' }) // always show account picker
+// ── GLOBALS ────────────────────────────────────────────
+let ME = null          // current user profile from Firestore
+let TEAM = []          // all user profiles
+let ASSIGNMENTS = []   // live assignment list
+let MEDIA_ALL = []     // all media records
+let NOTIFICATIONS = [] // unread notifications
+let CURRENT_ASSIGN = null  // assignment open in editor
+let CURRENT_STORY  = null  // story doc open in editor
+let ASSIGN_FILTER  = 'all'
+let MEDIA_FILTER   = 'all'
+let DRAG_ID        = null
+let saveTimer      = null
+let commentUnsub   = null
+let storyUnsub     = null
+let confirmResolve = null
+let editingAssignId = null
+let editingRoleUid  = null
 
-  // Avatar colour palette — assigned from first letter of display name
-  const AVATAR_COLORS = ['#c0392b','#2c6e49','#e67e22','#1a5276','#8e44ad','#7a7570','#16a085']
-  const avatarColor = name => AVATAR_COLORS[(name?.charCodeAt(0) || 0) % AVATAR_COLORS.length]
-  const initials    = name => (name || '?').split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase()
+const AVATAR_COLORS = ['#c0392b','#2c6e49','#e67e22','#1a5276','#8e44ad','#7a7570','#16a085','#2980b9']
+const avatarColor = n => AVATAR_COLORS[(n?.charCodeAt(0)||0) % AVATAR_COLORS.length]
+const initials    = n => (n||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()
+const isEditor    = () => ME?.role==='editor'||ME?.role==='editor-in-chief'
+const isEIC       = () => ME?.role==='editor-in-chief'
+const fmtDate     = ts => { if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) }
+const fmtSize     = b => b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/1048576).toFixed(1)+'MB'
+const isPast      = ts => { if(!ts) return false; const d=typeof ts==='string'?new Date(ts):ts?.toDate?ts.toDate():new Date(ts); return d<new Date() }
 
-  // ── Splash screen helpers ──────────────────────────────────
-  // While Firebase checks the auth session we show a full-screen
-  // splash so the user never sees a blank flash of the login form.
-  function showSplash() {
-    document.getElementById('splash-screen').style.display = 'flex'
-    document.getElementById('login-screen').style.display  = 'none'
-    document.getElementById('main-app').style.display      = 'none'
-  }
-  function hideSplash() {
-    document.getElementById('splash-screen').style.display = 'none'
-  }
+// ── BOOT ───────────────────────────────────────────────
+document.getElementById('tb-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})
 
-  // ── onAuthStateChanged — single source of truth ────────────
-  // Firebase calls this immediately on page load with the cached
-  // session (if any), so users who are already logged in go
-  // straight to the app without seeing the login form.
-  showSplash()
-
-  onAuthStateChanged(auth, async (firebaseUser) => {
-    hideSplash()
-    if (firebaseUser) {
-      // User is signed in — load their Firestore profile
-      // If Firestore fails (not set up yet, rules issue, etc.)
-      // we still enter the app with a basic profile so the
-      // user is never left on a blank white page
-      let profile = {}
-      try {
-        profile = await loadProfile(firebaseUser)
-      } catch (err) {
-        console.warn('Firestore profile load failed — using basic profile. Error:', err.message)
-        profile = {
-          uid:     firebaseUser.uid,
-          name:    firebaseUser.displayName || firebaseUser.email,
-          email:   firebaseUser.email,
-          role:    'reporter',
-          section: 'Campus News',
-        }
-      }
-      enterApp(firebaseUser, profile)
-    } else {
-      // No session — show login form
-      showLoginScreen()
+onAuthStateChanged(auth, async user => {
+  document.getElementById('splash').style.display = 'none'
+  if (user) {
+    try {
+      ME = await loadProfile(user)
+      startApp()
+    } catch(e) {
+      console.error(e)
+      ME = { uid: user.uid, name: user.displayName||user.email, email: user.email, role:'reporter', section:'Campus News' }
+      startApp()
     }
-  })
-
-  // ── Load (or create) Firestore user profile ────────────────
-  async function loadProfile(firebaseUser) {
-    const ref  = doc(db, 'users', firebaseUser.uid)
-    const snap = await getDoc(ref)
-
-    if (snap.exists()) {
-      return snap.data()
-    }
-
-    // First sign-in: create profile with default reporter role.
-    const profile = {
-      uid:       firebaseUser.uid,
-      name:      firebaseUser.displayName || firebaseUser.email.split('@')[0],
-      email:     firebaseUser.email,
-      role:      'reporter',
-      section:   'Campus News',
-      createdAt: serverTimestamp(),
-    }
-
-    // Try to save — if Firestore isn't set up yet this will throw
-    // and the caller's try/catch will handle it gracefully
-    await setDoc(ref, profile)
-    return profile
+  } else {
+    showLogin()
   }
+})
 
-  // ── Show login screen ──────────────────────────────────────
-  function showLoginScreen() {
-    document.getElementById('main-app').style.display    = 'none'
-    document.getElementById('login-screen').style.display = 'flex'
-    document.getElementById('login-screen').style.animation = 'loginFadeIn 0.25s ease'
-    setTimeout(() => document.getElementById('login-email')?.focus(), 300)
+async function loadProfile(user) {
+  const ref  = doc(db,'users',user.uid)
+  const snap = await getDoc(ref)
+  if (snap.exists()) return { id:snap.id, ...snap.data() }
+  const p = { uid:user.uid, name:user.displayName||user.email.split('@')[0], email:user.email, photoURL:user.photoURL||null, role:'reporter', section:'Campus News', createdAt:serverTimestamp() }
+  await setDoc(ref, p)
+  return p
+}
+
+// ── AUTH FUNCTIONS ─────────────────────────────────────
+window.signInGoogle = async () => {
+  const btn=document.getElementById('g-btn'), txt=document.getElementById('g-btn-txt')
+  btn.disabled=true; txt.textContent='Signing in…'
+  try { await signInWithPopup(auth, gProvider) }
+  catch(e) {
+    btn.disabled=false; txt.textContent='Continue with Google'
+    if (e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')
+      showLoginErr(e.code==='auth/popup-blocked'?'Popup blocked — allow popups for this site':'Sign-in failed. Try again.')
+  }
+}
+window.doLogin = async () => {
+  const email=document.getElementById('li-email').value.trim()
+  const pw=document.getElementById('li-pw').value
+  clearLoginErr()
+  if(!email){ showLoginErr('Enter your email address.','email'); return }
+  if(!pw){ showLoginErr('Enter your password.','pw'); return }
+  setLoginLoading(true)
+  try { await signInWithEmailAndPassword(auth,email,pw) }
+  catch(e) {
     setLoginLoading(false)
+    const msgs={'auth/user-not-found':'No account found for this email.','auth/invalid-email':'No account found for this email.','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Incorrect email or password.','auth/too-many-requests':'Too many attempts. Wait a few minutes or reset your password.','auth/network-request-failed':'Network error. Check your connection.'}
+    showLoginErr(msgs[e.code]||'Sign-in failed. Try again.', e.code.includes('password')?'pw':'email')
+  }
+}
+window.doForgot = async () => {
+  const email=document.getElementById('li-email').value.trim()
+  if(!email){ showLoginErr('Enter your email address above first.','email'); return }
+  try {
+    await sendPasswordResetEmail(auth,email)
+    const el=document.getElementById('login-err')
+    el.style.background='#eafaf1'; el.style.borderColor='#a9dfbf'; el.style.color='#1e8449'
+    document.getElementById('login-err-msg').textContent=`Reset email sent to ${email}. Check your inbox.`
+    el.classList.add('on')
+  } catch(e) { showLoginErr(e.code.includes('user-not-found')||e.code.includes('invalid-email')?'No account found for this email.':'Could not send reset email.','email') }
+}
+window.doSignOut = async () => {
+  if (!await confirm2('Sign out','Sign out of The Pressroom?')) return
+  await fbSignOut(auth)
+  showLogin()
+}
+window.togglePw = () => {
+  const el=document.getElementById('li-pw'), btn=el.nextElementSibling
+  el.type=el.type==='password'?'text':'password'
+  btn.textContent=el.type==='password'?'Show':'Hide'
+}
+function showLogin() {
+  document.getElementById('app').style.display='none'
+  const ls=document.getElementById('login-screen')
+  ls.style.display='flex'; ls.style.animation='fadeIn .25s ease'
+  setLoginLoading(false)
+  setTimeout(()=>document.getElementById('li-email')?.focus(),300)
+}
+function setLoginLoading(v) {
+  const btn=document.getElementById('login-btn'),sp=document.getElementById('login-spin'),txt=document.getElementById('login-btn-txt')
+  btn.disabled=v; sp.style.display=v?'block':'none'; txt.textContent=v?'Signing in…':'Sign in with email'
+}
+function showLoginErr(msg,field) {
+  const el=document.getElementById('login-err'); el.style.background=''; el.style.borderColor=''; el.style.color=''
+  document.getElementById('login-err-msg').textContent=msg; el.classList.add('on')
+  if(field==='email') document.getElementById('li-email').classList.add('err')
+  if(field==='pw')    document.getElementById('li-pw').classList.add('err')
+}
+function clearLoginErr() {
+  document.getElementById('login-err').classList.remove('on')
+  document.getElementById('li-email').classList.remove('err')
+  document.getElementById('li-pw').classList.remove('err')
+}
+
+// ── START APP ──────────────────────────────────────────
+function startApp() {
+  document.getElementById('login-screen').style.display='none'
+  const app=document.getElementById('app')
+  app.style.display='flex'; app.style.animation='fadeIn .2s ease'
+
+  // Sidebar user info
+  const av=document.getElementById('sb-avatar')
+  if(ME.photoURL){ const img=document.createElement('img'); img.src=ME.photoURL; img.style.cssText='width:29px;height:29px;border-radius:50%;object-fit:cover'; av.innerHTML=''; av.appendChild(img) }
+  else { av.textContent=initials(ME.name); av.style.background=avatarColor(ME.name) }
+  document.getElementById('sb-name').textContent=ME.name
+  document.getElementById('sb-role').textContent=ME.role
+
+  // Role UI
+  if(!isEditor()) {
+    document.getElementById('btn-new-assign').style.display='none'
+    document.getElementById('btn-new-assign2').style.display='none'
   }
 
-  // ── Attempt login — called by Sign in button ───────────────
-  window.attemptLogin = async function() {
-    const emailEl = document.getElementById('login-email')
-    const pwEl    = document.getElementById('login-password')
-    const email   = emailEl.value.trim()
-    const pw      = pwEl.value
+  // Start live subscriptions
+  subscribeAssignments()
+  subscribeTeam()
+  subscribeMedia()
+  subscribeNotifications()
 
-    clearLoginError()
+  const hour=new Date().getHours()
+  toast(`${hour<12?'Good morning':hour<17?'Good afternoon':'Good evening'}, ${ME.name.split(' ')[0]} — welcome back.`,'info')
+}
 
-    if (!email) { showLoginError('Please enter your email address.', 'email'); return }
-    if (!pw)    { showLoginError('Please enter your password.', 'password');   return }
+// ── NAVIGATION ─────────────────────────────────────────
+const TITLES = { dashboard:'Daily Briefing', assignments:'All Assignments', board:'Story Board', editor:'Story Editor', media:'Media Library', team:'Team' }
+window.nav = function(view) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))
+  document.getElementById('view-'+view)?.classList.add('active')
+  document.querySelectorAll('.nav-item').forEach(n=>{ if(n.textContent.toLowerCase().includes(view==='assignments'?'assign':view==='board'?'board':view==='editor'?'editor':view==='media'?'media':view==='team'?'team':'brief')) n.classList.add('active') })
+  document.getElementById('tb-title').textContent=TITLES[view]||view
+  document.getElementById('notif-drop').classList.remove('open')
+}
 
-    setLoginLoading(true)
+// ── FIRESTORE SUBSCRIPTIONS ────────────────────────────
+function subscribeAssignments() {
+  const q = isEditor()
+    ? query(collection(db,'assignments'),orderBy('createdAt','desc'))
+    : query(collection(db,'assignments'),where('assignedTo','==',ME.uid),orderBy('createdAt','desc'))
+  onSnapshot(q, snap=>{
+    ASSIGNMENTS = snap.docs.map(d=>({id:d.id,...d.data()}))
+    renderDashboard()
+    renderAssignments()
+    renderBoard()
+    // badge
+    const mine=ASSIGNMENTS.filter(a=>a.assignedTo===ME.uid&&['assigned','draft'].includes(a.status))
+    const nb=document.getElementById('nb-assign')
+    if(mine.length){ nb.style.display=''; nb.textContent=mine.length } else nb.style.display='none'
+  })
+}
+function subscribeTeam() {
+  onSnapshot(collection(db,'users'), snap=>{
+    TEAM=snap.docs.map(d=>({id:d.id,...d.data()}))
+    renderTeam()
+    populateReporterSelects()
+    document.getElementById('ds-team').textContent=TEAM.length
+  })
+}
+function subscribeMedia() {
+  onSnapshot(query(collection(db,'media'),orderBy('uploadedAt','desc')), snap=>{
+    MEDIA_ALL=snap.docs.map(d=>({id:d.id,...d.data()}))
+    renderMediaLibrary()
+    if(CURRENT_STORY) renderEditorMedia()
+  })
+}
+function subscribeNotifications() {
+  const q=query(collection(db,'notifications'),where('userId','==',ME.uid),where('read','==',false),orderBy('createdAt','desc'),limit(20))
+  onSnapshot(q, snap=>{
+    NOTIFICATIONS=snap.docs.map(d=>({id:d.id,...d.data()}))
+    const dot=document.getElementById('notif-dot')
+    if(NOTIFICATIONS.length){ dot.style.display='flex'; dot.textContent=NOTIFICATIONS.length } else dot.style.display='none'
+    renderNotifications()
+  })
+}
+async function notify(userId,message,type='info') {
+  if(!userId||userId===ME.uid) return
+  await addDoc(collection(db,'notifications'),{ userId,message,type,read:false,createdAt:serverTimestamp() })
+}
 
-    try {
-      // Firebase validates credentials, rate-limits brute force,
-      // and manages the session cookie automatically
-      await signInWithEmailAndPassword(auth, email, pw)
-      // onAuthStateChanged fires → enterApp() is called automatically
-    } catch (err) {
-      setLoginLoading(false)
-      switch (err.code) {
-        case 'auth/user-not-found':
-        case 'auth/invalid-email':
-          showLoginError('No account found for this email address.', 'email'); break
-        case 'auth/wrong-password':
-        case 'auth/invalid-credential':
-          showLoginError('Incorrect password. Please try again.', 'password')
-          pwEl.value = ''
-          break
-        case 'auth/too-many-requests':
-          showLoginError('Too many failed attempts. Please wait a few minutes or reset your password.'); break
-        case 'auth/network-request-failed':
-          showLoginError('Network error. Check your connection and try again.'); break
-        default:
-          showLoginError('Sign-in failed. Please try again.')
-      }
+// ── DASHBOARD ──────────────────────────────────────────
+function renderDashboard() {
+  document.getElementById('ds-active').textContent=ASSIGNMENTS.filter(a=>['assigned','draft','review'].includes(a.status)).length
+  document.getElementById('ds-review').textContent=ASSIGNMENTS.filter(a=>a.status==='review').length
+  document.getElementById('ds-pub').textContent=ASSIGNMENTS.filter(a=>a.status==='published').length
+
+  // Recent table
+  const tb=document.getElementById('dash-table')
+  const rows=ASSIGNMENTS.slice(0,6).map(a=>{
+    const r=TEAM.find(u=>u.id===a.assignedTo)
+    const overdue=a.deadline&&isPast(a.deadline)&&a.status!=='published'
+    return `<tr style="cursor:pointer" onclick="openEditor('${a.id}')">
+      <td><div style="font-weight:500;font-size:.8rem;max-width:220px">${esc(a.title||'Untitled')}</div><div style="font-size:.66rem;color:var(--muted);font-family:var(--fm)">${esc(a.section||'')}</div></td>
+      <td><div style="display:flex;align-items:center;gap:6px;font-size:.78rem">${r?`<div class="avatar" style="width:20px;height:20px;font-size:.58rem;background:${avatarColor(r.name)}">${initials(r.name)}</div>${esc(r.name.split(' ')[0])}`:'—'}</div></td>
+      <td><span class="badge badge-${a.status||'draft'}">${a.status||'draft'}</span></td>
+      <td style="font-family:var(--fm);font-size:.7rem;color:${overdue?'var(--accent)':'var(--muted)'}">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}${overdue?' ⚠':''}</td></tr>`
+  }).join('')
+  tb.innerHTML=`<thead><tr><th>Story</th><th>Reporter</th><th>Status</th><th>Deadline</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="empty-state" style="padding:20px">No assignments yet</td></tr>'}</tbody>`
+
+  // Section progress
+  const sections=['Campus News','Investigations','Arts & Culture','Sports']
+  const colors=['var(--accent)','var(--sky)','var(--accent2)','var(--amber)']
+  document.getElementById('section-progress').innerHTML=sections.map((s,i)=>{
+    const all=ASSIGNMENTS.filter(a=>a.section===s).length
+    const done=ASSIGNMENTS.filter(a=>a.section===s&&a.status==='published').length
+    const pct=all?Math.round(done/all*100):0
+    return `<div style="margin-bottom:${i<3?'12px':'0'}">
+      <div style="display:flex;justify-content:space-between;font-size:.73rem;margin-bottom:3px"><span>${s}</span><span style="font-family:var(--fm);color:var(--muted)">${done}/${all}</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${colors[i]}"></div></div></div>`
+  }).join('')
+
+  // Activity feed (last 5 assignments as activity)
+  document.getElementById('activity-feed').innerHTML=ASSIGNMENTS.slice(0,5).map(a=>{
+    const r=TEAM.find(u=>u.id===a.assignedTo)
+    const color=a.status==='published'?'var(--accent2)':a.status==='review'?'var(--amber)':'var(--sky)'
+    const icon=a.status==='published'?'✓':a.status==='review'?'✎':'◈'
+    return `<div class="activity-item">
+      <div class="activity-dot" style="background:${color}">${icon}</div>
+      <div><div style="line-height:1.45"><strong>${esc(r?.name||'Unknown')}</strong> — ${esc(a.title||'Untitled')}</div>
+      <div style="font-size:.62rem;color:var(--muted);font-family:var(--fm)">${a.status}</div></div></div>`
+  }).join('')||'<div style="color:var(--muted);font-size:.78rem;text-align:center;padding:12px">No activity yet</div>'
+}
+
+// ── ASSIGNMENTS PAGE ───────────────────────────────────
+window.filterAssign = function(f) {
+  ASSIGN_FILTER=f
+  document.querySelectorAll('#assign-filters button').forEach(b=>{ b.style.background='transparent'; b.style.color='var(--ink)'; b.style.borderColor='var(--rule)' })
+  event.target.style.background='var(--ink)'; event.target.style.color='var(--paper)'; event.target.style.borderColor='var(--ink)'
+  renderAssignments()
+}
+function renderAssignments() {
+  const list=ASSIGN_FILTER==='all'?ASSIGNMENTS:ASSIGNMENTS.filter(a=>a.status===ASSIGN_FILTER)
+  if(!list.length) {
+    document.getElementById('assign-table-wrap').innerHTML='<div class="empty-state"><div class="empty-icon">◻</div><div class="empty-title">No assignments</div><div class="empty-sub">Create your first assignment to get started.</div></div>'
+    return
+  }
+  const rows=list.map(a=>{
+    const r=TEAM.find(u=>u.id===a.assignedTo)
+    const overdue=a.deadline&&isPast(a.deadline)&&a.status!=='published'
+    const canEdit=isEditor()
+    return `<tr>
+      <td style="cursor:pointer" onclick="openEditor('${a.id}')"><div style="font-weight:500;font-size:.8rem;max-width:240px">${esc(a.title||'Untitled')}</div></td>
+      <td><span class="badge badge-section">${esc(a.section||'')}</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px;font-size:.78rem">${r?`<div class="avatar" style="width:20px;height:20px;font-size:.58rem;background:${avatarColor(r.name)}">${initials(r.name)}</div>${esc(r.name.split(' ')[0])}`:'Unassigned'}</div></td>
+      <td><span class="badge badge-${a.status||'draft'}">${a.status||'draft'}</span></td>
+      <td style="font-family:var(--fm);font-size:.7rem;color:${overdue?'var(--accent)':'var(--muted)'}">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}${overdue?' ⚠':''}</td>
+      <td style="font-family:var(--fm);font-size:.7rem;color:var(--muted)">${a.wordCount||0}</td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-outline" style="font-size:.68rem;padding:3px 9px" onclick="openEditor('${a.id}')">Open</button>
+          ${canEdit?`<button class="btn btn-outline" style="font-size:.68rem;padding:3px 9px" onclick="editAssignment('${a.id}')">Edit</button>
+          <button class="btn btn-danger" style="font-size:.68rem;padding:3px 9px" onclick="deleteAssign('${a.id}')">Delete</button>`:''}
+        </div>
+      </td></tr>`
+  }).join('')
+  document.getElementById('assign-table-wrap').innerHTML=`<table><thead><tr><th>Story</th><th>Section</th><th>Reporter</th><th>Status</th><th>Deadline</th><th>Words</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
+}
+
+// ── ASSIGNMENTS CRUD ───────────────────────────────────
+window.createAssignment = async () => {
+  const title=document.getElementById('na-title').value.trim()
+  const reporter=document.getElementById('na-reporter').value
+  if(!title){ toast('Please enter a headline','error'); return }
+  if(!reporter){ toast('Please select a reporter','error'); return }
+  try {
+    const d = await addDoc(collection(db,'assignments'),{
+      title, brief:document.getElementById('na-brief').value.trim(),
+      section:document.getElementById('na-section').value,
+      assignedTo:reporter, deadline:document.getElementById('na-deadline').value||null,
+      wordTarget:parseInt(document.getElementById('na-words').value)||600,
+      status:'assigned', wordCount:0,
+      createdBy:ME.uid, createdAt:serverTimestamp(), updatedAt:serverTimestamp()
+    })
+    await notify(reporter,`New assignment: "${title}"`)
+    closeModal('new-assign')
+    document.getElementById('na-title').value=''
+    document.getElementById('na-brief').value=''
+    document.getElementById('na-deadline').value=''
+    document.getElementById('na-words').value=''
+    toast('Assignment created ✓')
+  } catch(e){ toast('Failed to create assignment','error'); console.error(e) }
+}
+window.editAssignment = (id) => {
+  editingAssignId=id
+  const a=ASSIGNMENTS.find(x=>x.id===id)
+  if(!a) return
+  document.getElementById('ea-title').value=a.title||''
+  document.getElementById('ea-brief').value=a.brief||''
+  document.getElementById('ea-section').value=a.section||'Campus News'
+  document.getElementById('ea-deadline').value=a.deadline||''
+  document.getElementById('ea-words').value=a.wordTarget||''
+  populateSelect('ea-reporter', a.assignedTo)
+  openModal('edit-assign')
+}
+window.saveEditAssignment = async () => {
+  if(!editingAssignId) return
+  try {
+    await updateDoc(doc(db,'assignments',editingAssignId),{
+      title:document.getElementById('ea-title').value.trim(),
+      brief:document.getElementById('ea-brief').value.trim(),
+      section:document.getElementById('ea-section').value,
+      assignedTo:document.getElementById('ea-reporter').value,
+      deadline:document.getElementById('ea-deadline').value||null,
+      wordTarget:parseInt(document.getElementById('ea-words').value)||600,
+      updatedAt:serverTimestamp()
+    })
+    closeModal('edit-assign'); toast('Assignment updated ✓')
+  } catch(e){ toast('Update failed','error') }
+}
+window.deleteAssign = async (id) => {
+  if(!await confirm2('Delete Assignment','This will permanently delete the assignment and cannot be undone.')) return
+  try { await deleteDoc(doc(db,'assignments',id)); toast('Assignment deleted') }
+  catch(e){ toast('Delete failed','error') }
+}
+
+// ── KANBAN BOARD ───────────────────────────────────────
+function renderBoard() {
+  const cols=['assigned','draft','review','published']
+  cols.forEach(status=>{
+    const cards=ASSIGNMENTS.filter(a=>a.status===status)
+    document.getElementById('kc-'+status).textContent=cards.length
+    const container=document.getElementById('cards-'+status)
+    container.innerHTML=cards.map(a=>{
+      const r=TEAM.find(u=>u.id===a.assignedTo)
+      const overdue=a.deadline&&isPast(a.deadline)&&status!=='published'
+      return `<div class="kanban-card col-${status}" draggable="true"
+        ondragstart="dragStart(event,'${a.id}')" ondragend="dragEnd(event)"
+        onclick="openEditor('${a.id}')">
+        <div class="kanban-card-title">${esc(a.title||'Untitled')}</div>
+        <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:.58rem">${esc(a.section||'')}</span></div>
+        <div class="kanban-card-meta">
+          <div class="kanban-card-reporter">${r?`<div class="avatar" style="width:17px;height:17px;font-size:.54rem;background:${avatarColor(r.name)}">${initials(r.name)}</div>${esc(r.name.split(' ')[0])}`:'Unassigned'}</div>
+          ${a.deadline?`<span class="kanban-deadline${overdue?' overdue':''}">${new Date(a.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'})}${overdue?' ⚠':''}</span>`:''}
+        </div></div>`
+    }).join('')
+  })
+}
+window.dragStart=(e,id)=>{ DRAG_ID=id; e.currentTarget.classList.add('dragging') }
+window.dragEnd=(e)=>{ e.currentTarget.classList.remove('dragging'); DRAG_ID=null; document.querySelectorAll('.kanban-drop-zone').forEach(z=>z.classList.remove('drag-over')); document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over')) }
+window.colDragOver=(e,status)=>{ e.preventDefault(); document.getElementById('dz-'+status).classList.add('drag-over') }
+window.colDragLeave=(e)=>{ e.currentTarget.querySelectorAll('.kanban-drop-zone').forEach(z=>z.classList.remove('drag-over')) }
+window.colDrop=async(e,status)=>{ e.preventDefault(); document.querySelectorAll('.kanban-drop-zone').forEach(z=>z.classList.remove('drag-over')); if(!DRAG_ID) return
+  if(!isEditor()&&status==='published'){ toast('Only editors can publish stories','error'); return }
+  try {
+    await updateDoc(doc(db,'assignments',DRAG_ID),{status,updatedAt:serverTimestamp()})
+    const a=ASSIGNMENTS.find(x=>x.id===DRAG_ID)
+    if(a) {
+      if(status==='review') await notify(a.assignedTo,`Your story "${a.title}" is in review`)
+      if(status==='published') await notify(a.assignedTo,`Your story "${a.title}" has been published! 🎉`)
     }
-  }
+    toast(`Moved to ${status} ✓`)
+  } catch(e){ toast('Could not update status','error') }
+}
 
-  // ── Google sign-in — called by the Google button ──────────
-  window.signInWithGoogle = async function() {
-    clearLoginError()
-    const btn = document.getElementById('google-btn')
-    const txt = document.getElementById('google-btn-text')
-    if (btn) { btn.disabled = true; txt.textContent = 'Signing in…' }
-    try {
-      await signInWithPopup(auth, provider)
-      // onAuthStateChanged fires automatically → enterApp() called
-    } catch (err) {
-      if (btn) { btn.disabled = false; txt.textContent = 'Continue with Google' }
-      switch (err.code) {
-        case 'auth/popup-closed-by-user':
-        case 'auth/cancelled-popup-request':
-          break // user closed popup — no error needed
-        case 'auth/popup-blocked':
-          showLoginError('Popup was blocked. Please allow popups for this site and try again.')
-          break
-        case 'auth/network-request-failed':
-          showLoginError('Network error. Check your connection and try again.')
-          break
-        default:
-          showLoginError('Google sign-in failed. Please try again.')
-      }
+// ── EDITOR ─────────────────────────────────────────────
+window.openEditor = async (assignId) => {
+  CURRENT_ASSIGN=null; CURRENT_STORY=null
+  nav('editor')
+  document.getElementById('nav-editor').style.display=''
+  document.getElementById('editor-loading').style.display='flex'
+  document.getElementById('editor-inner').style.display='none'
+  if(commentUnsub){ commentUnsub(); commentUnsub=null }
+  if(storyUnsub){ storyUnsub(); storyUnsub=null }
+
+  try {
+    const aSnap=await getDoc(doc(db,'assignments',assignId))
+    if(!aSnap.exists()){ toast('Assignment not found','error'); return }
+    CURRENT_ASSIGN={id:aSnap.id,...aSnap.data()}
+
+    // Find or create story doc
+    const q=query(collection(db,'stories'),where('assignmentId','==',assignId),limit(1))
+    let storyId=null
+    const sq=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(m=>m.getDocs(q))
+    if(!sq.empty){ storyId=sq.docs[0].id; CURRENT_STORY={id:storyId,...sq.docs[0].data()} }
+    else {
+      const ref=await addDoc(collection(db,'stories'),{ assignmentId, authorId:ME.uid, title:CURRENT_ASSIGN.title||'', deck:'', content:'', wordCount:0, status:'draft', versions:[], createdAt:serverTimestamp(), updatedAt:serverTimestamp() })
+      storyId=ref.id
+      CURRENT_STORY={id:storyId,assignmentId,authorId:ME.uid,title:CURRENT_ASSIGN.title||'',deck:'',content:'',wordCount:0,status:'draft',versions:[]}
     }
+
+    renderEditorUI()
+    document.getElementById('editor-loading').style.display='none'
+    document.getElementById('editor-inner').style.display='block'
+
+    // Live story listener
+    storyUnsub=onSnapshot(doc(db,'stories',storyId), snap=>{ if(snap.exists()){ CURRENT_STORY={id:snap.id,...snap.data()}; renderVersionHistory() } })
+    // Live comments
+    commentUnsub=onSnapshot(query(collection(db,'comments'),where('storyId','==',storyId),orderBy('createdAt','asc')), snap=>{ renderComments(snap.docs.map(d=>({id:d.id,...d.data()}))) })
+
+    renderEditorMedia()
+  } catch(e){ console.error(e); toast('Failed to load story','error') }
+}
+
+function renderEditorUI() {
+  const a=CURRENT_ASSIGN, s=CURRENT_STORY
+  const locked=a.status==='published'
+  const isAuthor=a.assignedTo===ME.uid
+
+  // Status badge
+  const badge=document.getElementById('ed-status-badge')
+  badge.className=`badge badge-${a.status||'draft'}`; badge.textContent=a.status||'draft'
+
+  // Reporter name
+  const r=TEAM.find(u=>u.id===a.assignedTo)
+  document.getElementById('ed-reporter-name').textContent=r?.name||'Unassigned'
+
+  // Buttons
+  document.getElementById('btn-submit-review').style.display=isAuthor&&a.status==='draft'?'':'none'
+  document.getElementById('btn-send-back').style.display=isEditor()&&a.status==='review'?'':'none'
+  document.getElementById('btn-publish').style.display=isEIC()&&a.status==='review'?'':'none'
+  document.getElementById('btn-unlock').style.display=isEIC()&&locked?'':'none'
+  document.getElementById('locked-banner').style.display=locked?'':'none'
+
+  // Inputs
+  document.getElementById('ed-title').value=s?.title||a.title||''
+  document.getElementById('ed-deck').value=s?.deck||''
+  document.getElementById('story-content').innerHTML=s?.content||''
+  document.getElementById('story-content').contentEditable=locked?'false':'true'
+  document.getElementById('ed-title').readOnly=locked
+  document.getElementById('ed-deck').readOnly=locked
+
+  updateWordCount()
+
+  // Meta panel
+  const overdue=a.deadline&&isPast(a.deadline)&&a.status!=='published'
+  document.getElementById('ed-meta').innerHTML=[
+    ['Section', `<span class="badge badge-section">${esc(a.section||'')}</span>`],
+    ['Reporter', r?`<div style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div class="avatar" style="width:19px;height:19px;font-size:.58rem;background:${avatarColor(r.name)}">${initials(r.name)}</div>${esc(r.name.split(' ')[0])}</div>`:'—'],
+    ['Status',   `<span class="badge badge-${a.status||'draft'}">${a.status||'draft'}</span>`],
+    ['Deadline', `<span style="color:${overdue?'var(--accent)':'var(--ink)'}">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—'}${overdue?' ⚠':''}</span>`],
+    ['Target',   `${a.wordTarget||0} words`],
+  ].map(([k,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--cream);font-size:.77rem"><span style="color:var(--muted);font-size:.7rem">${k}</span><span style="font-weight:500">${v}</span></div>`).join('')
+  if(a.brief) document.getElementById('ed-meta').innerHTML+=`<div style="margin-top:9px;font-size:.73rem;color:var(--muted);line-height:1.5;border-top:1px solid var(--cream);padding-top:9px"><strong style="font-size:.6rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--ink)">Brief</strong><p style="margin-top:3px">${esc(a.brief)}</p></div>`
+}
+
+// Editor autosave
+window.onEditorInput = () => {
+  setSaveStatus('unsaved')
+  clearTimeout(saveTimer)
+  saveTimer=setTimeout(doSave,2000)
+  updateWordCount()
+}
+function updateWordCount() {
+  const words=(document.getElementById('story-content')?.innerText||'').trim().split(/\s+/).filter(w=>w).length
+  document.getElementById('word-count').textContent=words+' words'
+}
+async function doSave() {
+  if(!CURRENT_STORY||CURRENT_ASSIGN?.status==='published') return
+  setSaveStatus('saving')
+  const title=document.getElementById('ed-title').value.trim()
+  const deck=document.getElementById('ed-deck').value.trim()
+  const content=document.getElementById('story-content').innerHTML
+  const wordCount=(document.getElementById('story-content').innerText||'').trim().split(/\s+/).filter(w=>w).length
+  try {
+    const versions=CURRENT_STORY.versions||[]
+    const last=versions[versions.length-1]
+    const snap=!last||Math.abs((last.wordCount||0)-wordCount)>40?[...versions,{content,wordCount,savedAt:new Date().toISOString(),label:`v${versions.length+1}`}]:versions
+    await updateDoc(doc(db,'stories',CURRENT_STORY.id),{ title,deck,content,wordCount,versions:snap.slice(-20),updatedAt:serverTimestamp() })
+    await updateDoc(doc(db,'assignments',CURRENT_ASSIGN.id),{ wordCount,updatedAt:serverTimestamp() })
+    setSaveStatus('saved')
+  } catch(e){ setSaveStatus('error'); console.error(e) }
+}
+function setSaveStatus(s) {
+  const dot=document.getElementById('save-dot'),st=document.getElementById('save-status')
+  const map={saved:['var(--accent2)','Saved'],saving:['var(--amber)','Saving…'],unsaved:['var(--muted)','Unsaved'],error:['var(--accent)','Save failed']}
+  const [col,txt]=map[s]||map.saved
+  dot.style.background=col; dot.className='save-dot'+(s==='saving'?' saving':'')
+  st.textContent=txt
+}
+
+// Editor toolbar
+window.fmt=(cmd)=>{ document.execCommand(cmd,false,null); onEditorInput() }
+window.fmtBlock=(tag)=>{ document.execCommand('formatBlock',false,tag); onEditorInput() }
+window.fmtLink=()=>{ const url=prompt('Enter URL:'); if(url) document.execCommand('createLink',false,url); onEditorInput() }
+window.insertPhoto=(input)=>{
+  const file=input.files[0]; if(!file) return
+  const bar=document.getElementById('upload-progress-bar'),fill=document.getElementById('upload-fill')
+  bar.style.display=''
+  const r=ref(storage,`media/image/${Date.now()}-${file.name}`)
+  const task=uploadBytesResumable(r,file)
+  task.on('state_changed',snap=>{ fill.style.width=(snap.bytesTransferred/snap.totalBytes*100)+'%' },
+    e=>{ toast('Upload failed','error'); bar.style.display='none' },
+    async()=>{ const url=await getDownloadURL(task.snapshot.ref); document.execCommand('insertImage',false,url); bar.style.display='none'; onEditorInput() })
+}
+
+// Workflow buttons
+window.submitForReview=async()=>{
+  clearTimeout(saveTimer); await doSave()
+  await updateDoc(doc(db,'assignments',CURRENT_ASSIGN.id),{status:'review',updatedAt:serverTimestamp()})
+  CURRENT_ASSIGN.status='review'
+  const editors=TEAM.filter(u=>u.role==='editor'||u.role==='editor-in-chief')
+  for(const e of editors) await notify(e.id,`"${CURRENT_ASSIGN.title}" submitted for review by ${ME.name}`)
+  renderEditorUI(); renderAssignments(); renderBoard()
+  toast('Submitted for editor review ✓')
+}
+window.sendBack=async()=>{
+  await updateDoc(doc(db,'assignments',CURRENT_ASSIGN.id),{status:'draft',updatedAt:serverTimestamp()})
+  CURRENT_ASSIGN.status='draft'
+  await notify(CURRENT_ASSIGN.assignedTo,`"${CURRENT_ASSIGN.title}" was sent back for edits by ${ME.name}`)
+  renderEditorUI(); renderAssignments(); renderBoard()
+  toast('Story sent back for edits','info')
+}
+window.publishStory=async()=>{
+  if(!await confirm2('Publish Story',`Publish "${CURRENT_ASSIGN.title}"? It will be locked from editing.`)) return
+  clearTimeout(saveTimer); await doSave()
+  await updateDoc(doc(db,'assignments',CURRENT_ASSIGN.id),{status:'published',publishedAt:serverTimestamp(),updatedAt:serverTimestamp()})
+  CURRENT_ASSIGN.status='published'
+  await notify(CURRENT_ASSIGN.assignedTo,`"${CURRENT_ASSIGN.title}" has been published! 🎉`)
+  renderEditorUI(); renderAssignments(); renderBoard()
+  toast('Story published ✓')
+}
+window.unlockStory=async()=>{
+  if(!await confirm2('Unlock Story','Unlock this story for editing?')) return
+  await updateDoc(doc(db,'assignments',CURRENT_ASSIGN.id),{status:'draft',updatedAt:serverTimestamp()})
+  CURRENT_ASSIGN.status='draft'; renderEditorUI(); toast('Story unlocked','info')
+}
+
+// Comments
+window.postComment=async()=>{
+  const txt=document.getElementById('new-comment').value.trim(); if(!txt) return
+  await addDoc(collection(db,'comments'),{ storyId:CURRENT_STORY.id, authorId:ME.uid, authorName:ME.name, body:txt, createdAt:serverTimestamp() })
+  document.getElementById('new-comment').value=''
+  if(CURRENT_ASSIGN.assignedTo!==ME.uid) await notify(CURRENT_ASSIGN.assignedTo,`${ME.name} commented on "${CURRENT_ASSIGN.title}"`)
+}
+function renderComments(comments) {
+  const cnt=document.getElementById('comment-count')
+  if(comments.length){ cnt.style.display=''; cnt.textContent=comments.length } else cnt.style.display='none'
+  document.getElementById('comment-list').innerHTML=comments.map(c=>`
+    <div class="comment">
+      <div class="comment-hdr">
+        <div class="avatar" style="width:21px;height:21px;font-size:.58rem;background:${avatarColor(c.authorName)}">${initials(c.authorName)}</div>
+        <span style="font-size:.75rem;font-weight:500">${esc(c.authorName)}</span>
+        <span style="font-size:.6rem;color:var(--muted);font-family:var(--fm);margin-left:auto">${c.createdAt?.toDate?c.createdAt.toDate().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):''}</span>
+      </div>
+      <div class="comment-body">${esc(c.body)}</div>
+    </div>`).join('')||'<div style="font-size:.75rem;color:var(--muted)">No comments yet.</div>'
+}
+function renderVersionHistory() {
+  const versions=(CURRENT_STORY?.versions||[]).slice().reverse()
+  document.getElementById('version-list').innerHTML=versions.map((v,i)=>`
+    <div class="version-item">
+      <div class="version-dot${i===0?' current':''}"></div>
+      <div>
+        <div style="font-weight:500;font-size:.75rem">${v.label||'Version '+(versions.length-i)}</div>
+        <div style="font-size:.62rem;color:var(--muted);font-family:var(--fm)">${v.savedAt?new Date(v.savedAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''} · ${v.wordCount||0}w</div>
+      </div>
+    </div>`).join('')||'<div style="font-size:.75rem;color:var(--muted)">No versions yet.</div>'
+}
+
+// Story media panel
+function renderEditorMedia() {
+  const storyMedia=MEDIA_ALL.filter(m=>m.storyId===CURRENT_STORY?.id)
+  const container=document.getElementById('ed-media')
+  if(!storyMedia.length) {
+    container.innerHTML='<label class="upload-zone" style="cursor:pointer;display:block;padding:14px;font-size:.72rem;text-align:center">Drop files or click to upload<input type="file" accept="image/*,video/*,audio/*,.pdf" multiple style="display:none" onchange="uploadStoryMedia(this)"></label>'
+    return
   }
+  const grid=storyMedia.slice(0,4).map(m=>`
+    <div style="aspect-ratio:16/10;background:var(--cream);border-radius:var(--r);border:1px solid var(--rule);overflow:hidden;position:relative;cursor:pointer" onclick="openLightbox('${m.id}')">
+      ${m.category==='image'?`<img src="${m.downloadURL}" style="width:100%;height:100%;object-fit:cover" alt="${esc(m.name)}">`:
+        `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.4rem">${m.category==='video'?'🎬':m.category==='audio'?'🎤':'📄'}</div>`}
+      <span class="media-type-badge">${m.mimeType?.split('/')[1]?.split(';')[0]||m.category}</span>
+    </div>`).join('')
+  container.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:7px">${grid}</div>
+    <label class="upload-zone" style="cursor:pointer;display:block;padding:8px 13px;font-size:.7rem;text-align:center">+ Add more files<input type="file" accept="image/*,video/*,audio/*,.pdf" multiple style="display:none" onchange="uploadStoryMedia(this)"></label>`
+}
+window.uploadStoryMedia=async(input)=>{
+  for(const file of Array.from(input.files)) await doUpload(file,CURRENT_STORY?.id)
+  input.value=''
+}
 
-  // ── Forgot password — sends Firebase reset email ───────────
-  window.forgotPassword = async function() {
-    const email = document.getElementById('login-email').value.trim()
-    if (!email) {
-      showLoginError('Enter your email address above first, then click "Forgot password".', 'email')
-      return
-    }
-    try {
-      await sendPasswordResetEmail(auth, email)
-      showResetSent(email)
-    } catch (err) {
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-email') {
-        showLoginError('No account found for this email address.', 'email')
-      } else {
-        showLoginError('Could not send reset email. Please try again.')
-      }
-    }
-  }
-
-  // ── Sign out ───────────────────────────────────────────────
-  window.signOut = async function() {
-    if (!confirm('Sign out of The Pressroom?')) return
-    await fbSignOut(auth)
-    // onAuthStateChanged fires → showLoginScreen() called automatically
-  }
-
-  // ── Enter app after auth ───────────────────────────────────
-  function enterApp(firebaseUser, profile) {
-    // Populate sidebar
-    const name = profile.name || firebaseUser.displayName || firebaseUser.email
-    const role = profile.role || 'reporter'
-
-    const avatarEl = document.querySelector('.sidebar-user .avatar')
-    if (avatarEl) {
-      avatarEl.textContent         = initials(name)
-      avatarEl.style.background    = avatarColor(name)
-    }
-    const nameEl = document.querySelector('.sidebar-user .user-name')
-    if (nameEl) nameEl.textContent = name
-
-    const roleEl = document.querySelector('.sidebar-user .user-role')
-    if (roleEl) roleEl.textContent = role
-
-    // Apply role-based UI
-    applyRoleRestrictions(role)
-
-    // Show app
-    document.getElementById('login-screen').style.display = 'none'
-    const appEl = document.getElementById('main-app')
-    appEl.style.display = 'flex'
-    appEl.style.animation = 'loginFadeIn 0.2s ease'
-
-    // Welcome toast
-    const hour     = new Date().getHours()
-    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
-    showToast(`${greeting}, ${name.split(' ')[0]} — welcome back.`, 'info')
-  }
-
-  // ── Role-based UI restrictions ─────────────────────────────
-  function applyRoleRestrictions(role) {
-    const isEditor = role === 'editor-in-chief' || role === 'editor'
-    if (!isEditor) {
-      document.querySelectorAll('.btn-primary').forEach(btn => {
-        if (btn.textContent.includes('New Assignment')) btn.style.display = 'none'
+// ── MEDIA LIBRARY ──────────────────────────────────────
+window.filterMedia=f=>{
+  MEDIA_FILTER=f
+  document.querySelectorAll('#media-filters button').forEach(b=>{ b.style.background='transparent'; b.style.color='var(--ink)'; b.style.borderColor='var(--rule)' })
+  event.target.style.background='var(--ink)'; event.target.style.color='var(--paper)'; event.target.style.borderColor='var(--ink)'
+  renderMediaLibrary()
+}
+function renderMediaLibrary() {
+  const list=MEDIA_FILTER==='all'?MEDIA_ALL:MEDIA_ALL.filter(m=>m.category===MEDIA_FILTER)
+  const grid=document.getElementById('media-library-grid')
+  if(!list.length){ grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">⊡</div><div class="empty-title">No media files</div><div class="empty-sub">Upload photos, videos, PDFs and audio files.</div></div>'; return }
+  grid.innerHTML=list.map(m=>`
+    <div class="media-card" onclick="openLightbox('${m.id}')">
+      <div class="media-thumb">
+        ${m.category==='image'?`<img src="${m.downloadURL}" alt="${esc(m.name)}" loading="lazy">`:
+          `<span style="font-size:2rem">${m.category==='video'?'🎬':m.category==='audio'?'🎤':'📄'}</span>`}
+        <span class="media-type-badge">${m.mimeType?.split('/')[1]?.split(';')[0]||m.category}</span>
+      </div>
+      <div class="media-info">
+        <div class="media-name" title="${esc(m.name)}">${esc(m.name)}</div>
+        <div class="media-meta">${fmtSize(m.size||0)} · ${esc(m.uploadedByName?.split(' ')[0]||'')}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:7px">
+          <a href="${m.downloadURL}" download="${esc(m.name)}" target="_blank" style="font-size:.67rem;color:var(--sky);text-decoration:none" onclick="event.stopPropagation()">↓ Download</a>
+          <button onclick="event.stopPropagation();deleteMedia('${m.id}','${esc(m.path||'')}')" style="background:none;border:none;cursor:pointer;font-size:.67rem;color:var(--muted);padding:2px 4px">✕</button>
+        </div>
+      </div>
+    </div>`).join('')
+}
+window.uploadLibraryMedia=async(input)=>{
+  for(const file of Array.from(input.files)) await doUpload(file,null)
+  input.value=''
+}
+async function doUpload(file, storyId) {
+  const cat=file.type.startsWith('image')?'image':file.type.startsWith('video')?'video':file.type.startsWith('audio')?'audio':'document'
+  const path=`media/${cat}/${Date.now()}-${file.name}`
+  const r=ref(storage,path)
+  const bar=document.getElementById('upload-status-global'),pct=document.getElementById('upload-pct'),fill=document.getElementById('upload-fill-global')
+  bar.style.display=''
+  return new Promise((res,rej)=>{
+    const task=uploadBytesResumable(r,file)
+    task.on('state_changed',snap=>{ const p=Math.round(snap.bytesTransferred/snap.totalBytes*100); pct.textContent=p; fill.style.width=p+'%' },
+      e=>{ toast('Upload failed: '+file.name,'error'); bar.style.display='none'; rej(e) },
+      async()=>{
+        const url=await getDownloadURL(task.snapshot.ref)
+        await addDoc(collection(db,'media'),{ name:file.name, path, downloadURL:url, mimeType:file.type, category:cat, size:file.size, storyId:storyId||null, uploadedById:ME.uid, uploadedByName:ME.name, uploadedAt:serverTimestamp() })
+        bar.style.display='none'; toast(file.name+' uploaded ✓'); res()
       })
-      const publishBtn = document.querySelector('[onclick="publishStory()"]')
-      if (publishBtn) publishBtn.style.display = 'none'
-    }
-  }
+  })
+}
+window.deleteMedia=async(id,path)=>{
+  if(!await confirm2('Delete File','Permanently delete this file?')) return
+  try {
+    if(path){ const r=ref(storage,path); await deleteObject(r).catch(()=>{}) }
+    await deleteDoc(doc(db,'media',id)); toast('File deleted')
+  } catch(e){ toast('Delete failed','error') }
+}
 
-  // ── Login form helpers ─────────────────────────────────────
-  function setLoginLoading(loading) {
-    const btn     = document.getElementById('login-btn')
-    const spinner = document.getElementById('login-spinner')
-    const txt     = document.getElementById('login-btn-text')
-    if (!btn) return
-    btn.disabled          = loading
-    spinner.style.display = loading ? 'block' : 'none'
-    txt.textContent       = loading ? 'Signing in…' : 'Sign in to the newsroom'
-  }
+// Lightbox
+window.openLightbox=(mediaId)=>{
+  const m=MEDIA_ALL.find(x=>x.id===mediaId); if(!m) return
+  const lb=document.getElementById('lightbox'),inner=document.getElementById('lightbox-inner')
+  if(m.category==='image') inner.innerHTML=`<img src="${m.downloadURL}" alt="${esc(m.name)}">`
+  else if(m.category==='video') inner.innerHTML=`<video src="${m.downloadURL}" controls autoplay style="max-width:90vw;max-height:90vh;border-radius:8px"></video>`
+  else if(m.category==='audio') inner.innerHTML=`<div class="lightbox-pdf"><div style="font-size:3rem;margin-bottom:14px">🎤</div><div style="font-weight:500;margin-bottom:12px">${esc(m.name)}</div><audio src="${m.downloadURL}" controls></audio></div>`
+  else inner.innerHTML=`<div class="lightbox-pdf"><div style="font-size:3rem;margin-bottom:14px">📄</div><div style="font-weight:500;margin-bottom:12px">${esc(m.name)}</div><a href="${m.downloadURL}" target="_blank" rel="noreferrer" style="color:var(--accent)">Open PDF ↗</a></div>`
+  lb.classList.add('open')
+}
+window.closeLightbox=()=>document.getElementById('lightbox').classList.remove('open')
 
-  function clearLoginError() {
-    const errEl = document.getElementById('login-error')
-    if (errEl) errEl.classList.remove('visible')
-    document.getElementById('login-email')?.classList.remove('error')
-    document.getElementById('login-password')?.classList.remove('error')
-  }
+// ── TEAM ───────────────────────────────────────────────
+function renderTeam() {
+  document.getElementById('team-count').textContent=`${TEAM.length} member${TEAM.length!==1?'s':''} in the newsroom`
+  populateReporterSelects()
+  const grid=document.getElementById('team-grid')
+  if(!TEAM.length){ grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">◎</div><div class="empty-title">No team members yet</div></div>'; return }
 
-  function showLoginError(msg, field) {
-    const errEl = document.getElementById('login-error')
-    const msgEl = document.getElementById('login-error-msg')
-    if (!errEl || !msgEl) return
-    msgEl.textContent = msg
-    errEl.classList.add('visible')
-    if (field === 'email')    document.getElementById('login-email')?.classList.add('error')
-    if (field === 'password') document.getElementById('login-password')?.classList.add('error')
-  }
+  const cards=TEAM.map(u=>{
+    const pub=ASSIGNMENTS.filter(a=>a.assignedTo===u.id&&a.status==='published').length
+    const active=ASSIGNMENTS.filter(a=>a.assignedTo===u.id&&['assigned','draft','review'].includes(a.status)).length
+    const isMe=u.id===ME.uid
+    return `<div class="team-card">
+      ${isMe?'<span style="position:absolute;top:9px;right:9px;font-size:.58rem;font-family:var(--fm);background:var(--cream);color:var(--muted);padding:2px 6px;border-radius:10px;text-transform:uppercase">You</span>':''}
+      ${u.photoURL?`<img src="${u.photoURL}" style="width:50px;height:50px;border-radius:50%;object-fit:cover" alt="${esc(u.name)}">`:
+        `<div class="avatar" style="width:50px;height:50px;font-size:1.1rem;background:${avatarColor(u.name)}">${initials(u.name)}</div>`}
+      <div style="font-weight:600;font-size:.86rem">${esc(u.name)}</div>
+      <span class="badge badge-${u.role||'reporter'}">${u.role||'reporter'}</span>
+      <div style="font-size:.7rem;color:var(--muted)">${esc(u.section||'')}</div>
+      <div style="font-size:.68rem;color:var(--muted);font-family:var(--fm)">${esc(u.email)}</div>
+      <div class="team-stats">
+        <div style="text-align:center"><div class="team-stat-num">${pub}</div><div class="team-stat-lbl">Published</div></div>
+        <div style="text-align:center"><div class="team-stat-num">${active}</div><div class="team-stat-lbl">Active</div></div>
+      </div>
+      ${isEIC()&&!isMe?`<button class="btn btn-ghost" style="font-size:.68rem;color:var(--muted);margin-top:3px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change role</button>`:''}
+    </div>`
+  }).join('')
 
-  function showResetSent(email) {
-    const errEl = document.getElementById('login-error')
-    const msgEl = document.getElementById('login-error-msg')
-    if (!errEl || !msgEl) return
-    errEl.style.background   = '#eafaf1'
-    errEl.style.borderColor  = '#a9dfbf'
-    errEl.style.color        = '#1e8449'
-    msgEl.textContent        = `Password reset email sent to ${email}. Check your inbox.`
-    errEl.classList.add('visible')
-  }
+  const inviteCard=`<div class="team-card invite-card" onclick="openModal('invite')">
+    <div style="font-size:1.8rem">+</div>
+    <div style="font-size:.8rem;font-weight:500">Invite a journalist</div>
+    <div style="font-size:.68rem">Send a Google sign-in invite</div>
+  </div>`
+  grid.innerHTML=cards+inviteCard
+}
+window.openRoleModal=(uid,name,role)=>{
+  editingRoleUid=uid
+  document.getElementById('role-name').value=name
+  document.getElementById('role-select').value=role
+  openModal('role')
+}
+window.saveRole=async()=>{
+  if(!editingRoleUid) return
+  const role=document.getElementById('role-select').value
+  try { await updateDoc(doc(db,'users',editingRoleUid),{role}); closeModal('role'); toast('Role updated ✓') }
+  catch(e){ toast('Update failed','error') }
+}
+window.sendInvite=()=>{
+  const email=document.getElementById('inv-email').value.trim()
+  if(!email){ toast('Enter an email address','error'); return }
+  const role=document.getElementById('inv-role').value
+  const section=document.getElementById('inv-section').value
+  const subject=encodeURIComponent('Invitation to join The Pressroom — SGJC Newsroom')
+  const body=encodeURIComponent(`Hi,\n\nYou've been invited to join The Pressroom, the SGJC student newsroom platform, as a ${role}.\n\nClick the link below to sign in with your Google account:\nhttps://msugoalkeepers.github.io/\n\nYour section: ${section}\n\nSee you in the newsroom!\n${ME.name}`)
+  window.open(`mailto:${email}?subject=${subject}&body=${body}`)
+  closeModal('invite')
+  document.getElementById('inv-email').value=''
+  toast(`Invite email opened for ${email} ✓`)
+}
 
-  // ── Password show/hide toggle ──────────────────────────────
-  window.togglePw = function() {
-    const el  = document.getElementById('login-password')
-    const btn = document.getElementById('pw-toggle-btn')
-    if (!el) return
-    if (el.type === 'password') { el.type = 'text';     btn.textContent = 'Hide' }
-    else                        { el.type = 'password'; btn.textContent = 'Show' }
-  }
+// ── NOTIFICATIONS ──────────────────────────────────────
+window.toggleNotifs=()=>{ document.getElementById('notif-drop').classList.toggle('open') }
+function renderNotifications() {
+  const list=document.getElementById('notif-list')
+  if(!NOTIFICATIONS.length){ list.innerHTML='<div class="notif-empty">All caught up ✓</div>'; return }
+  list.innerHTML=NOTIFICATIONS.map(n=>`
+    <div class="notif-item" onclick="markRead('${n.id}')">
+      <div>${esc(n.message)}</div>
+      <div class="notif-time">${n.createdAt?.toDate?n.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div>
+    </div>`).join('')
+}
+window.markRead=async(id)=>{
+  await updateDoc(doc(db,'notifications',id),{read:true})
+  document.getElementById('notif-drop').classList.remove('open')
+}
+// Close notif when clicking outside
+document.addEventListener('click',e=>{ if(!document.getElementById('notif-btn').contains(e.target)&&!document.getElementById('notif-drop').contains(e.target)) document.getElementById('notif-drop').classList.remove('open') })
 
-  // ════════════════════════════════════════════════════════════
-  // APP NAVIGATION & FEATURES
-  // (These run regardless of auth state — safe because the
-  //  entire #main-app div is hidden until login succeeds)
-  // ════════════════════════════════════════════════════════════
+// ── HELPERS ────────────────────────────────────────────
+window.openModal=id=>document.getElementById('modal-'+id)?.classList.add('open')
+window.closeModal=id=>document.getElementById('modal-'+id)?.classList.remove('open')
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open') }))
 
-  const views  = ['dashboard','assignments','board','editor','media','team']
-  const titles = {
-    dashboard:   'Daily Briefing',
-    assignments: 'All Assignments',
-    board:       'Story Board',
-    editor:      'Story Editor — Budget cuts threaten athletics program',
-    media:       'Media Library',
-    team:        'Team',
-  }
-
-  window.showView = function(name) {
-    views.forEach(v =>
-      document.getElementById('view-' + v)?.classList.toggle('active', v === name)
-    )
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'))
-    document.querySelectorAll('.nav-item').forEach(el => {
-      const t = el.textContent.trim().toLowerCase()
-      if (
-        (name === 'dashboard'    && t.includes('dashboard'))  ||
-        (name === 'assignments'  && t.includes('assign'))     ||
-        (name === 'board'        && t.includes('board'))      ||
-        (name === 'editor'       && t.includes('write'))      ||
-        (name === 'media'        && t.includes('media'))      ||
-        (name === 'team'         && t.includes('team'))
-      ) el.classList.add('active')
-    })
-    const titleEl = document.getElementById('topbar-title')
-    if (titleEl) titleEl.textContent = titles[name] || name
-  }
-
-  window.openModal  = name => document.getElementById('modal-' + name)?.classList.add('open')
-  window.closeModal = name => document.getElementById('modal-' + name)?.classList.remove('open')
-
-  document.querySelectorAll('.modal-overlay').forEach(overlay =>
-    overlay.addEventListener('click', e => {
-      if (e.target === overlay) overlay.classList.remove('open')
-    })
-  )
-
-  window.showToast = function(msg, type = 'success') {
-    const container = document.getElementById('toast-container')
-    if (!container) return
-    const toast = document.createElement('div')
-    toast.className = 'toast ' + type
-    toast.innerHTML = (type === 'success' ? '✓ ' : 'ℹ ') + msg
-    container.appendChild(toast)
-    setTimeout(() => toast.remove(), 3500)
-  }
-
-  window.toggleFormat = function(btn, cmd) {
-    document.execCommand(cmd, false, null)
-    btn.classList.toggle('active')
-    triggerAutosave()
-  }
-  window.formatBlock = function(tag) {
-    document.execCommand('formatBlock', false, tag)
-    triggerAutosave()
-  }
-  window.insertLink = function() {
-    const url = prompt('Enter URL:')
-    if (url) document.execCommand('createLink', false, url)
-  }
-
-  let saveTimer
-  function triggerAutosave() { handleEditorInput() }
-  window.handleEditorInput = function() {
-    const dot    = document.getElementById('save-dot')
-    const status = document.getElementById('save-status')
-    if (!dot || !status) return
-    dot.classList.add('saving')
-    status.textContent = 'Saving…'
-    clearTimeout(saveTimer)
-    saveTimer = setTimeout(() => {
-      dot.classList.remove('saving')
-      status.textContent = 'Saved just now'
-      updateWordCount()
-    }, 1500)
-    updateWordCount()
-  }
-
-  function updateWordCount() {
-    const el = document.getElementById('story-content')
-    if (!el) return
-    const words = (el.innerText || '').trim().split(/\s+/).filter(w => w).length
-    const display = document.getElementById('word-count-display')
-    if (display) display.textContent = words + ' words'
-  }
-
-  window.addComment     = function() {
-    const input = document.getElementById('new-comment')
-    if (!input?.value.trim()) return
-    showToast('Comment added', 'success')
-    input.value = ''
-  }
-  window.submitReview   = () => showToast('Story submitted for editor review', 'success')
-  window.publishStory   = () => showToast('Story approved and published ✓', 'success')
-  window.createAssignment = function() {
-    closeModal('new-assignment')
-    showToast('Assignment created and reporter notified', 'success')
-  }
-  window.sendInvite = function() {
-    closeModal('invite')
-    showToast('Invitation sent via email', 'success')
-  }
+function populateReporterSelects() {
+  const reporters=TEAM
+  ;['na-reporter','ea-reporter'].forEach(selId=>{
+    const sel=document.getElementById(selId); if(!sel) return
+    const cur=sel.value
+    sel.innerHTML='<option value="">— Select reporter —</option>'+reporters.map(u=>`<option value="${u.id}" ${u.id===cur?'selected':''}>${esc(u.name)}</option>`).join('')
+  })
+}
+function populateSelect(selId, value) {
+  const sel=document.getElementById(selId); if(!sel) return
+  Array.from(sel.options).forEach(o=>o.selected=o.value===value)
+}
+window.toast = (msg,type='success')=>{
+  const c=document.getElementById('toast-container')
+  const t=document.createElement('div'); t.className='toast '+type
+  t.innerHTML=(type==='success'?'✓ ':type==='error'?'✕ ':'ℹ ')+esc(msg)
+  c.appendChild(t); setTimeout(()=>t.remove(),3800)
+}
+function esc(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.innerHTML }
+function confirm2(title,msg) {
+  return new Promise(res=>{
+    confirmResolve=res
+    document.getElementById('confirm-title').textContent=title
+    document.getElementById('confirm-msg').textContent=msg
+    document.getElementById('confirm-overlay').classList.add('open')
+  })
+}
+window.confirmResolve=(v)=>{ document.getElementById('confirm-overlay').classList.remove('open'); if(confirmResolve){ confirmResolve(v); confirmResolve=null } }
 </script>
 </body>
 </html>
