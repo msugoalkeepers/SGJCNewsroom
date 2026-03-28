@@ -2124,7 +2124,22 @@
     hideSplash()
     if (firebaseUser) {
       // User is signed in — load their Firestore profile
-      let profile = await loadProfile(firebaseUser)
+      // If Firestore fails (not set up yet, rules issue, etc.)
+      // we still enter the app with a basic profile so the
+      // user is never left on a blank white page
+      let profile = {}
+      try {
+        profile = await loadProfile(firebaseUser)
+      } catch (err) {
+        console.warn('Firestore profile load failed — using basic profile. Error:', err.message)
+        profile = {
+          uid:     firebaseUser.uid,
+          name:    firebaseUser.displayName || firebaseUser.email,
+          email:   firebaseUser.email,
+          role:    'reporter',
+          section: 'Campus News',
+        }
+      }
       enterApp(firebaseUser, profile)
     } else {
       // No session — show login form
@@ -2142,16 +2157,17 @@
     }
 
     // First sign-in: create profile with default reporter role.
-    // An editor-in-chief can promote them from the Firebase Console
-    // or from the Team page once you wire that up.
     const profile = {
       uid:       firebaseUser.uid,
       name:      firebaseUser.displayName || firebaseUser.email.split('@')[0],
       email:     firebaseUser.email,
-      role:      'reporter',        // default — promote in Firestore Console
+      role:      'reporter',
       section:   'Campus News',
       createdAt: serverTimestamp(),
     }
+
+    // Try to save — if Firestore isn't set up yet this will throw
+    // and the caller's try/catch will handle it gracefully
     await setDoc(ref, profile)
     return profile
   }
