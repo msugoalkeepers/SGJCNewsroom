@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pressroom — Student Journalism Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --paper: #f5f2eb;
+    --cream: #ede9df;
+    --rule: #d4cfc3;
+    --accent: #c0392b;
+    --accent2: #2c6e49;
+    --amber: #e67e22;
+    --sky: #1a5276;
+    --muted: #7a7570;
+    --white: #ffffff;
+    --card: #faf8f3;
+    --shadow: 0 1px 3px rgba(15,14,12,0.08), 0 4px 16px rgba(15,14,12,0.05);
+    --shadow-lg: 0 8px 32px rgba(15,14,12,0.12);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --radius: 4px;
+    --radius-lg: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 15px; }
+  body {
+    font-family: var(--font-body);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── LAYOUT ── */
+  .app { display: flex; height: 100vh; overflow: hidden; }
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--ink);
+    color: var(--paper);
+    display: flex;
+    flex-direction: column;
+    border-right: none;
+    overflow-y: auto;
+  }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar {
+    height: 56px;
+    background: var(--white);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar-logo {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-logo .masthead {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+    line-height: 1.1;
+  }
+  .sidebar-logo .edition {
+    font-size: 0.65rem;
+    color: rgba(245,242,235,0.45);
+    font-family: var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+  .avatar.green { background: var(--accent2); }
+  .avatar.amber { background: var(--amber); }
+  .avatar.sky { background: var(--sky); }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--paper);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .user-role {
+    font-size: 0.65rem;
+    color: rgba(245,242,235,0.45);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+  .nav-section-label {
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245,242,235,0.3);
+    padding: 12px 18px 4px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 18px;
+    font-size: 0.82rem;
+    color: rgba(245,242,235,0.65);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    font-weight: 400;
+  }
+  .nav-item:hover { color: var(--paper); background: rgba(255,255,255,0.04); }
+  .nav-item.active {
+    color: var(--paper);
+    background: rgba(255,255,255,0.06);
+    border-left-color: var(--accent);
+  }
+  .nav-icon { width: 14px; text-align: center; font-size: 0.82rem; opacity: 0.7; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: white;
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    padding: 1px 5px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+  }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #a93226; border-color: #a93226; }
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--rule);
+  }
+  .btn-outline:hover { background: var(--cream); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    padding: 7px 10px;
+  }
+  .btn-ghost:hover { color: var(--ink); background: var(--cream); }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── DASHBOARD ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .stat-card.red::before { background: var(--accent); }
+  .stat-card.green::before { background: var(--accent2); }
+  .stat-card.amber::before { background: var(--amber); }
+  .stat-card.sky::before { background: var(--sky); }
+  .stat-label {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .stat-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .section-rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin-bottom: 20px;
+  }
+
+  /* ── ASSIGNMENT TABLE ── */
+  .table-wrap {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--cream);
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 500;
+  }
+  td {
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    border-bottom: 1px solid var(--cream);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--paper); }
+  .story-title-cell {
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    max-width: 280px;
+  }
+  .story-title-cell:hover { color: var(--accent); }
+  .story-section {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge-assigned { background: #e8f4fd; color: #1a5276; }
+  .badge-draft { background: #fef9e7; color: #7d6608; }
+  .badge-review { background: #fdf2e9; color: #784212; }
+  .badge-published { background: #eafaf1; color: #1e8449; }
+  .badge-overdue { background: #fdedec; color: #922b21; }
+  .badge-section { background: var(--cream); color: var(--muted); }
+
+  /* ── KANBAN ── */
+  .kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .kanban-col {
+    background: var(--cream);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    min-height: 400px;
+  }
+  .kanban-col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+  .kanban-col-title {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .kanban-count {
+    background: var(--rule);
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+  .kanban-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .kanban-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+  .kanban-card.red { border-left-color: var(--accent); }
+  .kanban-card.green { border-left-color: var(--accent2); }
+  .kanban-card.amber { border-left-color: var(--amber); }
+  .kanban-card.sky { border-left-color: var(--sky); }
+  .kanban-card-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .kanban-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .kanban-card-reporter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+  .mini-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    color: white;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .mini-avatar.green { background: var(--accent2); }
+  .mini-avatar.amber { background: var(--amber); }
+  .mini-avatar.sky { background: var(--sky); }
+  .kanban-deadline {
+    font-size: 0.62rem;
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+  .kanban-deadline.overdue { color: var(--accent); }
+
+  /* ── EDITOR VIEW ── */
+  .editor-layout { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
+  .editor-main { }
+  .editor-sidebar { }
+  .editor-header {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 16px 20px;
+    border-bottom: none;
+  }
+  .editor-title-input {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    color: var(--ink);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .editor-title-input::placeholder { color: var(--rule); }
+  .editor-deck-input {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--muted);
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    font-style: italic;
+  }
+  .editor-deck-input::placeholder { color: var(--rule); }
+  .editor-toolbar {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-bottom: none;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .toolbar-btn {
+    padding: 4px 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    font-size: 0.78rem;
+    cursor: pointer;
+    color: var(--ink);
+    font-family: var(--font-body);
+    transition: all 0.1s;
+  }
+  .toolbar-btn:hover { background: var(--white); border-color: var(--rule); }
+  .toolbar-btn.active { background: var(--ink); color: var(--white); }
+  .toolbar-sep { width: 1px; height: 18px; background: var(--rule); margin: 0 4px; }
+  .editor-body {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    min-height: 420px;
+    padding: 20px 24px;
+  }
+  .editor-body [contenteditable] {
+    outline: none;
+    min-height: 380px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--ink);
+    font-family: var(--font-body);
+  }
+  .editor-body [contenteditable] h2 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 20px 0 8px;
+    color: var(--ink);
+  }
+  .editor-body [contenteditable] h3 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    margin: 16px 0 6px;
+  }
+  .editor-body [contenteditable] p { margin-bottom: 12px; }
+  .editor-body [contenteditable] blockquote {
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    color: var(--muted);
+    font-style: italic;
+    margin: 16px 0;
+  }
+  .editor-body [contenteditable] strong { font-weight: 600; }
+
+  /* ── EDITOR SIDEBAR PANELS ── */
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 10px 14px;
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-title {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .panel-body { padding: 12px 14px; }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--cream);
+    font-size: 0.78rem;
+  }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-key { color: var(--muted); font-size: 0.72rem; }
+  .meta-val { color: var(--ink); font-weight: 500; text-align: right; max-width: 130px; }
+
+  /* ── MEDIA PANEL ── */
+  .media-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .media-thumb {
+    aspect-ratio: 16/10;
+    background: var(--cream);
+    border-radius: var(--radius);
+    border: 1px solid var(--rule);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+  .media-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .media-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--rule);
+  }
+  .media-type-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(15,14,12,0.7);
+    color: white;
+    font-size: 0.55rem;
+    font-family: var(--font-mono);
+    padding: 1px 4px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+  .upload-zone {
+    border: 1px dashed var(--rule);
+    border-radius: var(--radius);
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .upload-zone:hover { border-color: var(--accent); color: var(--accent); background: #fdf0ef; }
+
+  /* ── COMMENTS ── */
+  .comment {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--cream);
+  }
+  .comment:last-child { border-bottom: none; }
+  .comment-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 5px;
+  }
+  .comment-author { font-size: 0.75rem; font-weight: 500; }
+  .comment-time { font-size: 0.65rem; color: var(--muted); font-family: var(--font-mono); }
+  .comment-body { font-size: 0.78rem; color: var(--ink); line-height: 1.5; }
+  .comment-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: flex-end;
+  }
+  .comment-input {
+    flex: 1;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 7px 10px;
+    font-size: 0.78rem;
+    font-family: var(--font-body);
+    resize: none;
+    outline: none;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .comment-input:focus { border-color: var(--ink); }
+
+  /* ── VERSION HISTORY ── */
+  .version-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--cream);
+    font-size: 0.75rem;
+  }
+  .version-item:last-child { border-bottom: none; }
+  .version-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rule);
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .version-dot.current { background: var(--accent2); }
+  .version-label { color: var(--ink); font-weight: 500; }
+  .version-meta { color: var(--muted); font-size: 0.65rem; font-family: var(--font-mono); }
+
+  /* ── MEDIA VIEW ── */
+  .media-library {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .media-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .media-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .media-card-thumb {
+    aspect-ratio: 16/10;
+    background: var(--cream);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--rule);
+  }
+  .media-card-info { padding: 10px 12px; }
+  .media-card-name { font-size: 0.78rem; font-weight: 500; color: var(--ink); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .media-card-meta { font-size: 0.65rem; color: var(--muted); font-family: var(--font-mono); }
+
+  /* ── TEAM VIEW ── */
+  .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .team-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
+  .team-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    font-weight: 700;
+    font-family: var(--font-display);
+  }
+  .team-name { font-weight: 600; font-size: 0.88rem; }
+  .team-role { font-size: 0.65rem; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .team-section { font-size: 0.72rem; color: var(--muted); }
+  .team-stats { display: flex; gap: 16px; margin-top: 8px; }
+  .team-stat { text-align: center; }
+  .team-stat-num { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+  .team-stat-label { font-size: 0.6rem; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,14,12,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    width: 520px;
+    max-width: 95vw;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    color: var(--ink);
+    background: var(--paper);
+    outline: none;
+    transition: border 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--ink); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── TOAST ── */
+  .toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2000;
+  }
+  .toast {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 16px;
+    border-radius: var(--radius-lg);
+    font-size: 0.8rem;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.success { border-left: 3px solid var(--accent2); }
+  .toast.info { border-left: 3px solid var(--sky); }
+  @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  /* ── ACTIVITY FEED ── */
+  .activity-feed { display: flex; flex-direction: column; gap: 0; }
+  .activity-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--cream);
+    font-size: 0.78rem;
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: white;
+    margin-top: 1px;
+  }
+  .activity-text { flex: 1; line-height: 1.5; }
+  .activity-text strong { font-weight: 500; }
+  .activity-time { font-size: 0.62rem; font-family: var(--font-mono); color: var(--muted); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar { height: 4px; background: var(--rule); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
+
+  /* tag chip */
+  .chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.62rem;
+    font-family: var(--font-mono);
+    background: var(--cream);
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    margin: 2px;
+  }
+
+  .autosave {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .autosave-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+  }
+  .autosave-dot.saving {
+    background: var(--amber);
+    animation: pulse 0.8s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .word-count {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* deadline warning strip */
+  .deadline-strip {
+    background: #fdf2e9;
+    border: 1px solid #f0a070;
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    color: #784212;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+  /* ── LOGIN SCREEN ── */
+  .login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: loginFadeIn 0.3s ease;
+  }
+  @keyframes loginFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes loginFadeOut { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .login-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 48px 40px;
+    width: 400px;
+    max-width: 95vw;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    animation: cardRise 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes cardRise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .login-masthead {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: center;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+  .login-sub {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .login-rule {
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    margin: 0 auto 32px;
+    border-radius: 2px;
+  }
+  .login-label {
+    display: block;
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .login-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--ink);
+    background: var(--paper);
+    outline: none;
+    transition: border 0.15s, box-shadow 0.15s;
+    margin-bottom: 14px;
+  }
+  .login-input:focus {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(15,14,12,0.06);
+  }
+  .login-input.error { border-color: var(--accent); }
+  .login-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .login-btn:hover { background: #a93226; }
+  .login-btn:active { transform: scale(0.99); }
+  .login-btn:disabled { background: var(--rule); cursor: not-allowed; }
+  .login-error {
+    background: #fdedec;
+    color: #922b21;
+    border: 1px solid #f5b7b1;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .login-error.visible { display: flex; }
+  .login-footer {
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 24px;
+    line-height: 1.5;
+  }
+  .login-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Sidebar sign-out */
+  .signout-btn {
+    width: 100%;
+    padding: 7px 14px;
+    background: transparent;
+    color: rgba(245,242,235,0.35);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.15s;
+  }
+  .signout-btn:hover { color: rgba(245,242,235,0.7); border-color: rgba(255,255,255,0.2); }
+
+  /* Password toggle */
+  .pw-wrap { position: relative; }
+  .pw-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-60%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    padding: 2px 4px;
+  }
+  .pw-toggle:hover { color: var(--ink); }
+
+  /* Session badge on sidebar */
+  .session-badge {
+    display: inline-block;
+    padding: 1px 5px;
+    background: rgba(44,110,73,0.2);
+    color: #5dbb86;
+    font-size: 0.55rem;
+    font-family: var(--font-mono);
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-left: 4px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     SPLASH — shown for ~1s while Firebase checks session
+     ══════════════════════════════════════════════════════ -->
+<div id="splash-screen" style="
+  position:fixed;inset:0;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  z-index:10000;flex-direction:column;gap:16px;">
+  <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--paper);letter-spacing:-0.02em;">
+    The Pressroom
+  </div>
+  <div style="width:32px;height:32px;border:2px solid rgba(255,255,255,0.15);border-top:2px solid var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     LOGIN SCREEN — shown until user authenticates
+     ══════════════════════════════════════════════════════ -->
+<div class="login-screen" id="login-screen" style="display:none;">
+  <div class="login-card">
+    <div class="login-masthead">The Pressroom</div>
+    <div class="login-sub">Student Journalism Platform</div>
+    <div class="login-rule"></div>
+
+    <div class="login-error" id="login-error">
+      <span>✕</span>
+      <span id="login-error-msg">Unrecognized email or incorrect password.</span>
+    </div>
+
+    <label class="login-label" for="login-email">Email address</label>
+    <input
+      class="login-input"
+      type="email"
+      id="login-email"
+      placeholder="you@university.edu"
+      autocomplete="email"
+      onkeydown="if(event.key==='Enter') document.getElementById('login-password').focus()"
+    />
+
+    <label class="login-label" for="login-password">Password</label>
+    <div class="pw-wrap">
+      <input
+        class="login-input"
+        type="password"
+        id="login-password"
+        placeholder="••••••••"
+        autocomplete="current-password"
+        style="padding-right: 52px;"
+        onkeydown="if(event.key==='Enter') attemptLogin()"
+      />
+      <button class="pw-toggle" type="button" onclick="togglePw()" id="pw-toggle-btn">Show</button>
+    </div>
+
+    <button class="login-btn" id="login-btn" onclick="attemptLogin()">
+      <div class="login-spinner" id="login-spinner"></div>
+      <span id="login-btn-text">Sign in to the newsroom</span>
+    </button>
+
+    <div style="text-align:center;margin-top:14px;">
+      <button onclick="forgotPassword()" style="
+        background:none;border:none;cursor:pointer;
+        font-family:var(--font-body);font-size:0.75rem;
+        color:var(--muted);text-decoration:underline;
+        text-underline-offset:2px;">
+        Forgot password?
+      </button>
+    </div>
+
+    <div class="login-footer">
+      Access is restricted to approved team members.<br>
+      Contact your editor-in-chief to be added to the system.
+    </div>
+  </div>
+</div>
+
+<div class="app" id="main-app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="masthead">The Pressroom</div>
+      <div class="edition">Student Journalism Platform</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar">MR</div>
+      <div class="user-info">
+        <div class="user-name">Maya Rodriguez</div>
+        <div class="user-role">Editor-in-Chief</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Newsroom</div>
+      <div class="nav-item active" onclick="showView('dashboard')">
+        <span class="nav-icon">◈</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showView('assignments')">
+        <span class="nav-icon">◻</span> Assignments
+        <span class="nav-badge">7</span>
+      </div>
+      <div class="nav-item" onclick="showView('board')">
+        <span class="nav-icon">⊞</span> Story Board
+      </div>
+      <div class="nav-item" onclick="showView('editor')">
+        <span class="nav-icon">✎</span> Write Story
+      </div>
+      <div class="nav-section-label">Assets</div>
+      <div class="nav-item" onclick="showView('media')">
+        <span class="nav-icon">⊡</span> Media Library
+      </div>
+      <div class="nav-section-label">Team</div>
+      <div class="nav-item" onclick="showView('team')">
+        <span class="nav-icon">◎</span> Team Members
+      </div>
+    </nav>
+    <div style="padding: 10px 14px; border-top: 1px solid rgba(255,255,255,0.08);">
+      <button class="signout-btn" onclick="signOut()">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Daily Briefing</div>
+      <div class="topbar-actions">
+        <span style="font-size:0.72rem;font-family:var(--font-mono);color:var(--muted)">Tue, Mar 24 2026</span>
+        <button class="btn btn-ghost">🔔</button>
+        <button class="btn btn-primary" onclick="openModal('new-assignment')">+ New Assignment</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="view active" id="view-dashboard">
+        <div class="stats-row">
+          <div class="stat-card red">
+            <div class="stat-label">Active Stories</div>
+            <div class="stat-num">12</div>
+            <div class="stat-sub">↑ 3 from last week</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">In Review</div>
+            <div class="stat-num">4</div>
+            <div class="stat-sub">2 need editor action</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Published</div>
+            <div class="stat-num">38</div>
+            <div class="stat-sub">this semester</div>
+          </div>
+          <div class="stat-card sky">
+            <div class="stat-label">Team Members</div>
+            <div class="stat-num">11</div>
+            <div class="stat-sub">across 4 sections</div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div>
+            <div class="section-header">
+              <div class="section-title">Recent Assignments</div>
+              <button class="btn btn-ghost" style="font-size:0.75rem" onclick="showView('assignments')">View all →</button>
+            </div>
+            <hr class="section-rule">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Story</th>
+                    <th>Reporter</th>
+                    <th>Status</th>
+                    <th>Deadline</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr onclick="showView('editor')" style="cursor:pointer">
+                    <td>
+                      <div class="story-title-cell">Budget cuts threaten athletics program</div>
+                      <div class="story-section">Campus News</div>
+                    </td>
+                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar green">JL</div><span style="font-size:0.78rem">Jamie Lee</span></div></td>
+                    <td><span class="badge badge-review">In Review</span></td>
+                    <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent)">Mar 25 ⚠</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="story-title-cell">Student housing crisis: a year in numbers</div>
+                      <div class="story-section">Investigations</div>
+                    </td>
+                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar amber">TP</div><span style="font-size:0.78rem">Taylor Park</span></div></td>
+                    <td><span class="badge badge-draft">Draft</span></td>
+                    <td style="font-family:var(--font-mono);font-size:0.72rem">Mar 28</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="story-title-cell">Spring theatre showcase: preview</div>
+                      <div class="story-section">Arts & Culture</div>
+                    </td>
+                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar sky">AK</div><span style="font-size:0.78rem">Alex Kim</span></div></td>
+                    <td><span class="badge badge-assigned">Assigned</span></td>
+                    <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="story-title-cell">Poll: Students weigh in on new campus policy</div>
+                      <div class="story-section">Campus News</div>
+                    </td>
+                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar">SR</div><span style="font-size:0.78rem">Sam Rivera</span></div></td>
+                    <td><span class="badge badge-published">Published</span></td>
+                    <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">Mar 22 ✓</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="story-title-cell">New library renovation: what students think</div>
+                      <div class="story-section">Campus News</div>
+                    </td>
+                    <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar green">JL</div><span style="font-size:0.78rem">Jamie Lee</span></div></td>
+                    <td><span class="badge badge-draft">Draft</span></td>
+                    <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 5</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-header">
+              <div class="section-title">Activity</div>
+            </div>
+            <hr class="section-rule">
+            <div class="panel" style="margin-bottom:16px">
+              <div class="panel-body" style="padding:14px">
+                <div class="activity-feed">
+                  <div class="activity-item">
+                    <div class="activity-dot" style="background:var(--accent2)">✓</div>
+                    <div>
+                      <div class="activity-text"><strong>Jamie Lee</strong> submitted draft for review</div>
+                      <div class="activity-time">12 min ago</div>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-dot" style="background:var(--amber)">✎</div>
+                    <div>
+                      <div class="activity-text"><strong>Maya R.</strong> left 3 comments on housing story</div>
+                      <div class="activity-time">1 hr ago</div>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-dot" style="background:var(--sky)">⊡</div>
+                    <div>
+                      <div class="activity-text"><strong>Alex Kim</strong> uploaded 4 photos to Media Library</div>
+                      <div class="activity-time">2 hrs ago</div>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-dot" style="background:var(--accent)">◈</div>
+                    <div>
+                      <div class="activity-text"><strong>Taylor Park</strong> created new assignment: Housing Crisis</div>
+                      <div class="activity-time">Yesterday</div>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-dot" style="background:var(--accent2)">✓</div>
+                    <div>
+                      <div class="activity-text"><strong>Sam Rivera</strong>'s story was published</div>
+                      <div class="activity-time">Yesterday</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><span class="panel-title">Section Progress</span></div>
+              <div class="panel-body">
+                <div style="margin-bottom:12px">
+                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px">
+                    <span>Campus News</span><span style="font-family:var(--font-mono);color:var(--muted)">5/7</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:71%;background:var(--accent)"></div></div>
+                </div>
+                <div style="margin-bottom:12px">
+                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px">
+                    <span>Investigations</span><span style="font-family:var(--font-mono);color:var(--muted)">2/4</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:50%;background:var(--sky)"></div></div>
+                </div>
+                <div style="margin-bottom:12px">
+                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px">
+                    <span>Arts & Culture</span><span style="font-family:var(--font-mono);color:var(--muted)">3/3</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--accent2)"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px">
+                    <span>Sports</span><span style="font-family:var(--font-mono);color:var(--muted)">1/4</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:25%;background:var(--amber)"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ASSIGNMENTS ── -->
+      <div class="view" id="view-assignments">
+        <div class="section-header" style="margin-bottom:16px">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span class="badge badge-assigned" style="cursor:pointer;padding:5px 12px">All</span>
+            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Assigned</span>
+            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Draft</span>
+            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">In Review</span>
+            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Published</span>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('new-assignment')">+ New Assignment</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Story Title</th>
+                <th>Section</th>
+                <th>Reporter</th>
+                <th>Status</th>
+                <th>Deadline</th>
+                <th>Words</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="showView('editor')" style="cursor:pointer">
+                <td><div class="story-title-cell">Budget cuts threaten athletics program</div></td>
+                <td><span class="badge badge-section">Campus News</span></td>
+                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar green">JL</div> Jamie Lee</div></td>
+                <td><span class="badge badge-review">In Review</span></td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent)">Mar 25</td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">842</td>
+                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px" onclick="event.stopPropagation();showView('editor')">Open</button></td>
+              </tr>
+              <tr>
+                <td><div class="story-title-cell">Student housing crisis: a year in numbers</div></td>
+                <td><span class="badge badge-section">Investigations</span></td>
+                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar amber">TP</div> Taylor Park</div></td>
+                <td><span class="badge badge-draft">Draft</span></td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">Mar 28</td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">1,204</td>
+                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
+              </tr>
+              <tr>
+                <td><div class="story-title-cell">Spring theatre showcase: preview</div></td>
+                <td><span class="badge badge-section">Arts</span></td>
+                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar sky">AK</div> Alex Kim</div></td>
+                <td><span class="badge badge-assigned">Assigned</span></td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 2</td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">0</td>
+                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
+              </tr>
+              <tr>
+                <td><div class="story-title-cell">Varsity soccer season preview</div></td>
+                <td><span class="badge badge-section">Sports</span></td>
+                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar">SR</div> Sam Rivera</div></td>
+                <td><span class="badge badge-draft">Draft</span></td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 4</td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">560</td>
+                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
+              </tr>
+              <tr>
+                <td><div class="story-title-cell">Student loan relief: what's changing</div></td>
+                <td><span class="badge badge-section">Campus News</span></td>
+                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar green">JL</div> Jamie Lee</div></td>
+                <td><span class="badge badge-assigned">Assigned</span></td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">Apr 6</td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">0</td>
+                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
+              </tr>
+              <tr>
+                <td><div class="story-title-cell">Faculty senate votes on grading reform</div></td>
+                <td><span class="badge badge-section">Campus News</span></td>
+                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar amber">TP</div> Taylor Park</div></td>
+                <td><span class="badge badge-review">In Review</span></td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent)">Mar 26</td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">990</td>
+                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">Open</button></td>
+              </tr>
+              <tr>
+                <td><div class="story-title-cell">Poll: Students weigh in on new campus policy</div></td>
+                <td><span class="badge badge-section">Campus News</span></td>
+                <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-avatar">SR</div> Sam Rivera</div></td>
+                <td><span class="badge badge-published">Published</span></td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">Mar 22 ✓</td>
+                <td style="font-family:var(--font-mono);font-size:0.72rem">720</td>
+                <td><button class="btn btn-outline" style="font-size:0.7rem;padding:4px 10px">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── KANBAN BOARD ── -->
+      <div class="view" id="view-board">
+        <div class="kanban-board">
+          <!-- Assigned -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title">Assigned</span>
+              <span class="kanban-count">3</span>
+            </div>
+            <div class="kanban-card sky" onclick="showView('editor')">
+              <div class="kanban-card-title">Spring theatre showcase: preview</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Arts</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar sky">AK</div> Alex Kim</div>
+                <span class="kanban-deadline">Apr 2</span>
+              </div>
+            </div>
+            <div class="kanban-card sky" onclick="showView('editor')">
+              <div class="kanban-card-title">Student loan relief: what's changing</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar green">JL</div> Jamie Lee</div>
+                <span class="kanban-deadline">Apr 6</span>
+              </div>
+            </div>
+            <div class="kanban-card sky" onclick="showView('editor')">
+              <div class="kanban-card-title">Homecoming parade coverage</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Sports</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar">SR</div> Sam Rivera</div>
+                <span class="kanban-deadline">Apr 10</span>
+              </div>
+            </div>
+          </div>
+          <!-- In Progress -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title">In Progress</span>
+              <span class="kanban-count">4</span>
+            </div>
+            <div class="kanban-card amber" onclick="showView('editor')">
+              <div class="kanban-card-title">Student housing crisis: a year in numbers</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Investigations</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar amber">TP</div> Taylor Park</div>
+                <span class="kanban-deadline">Mar 28</span>
+              </div>
+            </div>
+            <div class="kanban-card amber" onclick="showView('editor')">
+              <div class="kanban-card-title">Varsity soccer season preview</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Sports</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar">SR</div> Sam Rivera</div>
+                <span class="kanban-deadline">Apr 4</span>
+              </div>
+            </div>
+            <div class="kanban-card amber" onclick="showView('editor')">
+              <div class="kanban-card-title">New library renovation: what students think</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar green">JL</div> Jamie Lee</div>
+                <span class="kanban-deadline">Apr 5</span>
+              </div>
+            </div>
+            <div class="kanban-card amber" onclick="showView('editor')">
+              <div class="kanban-card-title">Profile: Dean of Students on her first year</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar sky">AK</div> Alex Kim</div>
+                <span class="kanban-deadline">Apr 7</span>
+              </div>
+            </div>
+          </div>
+          <!-- In Review -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title">In Review</span>
+              <span class="kanban-count">2</span>
+            </div>
+            <div class="kanban-card red" onclick="showView('editor')">
+              <div class="kanban-card-title">Budget cuts threaten athletics program</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar green">JL</div> Jamie Lee</div>
+                <span class="kanban-deadline overdue">Mar 25 ⚠</span>
+              </div>
+            </div>
+            <div class="kanban-card red" onclick="showView('editor')">
+              <div class="kanban-card-title">Faculty senate votes on grading reform</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar amber">TP</div> Taylor Park</div>
+                <span class="kanban-deadline overdue">Mar 26 ⚠</span>
+              </div>
+            </div>
+          </div>
+          <!-- Published -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title">Published</span>
+              <span class="kanban-count">3</span>
+            </div>
+            <div class="kanban-card green">
+              <div class="kanban-card-title">Poll: Students weigh in on new campus policy</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Campus News</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar">SR</div> Sam Rivera</div>
+                <span class="kanban-deadline">Mar 22</span>
+              </div>
+            </div>
+            <div class="kanban-card green">
+              <div class="kanban-card-title">End-of-semester mental health resources</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Features</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar amber">TP</div> Taylor Park</div>
+                <span class="kanban-deadline">Mar 18</span>
+              </div>
+            </div>
+            <div class="kanban-card green">
+              <div class="kanban-card-title">Campus café review: three new spots</div>
+              <div style="margin-bottom:6px"><span class="badge badge-section" style="font-size:0.6rem">Arts</span></div>
+              <div class="kanban-card-meta">
+                <div class="kanban-card-reporter"><div class="mini-avatar sky">AK</div> Alex Kim</div>
+                <span class="kanban-deadline">Mar 15</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STORY EDITOR ── -->
+      <div class="view" id="view-editor">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span class="badge badge-review">In Review</span>
+          <span style="font-size:0.75rem;color:var(--muted)">Assigned to: <strong>Jamie Lee</strong></span>
+          <div style="flex:1"></div>
+          <div class="autosave"><div class="autosave-dot" id="save-dot"></div><span id="save-status">Saved 2 min ago</span></div>
+          <div class="word-count" id="word-count-display">842 words</div>
+          <button class="btn btn-outline" style="font-size:0.75rem" onclick="submitReview()">Submit for Review</button>
+          <button class="btn btn-primary" style="font-size:0.75rem" onclick="publishStory()">Approve &amp; Publish</button>
+        </div>
+
+        <div class="deadline-strip">
+          ⚠ Deadline: <strong>March 25, 2026</strong> — Due tomorrow. Editor review pending.
+        </div>
+
+        <div class="editor-layout">
+          <div class="editor-main">
+            <div class="editor-header">
+              <input class="editor-title-input" id="story-title" value="Budget cuts threaten athletics program, sources say" />
+              <input class="editor-deck-input" id="story-deck" value="University administrators confirm a 15% reduction, leaving coaches and student-athletes uncertain about the coming year." />
+            </div>
+            <div class="editor-toolbar">
+              <button class="toolbar-btn active" onclick="toggleFormat(this,'bold')"><strong>B</strong></button>
+              <button class="toolbar-btn" onclick="toggleFormat(this,'italic')"><em>I</em></button>
+              <button class="toolbar-btn" onclick="toggleFormat(this,'underline')"><u>U</u></button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn" onclick="formatBlock('h2')">H2</button>
+              <button class="toolbar-btn" onclick="formatBlock('h3')">H3</button>
+              <button class="toolbar-btn" onclick="formatBlock('p')">P</button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn" onclick="formatBlock('blockquote')">" Quote</button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn" onclick="insertLink()">⌖ Link</button>
+              <button class="toolbar-btn" onclick="showToast('Photo inserted into story','info')">⊡ Photo</button>
+            </div>
+            <div class="editor-body">
+              <div id="story-content" contenteditable="true" oninput="handleEditorInput()">
+<p>University athletics officials confirmed Tuesday that the department will face a 15 percent budget reduction beginning next fall, a move administrators say is necessary to address broader financial shortfalls affecting multiple divisions.</p>
+
+<p>The cuts, which were quietly discussed in a January board meeting, would eliminate two junior varsity programs and reduce coaching staff by at least four full-time positions, according to three sources familiar with the deliberations who spoke on the condition of anonymity.</p>
+
+<h2>What's at stake</h2>
+
+<p>Head basketball coach Derek Monroe said his program would lose two assistant coaching positions under the proposed plan. "We're being asked to do more with less, and I'm not sure that's sustainable for our athletes," Monroe told The Pressroom in an interview Wednesday.</p>
+
+<blockquote>"The students who came here expecting a full athletic experience deserve better than this. We need answers, not budget lines." — student-athlete, junior</blockquote>
+
+<p>The women's volleyball and men's cross-country programs are among those facing potential elimination, sources said. The university's athletic director did not respond to multiple requests for comment.</p>
+
+<h2>Administrative response</h2>
+
+<p>Vice Provost for Finance Diane Chu said in a statement that the university is "exploring all options to maintain competitive programs while meeting our fiscal responsibilities." She declined to confirm specific cuts.</p>
+
+<p>The Student Government Association has called for an emergency town hall with university leadership, set for next Thursday at 5 p.m. in the Student Union.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="editor-sidebar">
+            <!-- Story metadata -->
+            <div class="panel">
+              <div class="panel-header"><span class="panel-title">Story Details</span></div>
+              <div class="panel-body">
+                <div class="meta-row">
+                  <span class="meta-key">Section</span>
+                  <span class="meta-val"><span class="badge badge-section">Campus News</span></span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">Reporter</span>
+                  <span class="meta-val" style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div class="mini-avatar green" style="width:20px;height:20px;font-size:0.6rem">JL</div>Jamie Lee</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">Editor</span>
+                  <span class="meta-val" style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div class="mini-avatar" style="width:20px;height:20px;font-size:0.6rem">MR</div>Maya Rodriguez</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">Status</span>
+                  <span class="meta-val"><span class="badge badge-review">In Review</span></span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">Deadline</span>
+                  <span class="meta-val" style="color:var(--accent)">Mar 25, 2026</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">Tags</span>
+                  <span class="meta-val"><span class="chip">budget</span><span class="chip">athletics</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Media -->
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Media</span>
+                <button class="btn btn-ghost" style="font-size:0.65rem;padding:2px 6px" onclick="showToast('Media library opened','info')">Browse</button>
+              </div>
+              <div class="panel-body">
+                <div class="media-grid">
+                  <div class="media-thumb">
+                    <div class="media-thumb-placeholder">🏟</div>
+                    <span class="media-type-badge">JPG</span>
+                  </div>
+                  <div class="media-thumb">
+                    <div class="media-thumb-placeholder">🎽</div>
+                    <span class="media-type-badge">JPG</span>
+                  </div>
+                </div>
+                <div class="upload-zone" onclick="showToast('Upload dialog opened','info')">
+                  + Drop files or click to upload
+                </div>
+              </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="panel">
+              <div class="panel-header"><span class="panel-title">Editor Comments</span><span class="nav-badge" style="background:var(--accent)">2</span></div>
+              <div class="panel-body">
+                <div class="comment">
+                  <div class="comment-header">
+                    <div class="mini-avatar" style="width:22px;height:22px;font-size:0.6rem">MR</div>
+                    <span class="comment-author">Maya R.</span>
+                    <span class="comment-time">1 hr ago</span>
+                  </div>
+                  <div class="comment-body">Great lede. Can you get a named source to confirm the specific programs being cut? Anonymous quotes are a last resort here.</div>
+                </div>
+                <div class="comment">
+                  <div class="comment-header">
+                    <div class="mini-avatar" style="width:22px;height:22px;font-size:0.6rem">MR</div>
+                    <span class="comment-author">Maya R.</span>
+                    <span class="comment-time">50 min ago</span>
+                  </div>
+                  <div class="comment-body">The SGA quote needs attribution. Also double-check the town hall date — I saw a conflict on the calendar.</div>
+                </div>
+                <div class="comment-input-row">
+                  <textarea class="comment-input" rows="2" placeholder="Add a comment…" id="new-comment"></textarea>
+                  <button class="btn btn-primary" style="font-size:0.72rem;padding:7px 10px;flex-shrink:0" onclick="addComment()">Send</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Version History -->
+            <div class="panel">
+              <div class="panel-header"><span class="panel-title">Version History</span></div>
+              <div class="panel-body">
+                <div class="version-item">
+                  <div class="version-dot current"></div>
+                  <div><div class="version-label">v4 — Current</div><div class="version-meta">Jamie Lee · 12 min ago</div></div>
+                </div>
+                <div class="version-item">
+                  <div class="version-dot"></div>
+                  <div><div class="version-label">v3 — Added SGA quote</div><div class="version-meta">Jamie Lee · 2 hrs ago</div></div>
+                </div>
+                <div class="version-item">
+                  <div class="version-dot"></div>
+                  <div><div class="version-label">v2 — First full draft</div><div class="version-meta">Jamie Lee · Yesterday</div></div>
+                </div>
+                <div class="version-item">
+                  <div class="version-dot"></div>
+                  <div><div class="version-label">v1 — Initial save</div><div class="version-meta">Jamie Lee · 2 days ago</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MEDIA LIBRARY ── -->
+      <div class="view" id="view-media">
+        <div class="section-header" style="margin-bottom:16px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--ink);color:var(--paper)">All</span>
+            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Photos</span>
+            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Videos</span>
+            <span class="badge" style="cursor:pointer;padding:5px 12px;background:var(--cream)">Documents</span>
+          </div>
+          <button class="btn btn-primary" onclick="showToast('Upload dialog opened','info')">+ Upload Media</button>
+        </div>
+        <div class="media-library">
+          <div class="media-card" onclick="showToast('Opening preview…','info')">
+            <div class="media-card-thumb" style="font-size:2.5rem">🏟</div>
+            <div class="media-card-info">
+              <div class="media-card-name">stadium_exterior.jpg</div>
+              <div class="media-card-meta">JPG · 2.4 MB · Jamie Lee</div>
+            </div>
+          </div>
+          <div class="media-card" onclick="showToast('Opening preview…','info')">
+            <div class="media-card-thumb" style="font-size:2.5rem">🎽</div>
+            <div class="media-card-info">
+              <div class="media-card-name">soccer_practice.jpg</div>
+              <div class="media-card-meta">JPG · 3.1 MB · Jamie Lee</div>
+            </div>
+          </div>
+          <div class="media-card" onclick="showToast('Opening preview…','info')">
+            <div class="media-card-thumb" style="font-size:2.5rem">🎬</div>
+            <div class="media-card-info">
+              <div class="media-card-name">coach_interview.mp4</div>
+              <div class="media-card-meta">MP4 · 84 MB · Alex Kim</div>
+            </div>
+          </div>
+          <div class="media-card" onclick="showToast('Opening preview…','info')">
+            <div class="media-card-thumb" style="font-size:2.5rem">📸</div>
+            <div class="media-card-info">
+              <div class="media-card-name">theatre_rehearsal.jpg</div>
+              <div class="media-card-meta">JPG · 1.8 MB · Alex Kim</div>
+            </div>
+          </div>
+          <div class="media-card" onclick="showToast('Opening preview…','info')">
+            <div class="media-card-thumb" style="font-size:2.5rem">📄</div>
+            <div class="media-card-info">
+              <div class="media-card-name">budget_doc_2026.pdf</div>
+              <div class="media-card-meta">PDF · 420 KB · Taylor Park</div>
+            </div>
+          </div>
+          <div class="media-card" onclick="showToast('Opening preview…','info')">
+            <div class="media-card-thumb" style="font-size:2.5rem">🏠</div>
+            <div class="media-card-info">
+              <div class="media-card-name">housing_survey.jpg</div>
+              <div class="media-card-meta">JPG · 2.2 MB · Taylor Park</div>
+            </div>
+          </div>
+          <div class="media-card" onclick="showToast('Opening preview…','info')">
+            <div class="media-card-thumb" style="font-size:2.5rem">🎤</div>
+            <div class="media-card-info">
+              <div class="media-card-name">vp_finance_audio.mp3</div>
+              <div class="media-card-meta">MP3 · 12 MB · Jamie Lee</div>
+            </div>
+          </div>
+          <div class="media-card" onclick="showToast('Opening preview…','info')">
+            <div class="media-card-thumb" style="font-size:2.5rem">📸</div>
+            <div class="media-card-info">
+              <div class="media-card-name">crosscountry_team.jpg</div>
+              <div class="media-card-meta">JPG · 3.8 MB · Sam Rivera</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TEAM ── -->
+      <div class="view" id="view-team">
+        <div class="section-header" style="margin-bottom:16px">
+          <div class="section-title">Team Members</div>
+          <button class="btn btn-primary" onclick="openModal('invite')">+ Invite Member</button>
+        </div>
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-avatar" style="background:var(--accent)">MR</div>
+            <div class="team-name">Maya Rodriguez</div>
+            <div class="team-role">Editor-in-Chief</div>
+            <div class="team-section">All sections</div>
+            <div class="team-stats">
+              <div class="team-stat"><div class="team-stat-num">38</div><div class="team-stat-label">Published</div></div>
+              <div class="team-stat"><div class="team-stat-num">4</div><div class="team-stat-label">In Review</div></div>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar" style="background:var(--accent2)">JL</div>
+            <div class="team-name">Jamie Lee</div>
+            <div class="team-role">Reporter</div>
+            <div class="team-section">Campus News · Investigations</div>
+            <div class="team-stats">
+              <div class="team-stat"><div class="team-stat-num">12</div><div class="team-stat-label">Published</div></div>
+              <div class="team-stat"><div class="team-stat-num">2</div><div class="team-stat-label">Active</div></div>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar" style="background:var(--amber)">TP</div>
+            <div class="team-name">Taylor Park</div>
+            <div class="team-role">Reporter</div>
+            <div class="team-section">Investigations · Features</div>
+            <div class="team-stats">
+              <div class="team-stat"><div class="team-stat-num">9</div><div class="team-stat-label">Published</div></div>
+              <div class="team-stat"><div class="team-stat-num">3</div><div class="team-stat-label">Active</div></div>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar" style="background:var(--sky)">AK</div>
+            <div class="team-name">Alex Kim</div>
+            <div class="team-role">Reporter</div>
+            <div class="team-section">Arts & Culture</div>
+            <div class="team-stats">
+              <div class="team-stat"><div class="team-stat-num">11</div><div class="team-stat-label">Published</div></div>
+              <div class="team-stat"><div class="team-stat-num">2</div><div class="team-stat-label">Active</div></div>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar" style="background:var(--muted)">SR</div>
+            <div class="team-name">Sam Rivera</div>
+            <div class="team-role">Reporter</div>
+            <div class="team-section">Sports · Campus News</div>
+            <div class="team-stats">
+              <div class="team-stat"><div class="team-stat-num">6</div><div class="team-stat-label">Published</div></div>
+              <div class="team-stat"><div class="team-stat-num">2</div><div class="team-stat-label">Active</div></div>
+            </div>
+          </div>
+          <div class="team-card" style="border:2px dashed var(--rule);background:transparent;justify-content:center;gap:10px;cursor:pointer;color:var(--muted)" onclick="openModal('invite')">
+            <div style="font-size:1.8rem">+</div>
+            <div style="font-size:0.82rem;font-weight:500">Invite a journalist</div>
+            <div style="font-size:0.7rem">Send a Google sign-in link</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── NEW ASSIGNMENT MODAL ── -->
+<div class="modal-overlay" id="modal-new-assignment">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">New Assignment</span>
+      <button class="btn btn-ghost" onclick="closeModal('new-assignment')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Story Headline</label>
+        <input class="form-input" placeholder="e.g. New parking policy draws student backlash" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Assignment Brief</label>
+        <textarea class="form-textarea" placeholder="What should the journalist cover? Key sources, angle, context…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Section</label>
+          <select class="form-select">
+            <option>Campus News</option>
+            <option>Investigations</option>
+            <option>Arts & Culture</option>
+            <option>Sports</option>
+            <option>Features</option>
+            <option>Opinion</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Assign To</label>
+          <select class="form-select">
+            <option>Jamie Lee</option>
+            <option>Taylor Park</option>
+            <option>Alex Kim</option>
+            <option>Sam Rivera</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Deadline</label>
+          <input class="form-input" type="date" value="2026-04-08" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Word Count Target</label>
+          <input class="form-input" type="number" placeholder="600" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('new-assignment')">Cancel</button>
+      <button class="btn btn-primary" onclick="createAssignment()">Create Assignment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── INVITE MODAL ── -->
+<div class="modal-overlay" id="modal-invite">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Invite Team Member</span>
+      <button class="btn btn-ghost" onclick="closeModal('invite')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Google Email Address</label>
+        <input class="form-input" type="email" placeholder="journalist@university.edu" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-select">
+            <option>Reporter</option>
+            <option>Section Editor</option>
+            <option>Editor-in-Chief</option>
+            <option>Photographer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Section</label>
+          <select class="form-select">
+            <option>Campus News</option>
+            <option>Investigations</option>
+            <option>Arts & Culture</option>
+            <option>Sports</option>
+            <option>All Sections</option>
+          </select>
+        </div>
+      </div>
+      <div style="background:var(--cream);border-radius:var(--radius);padding:12px;font-size:0.78rem;color:var(--muted)">
+        An invitation will be sent to their Google account. They'll sign in with Google — no separate password needed.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('invite')">Cancel</button>
+      <button class="btn btn-primary" onclick="sendInvite()">Send Invite</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-app -->
+
+<!-- ── TOAST CONTAINER ── -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ── Firebase SDK (loaded as ES modules) ── -->
+<script type="module">
+  import { initializeApp }                        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'
+  import { getAuth, signInWithEmailAndPassword,
+           signOut as fbSignOut, onAuthStateChanged,
+           sendPasswordResetEmail }               from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'
+  import { getFirestore, doc, getDoc, setDoc,
+           serverTimestamp }                      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'
+
+  // ════════════════════════════════════════════════════════════
+  // ▼▼▼  PASTE YOUR FIREBASE CONFIG HERE  ▼▼▼
+  //
+  // 1. Go to console.firebase.google.com
+  // 2. Open your project → Project Settings → Your Apps → Web app
+  // 3. Copy the firebaseConfig object and replace the block below
+  //
+  const firebaseConfig = {
+    apiKey:            "AIzaSyAbiUhGY6pr8JWopViJx5pL7xF6jTeM_ow",
+    authDomain:        "sgjc-newsroom.firebaseapp.com",
+    projectId:         "sgjc-newsroom",
+    storageBucket:     "sgjc-newsroom.firebasestorage.app",
+    messagingSenderId: "534667392424",
+    appId:             "1:534667392424:web:d704b38c997043b895d99d",
+    measurementId:     "G-J6J0793TQ1",
+  }
+  // ▲▲▲  END OF CONFIG  ▲▲▲
+  // ════════════════════════════════════════════════════════════
+
+  // ── Initialise Firebase ────────────────────────────────────
+  const app  = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
+  const db   = getFirestore(app)
+
+  // Avatar colour palette — assigned from first letter of display name
+  const AVATAR_COLORS = ['#c0392b','#2c6e49','#e67e22','#1a5276','#8e44ad','#7a7570','#16a085']
+  const avatarColor = name => AVATAR_COLORS[(name?.charCodeAt(0) || 0) % AVATAR_COLORS.length]
+  const initials    = name => (name || '?').split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase()
+
+  // ── Splash screen helpers ──────────────────────────────────
+  // While Firebase checks the auth session we show a full-screen
+  // splash so the user never sees a blank flash of the login form.
+  function showSplash() {
+    document.getElementById('splash-screen').style.display = 'flex'
+    document.getElementById('login-screen').style.display  = 'none'
+    document.getElementById('main-app').style.display      = 'none'
+  }
+  function hideSplash() {
+    document.getElementById('splash-screen').style.display = 'none'
+  }
+
+  // ── onAuthStateChanged — single source of truth ────────────
+  // Firebase calls this immediately on page load with the cached
+  // session (if any), so users who are already logged in go
+  // straight to the app without seeing the login form.
+  showSplash()
+
+  onAuthStateChanged(auth, async (firebaseUser) => {
+    hideSplash()
+    if (firebaseUser) {
+      // User is signed in — load their Firestore profile
+      let profile = await loadProfile(firebaseUser)
+      enterApp(firebaseUser, profile)
+    } else {
+      // No session — show login form
+      showLoginScreen()
+    }
+  })
+
+  // ── Load (or create) Firestore user profile ────────────────
+  async function loadProfile(firebaseUser) {
+    const ref  = doc(db, 'users', firebaseUser.uid)
+    const snap = await getDoc(ref)
+
+    if (snap.exists()) {
+      return snap.data()
+    }
+
+    // First sign-in: create profile with default reporter role.
+    // An editor-in-chief can promote them from the Firebase Console
+    // or from the Team page once you wire that up.
+    const profile = {
+      uid:       firebaseUser.uid,
+      name:      firebaseUser.displayName || firebaseUser.email.split('@')[0],
+      email:     firebaseUser.email,
+      role:      'reporter',        // default — promote in Firestore Console
+      section:   'Campus News',
+      createdAt: serverTimestamp(),
+    }
+    await setDoc(ref, profile)
+    return profile
+  }
+
+  // ── Show login screen ──────────────────────────────────────
+  function showLoginScreen() {
+    document.getElementById('main-app').style.display    = 'none'
+    document.getElementById('login-screen').style.display = 'flex'
+    document.getElementById('login-screen').style.animation = 'loginFadeIn 0.25s ease'
+    setTimeout(() => document.getElementById('login-email')?.focus(), 300)
+    setLoginLoading(false)
+  }
+
+  // ── Attempt login — called by Sign in button ───────────────
+  window.attemptLogin = async function() {
+    const emailEl = document.getElementById('login-email')
+    const pwEl    = document.getElementById('login-password')
+    const email   = emailEl.value.trim()
+    const pw      = pwEl.value
+
+    clearLoginError()
+
+    if (!email) { showLoginError('Please enter your email address.', 'email'); return }
+    if (!pw)    { showLoginError('Please enter your password.', 'password');   return }
+
+    setLoginLoading(true)
+
+    try {
+      // Firebase validates credentials, rate-limits brute force,
+      // and manages the session cookie automatically
+      await signInWithEmailAndPassword(auth, email, pw)
+      // onAuthStateChanged fires → enterApp() is called automatically
+    } catch (err) {
+      setLoginLoading(false)
+      switch (err.code) {
+        case 'auth/user-not-found':
+        case 'auth/invalid-email':
+          showLoginError('No account found for this email address.', 'email'); break
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          showLoginError('Incorrect password. Please try again.', 'password')
+          pwEl.value = ''
+          break
+        case 'auth/too-many-requests':
+          showLoginError('Too many failed attempts. Please wait a few minutes or reset your password.'); break
+        case 'auth/network-request-failed':
+          showLoginError('Network error. Check your connection and try again.'); break
+        default:
+          showLoginError('Sign-in failed. Please try again.')
+      }
+    }
+  }
+
+  // ── Forgot password — sends Firebase reset email ───────────
+  window.forgotPassword = async function() {
+    const email = document.getElementById('login-email').value.trim()
+    if (!email) {
+      showLoginError('Enter your email address above first, then click "Forgot password".', 'email')
+      return
+    }
+    try {
+      await sendPasswordResetEmail(auth, email)
+      showResetSent(email)
+    } catch (err) {
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-email') {
+        showLoginError('No account found for this email address.', 'email')
+      } else {
+        showLoginError('Could not send reset email. Please try again.')
+      }
+    }
+  }
+
+  // ── Sign out ───────────────────────────────────────────────
+  window.signOut = async function() {
+    if (!confirm('Sign out of The Pressroom?')) return
+    await fbSignOut(auth)
+    // onAuthStateChanged fires → showLoginScreen() called automatically
+  }
+
+  // ── Enter app after auth ───────────────────────────────────
+  function enterApp(firebaseUser, profile) {
+    // Populate sidebar
+    const name = profile.name || firebaseUser.displayName || firebaseUser.email
+    const role = profile.role || 'reporter'
+
+    const avatarEl = document.querySelector('.sidebar-user .avatar')
+    if (avatarEl) {
+      avatarEl.textContent         = initials(name)
+      avatarEl.style.background    = avatarColor(name)
+    }
+    const nameEl = document.querySelector('.sidebar-user .user-name')
+    if (nameEl) nameEl.textContent = name
+
+    const roleEl = document.querySelector('.sidebar-user .user-role')
+    if (roleEl) roleEl.textContent = role
+
+    // Apply role-based UI
+    applyRoleRestrictions(role)
+
+    // Show app
+    document.getElementById('login-screen').style.display = 'none'
+    const appEl = document.getElementById('main-app')
+    appEl.style.display = 'flex'
+    appEl.style.animation = 'loginFadeIn 0.2s ease'
+
+    // Welcome toast
+    const hour     = new Date().getHours()
+    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+    showToast(`${greeting}, ${name.split(' ')[0]} — welcome back.`, 'info')
+  }
+
+  // ── Role-based UI restrictions ─────────────────────────────
+  function applyRoleRestrictions(role) {
+    const isEditor = role === 'editor-in-chief' || role === 'editor'
+    if (!isEditor) {
+      document.querySelectorAll('.btn-primary').forEach(btn => {
+        if (btn.textContent.includes('New Assignment')) btn.style.display = 'none'
+      })
+      const publishBtn = document.querySelector('[onclick="publishStory()"]')
+      if (publishBtn) publishBtn.style.display = 'none'
+    }
+  }
+
+  // ── Login form helpers ─────────────────────────────────────
+  function setLoginLoading(loading) {
+    const btn     = document.getElementById('login-btn')
+    const spinner = document.getElementById('login-spinner')
+    const txt     = document.getElementById('login-btn-text')
+    if (!btn) return
+    btn.disabled          = loading
+    spinner.style.display = loading ? 'block' : 'none'
+    txt.textContent       = loading ? 'Signing in…' : 'Sign in to the newsroom'
+  }
+
+  function clearLoginError() {
+    const errEl = document.getElementById('login-error')
+    if (errEl) errEl.classList.remove('visible')
+    document.getElementById('login-email')?.classList.remove('error')
+    document.getElementById('login-password')?.classList.remove('error')
+  }
+
+  function showLoginError(msg, field) {
+    const errEl = document.getElementById('login-error')
+    const msgEl = document.getElementById('login-error-msg')
+    if (!errEl || !msgEl) return
+    msgEl.textContent = msg
+    errEl.classList.add('visible')
+    if (field === 'email')    document.getElementById('login-email')?.classList.add('error')
+    if (field === 'password') document.getElementById('login-password')?.classList.add('error')
+  }
+
+  function showResetSent(email) {
+    const errEl = document.getElementById('login-error')
+    const msgEl = document.getElementById('login-error-msg')
+    if (!errEl || !msgEl) return
+    errEl.style.background   = '#eafaf1'
+    errEl.style.borderColor  = '#a9dfbf'
+    errEl.style.color        = '#1e8449'
+    msgEl.textContent        = `Password reset email sent to ${email}. Check your inbox.`
+    errEl.classList.add('visible')
+  }
+
+  // ── Password show/hide toggle ──────────────────────────────
+  window.togglePw = function() {
+    const el  = document.getElementById('login-password')
+    const btn = document.getElementById('pw-toggle-btn')
+    if (!el) return
+    if (el.type === 'password') { el.type = 'text';     btn.textContent = 'Hide' }
+    else                        { el.type = 'password'; btn.textContent = 'Show' }
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // APP NAVIGATION & FEATURES
+  // (These run regardless of auth state — safe because the
+  //  entire #main-app div is hidden until login succeeds)
+  // ════════════════════════════════════════════════════════════
+
+  const views  = ['dashboard','assignments','board','editor','media','team']
+  const titles = {
+    dashboard:   'Daily Briefing',
+    assignments: 'All Assignments',
+    board:       'Story Board',
+    editor:      'Story Editor — Budget cuts threaten athletics program',
+    media:       'Media Library',
+    team:        'Team',
+  }
+
+  window.showView = function(name) {
+    views.forEach(v =>
+      document.getElementById('view-' + v)?.classList.toggle('active', v === name)
+    )
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'))
+    document.querySelectorAll('.nav-item').forEach(el => {
+      const t = el.textContent.trim().toLowerCase()
+      if (
+        (name === 'dashboard'    && t.includes('dashboard'))  ||
+        (name === 'assignments'  && t.includes('assign'))     ||
+        (name === 'board'        && t.includes('board'))      ||
+        (name === 'editor'       && t.includes('write'))      ||
+        (name === 'media'        && t.includes('media'))      ||
+        (name === 'team'         && t.includes('team'))
+      ) el.classList.add('active')
+    })
+    const titleEl = document.getElementById('topbar-title')
+    if (titleEl) titleEl.textContent = titles[name] || name
+  }
+
+  window.openModal  = name => document.getElementById('modal-' + name)?.classList.add('open')
+  window.closeModal = name => document.getElementById('modal-' + name)?.classList.remove('open')
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay =>
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open')
+    })
+  )
+
+  window.showToast = function(msg, type = 'success') {
+    const container = document.getElementById('toast-container')
+    if (!container) return
+    const toast = document.createElement('div')
+    toast.className = 'toast ' + type
+    toast.innerHTML = (type === 'success' ? '✓ ' : 'ℹ ') + msg
+    container.appendChild(toast)
+    setTimeout(() => toast.remove(), 3500)
+  }
+
+  window.toggleFormat = function(btn, cmd) {
+    document.execCommand(cmd, false, null)
+    btn.classList.toggle('active')
+    triggerAutosave()
+  }
+  window.formatBlock = function(tag) {
+    document.execCommand('formatBlock', false, tag)
+    triggerAutosave()
+  }
+  window.insertLink = function() {
+    const url = prompt('Enter URL:')
+    if (url) document.execCommand('createLink', false, url)
+  }
+
+  let saveTimer
+  function triggerAutosave() { handleEditorInput() }
+  window.handleEditorInput = function() {
+    const dot    = document.getElementById('save-dot')
+    const status = document.getElementById('save-status')
+    if (!dot || !status) return
+    dot.classList.add('saving')
+    status.textContent = 'Saving…'
+    clearTimeout(saveTimer)
+    saveTimer = setTimeout(() => {
+      dot.classList.remove('saving')
+      status.textContent = 'Saved just now'
+      updateWordCount()
+    }, 1500)
+    updateWordCount()
+  }
+
+  function updateWordCount() {
+    const el = document.getElementById('story-content')
+    if (!el) return
+    const words = (el.innerText || '').trim().split(/\s+/).filter(w => w).length
+    const display = document.getElementById('word-count-display')
+    if (display) display.textContent = words + ' words'
+  }
+
+  window.addComment     = function() {
+    const input = document.getElementById('new-comment')
+    if (!input?.value.trim()) return
+    showToast('Comment added', 'success')
+    input.value = ''
+  }
+  window.submitReview   = () => showToast('Story submitted for editor review', 'success')
+  window.publishStory   = () => showToast('Story approved and published ✓', 'success')
+  window.createAssignment = function() {
+    closeModal('new-assignment')
+    showToast('Assignment created and reporter notified', 'success')
+  }
+  window.sendInvite = function() {
+    closeModal('invite')
+    showToast('Invitation sent via email', 'success')
+  }
+</script>
+</body>
+</html>
