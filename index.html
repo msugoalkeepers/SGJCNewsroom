@@ -2000,7 +2000,7 @@ function renderEditorMedia(){
   const container=document.getElementById('ed-media')
   if(!container)return
   if(!sm.length){
-    container.innerHTML='<div style="text-align:center;padding:14px 8px"><div style="font-size:.72rem;color:var(--muted);margin-bottom:8px">No media attached yet</div><button class="btn btn-outline" style="font-size:.72rem" onclick="openModal(\'add-drive-media\')">+ Add from Google Drive</button></div>'
+    container.innerHTML=`<div style="text-align:center;padding:14px 8px"><div style="font-size:.72rem;color:var(--muted);margin-bottom:8px">No media attached yet</div><button class="btn btn-outline" style="font-size:.72rem" onclick="openModal('add-drive-media')">+ Add from Google Drive</button></div>`
     return
   }
   const thumbs=sm.slice(0,4).map(m=>{
@@ -2344,13 +2344,17 @@ function renderNotifs(){
   const list=document.getElementById('notif-list')
   if(!NOTIFICATIONS.length){list.innerHTML='<div class="notif-empty">All caught up ✓</div>';return}
   list.innerHTML=NOTIFICATIONS.map(n=>{
-    // Pending access notifications take you straight to Team page
     const isPendingAlert=n.message?.toLowerCase().includes('requested access')
-    return`<div class="notif-item" onclick="${isPendingAlert?"nav('team');":""}markRead('${n.id}')">
-      ${isPendingAlert?'<div style="font-size:.6rem;font-family:var(--fm);color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">⏳ Approval needed → go to Team</div>':''}
-      <div>${esc(n.message)}</div>
-      <div class="notif-time">${n.createdAt?.toDate?n.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div>
-    </div>`
+    const onclick=isPendingAlert
+      ?`onclick="nav('team');markRead('${n.id}')"`
+      :`onclick="markRead('${n.id}')"`
+    const badge=isPendingAlert
+      ?'<div style="font-size:.6rem;font-family:var(--fm);color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">⏳ Approval needed → go to Team</div>'
+      :''
+    const time=n.createdAt?.toDate
+      ?n.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})
+      :''
+    return`<div class="notif-item" ${onclick}>${badge}<div>${esc(n.message)}</div><div class="notif-time">${time}</div></div>`
   }).join('')
 }
 document.addEventListener('click',e=>{if(!document.getElementById('notif-btn').contains(e.target)&&!document.getElementById('notif-drop').contains(e.target))document.getElementById('notif-drop').classList.remove('open')})
