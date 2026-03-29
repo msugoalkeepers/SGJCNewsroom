@@ -1141,6 +1141,7 @@ window.nav=function(view){
   if(view==='calendar')renderCalendar()
   if(view==='archive')renderArchive()
   if(view==='rundown')renderRundownView()
+  if(view==='team'){renderTeam();renderPendingApprovals()}
 }
 
 // ── FIRESTORE SUBSCRIPTIONS ──
@@ -1159,10 +1160,11 @@ function subscribeTeam(){
     const all=snap.docs.map(d=>({id:d.id,...d.data()}))
     TEAM=all.filter(u=>u.status!=='pending')
     PENDING_USERS=all.filter(u=>u.status==='pending')
-    renderTeam();populateReporterSelects()
+    renderTeam();renderPendingApprovals();populateReporterSelects()
     document.getElementById('ds-team').textContent=TEAM.length
     const pc=PENDING_USERS.length,nb=document.getElementById('nb-pending')
-    pc&&isEIC()?(nb.style.display='',nb.textContent=pc):nb.style.display='none'
+    const canSeeApprovals=isEIC()||isEditor()||isProducer()
+    pc&&canSeeApprovals?(nb.style.display='',nb.textContent=pc):nb.style.display='none'
   })
 }
 function subscribeMedia(){
@@ -1840,23 +1842,67 @@ window.openLightbox=mediaId=>{
 window.closeLightbox=()=>document.getElementById('lightbox').classList.remove('open')
 
 // ── TEAM ──
+function renderPendingApprovals(){
+  const canApprove=isEIC()||isEditor()||isProducer()
+  const pa=document.getElementById('pending-approvals-section')
+  if(!pa)return
+  if(!canApprove){pa.style.display='none';return}
+  if(!PENDING_USERS.length){
+    pa.style.display='none'
+    return
+  }
+  pa.style.display=''
+  pa.innerHTML=`<div style="background:#fdf2e9;border:1px solid #f0a070;border-radius:var(--rl);padding:16px 18px;margin-bottom:20px">
+    <div style="font-family:var(--fd);font-size:.95rem;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:9px;color:#784212">
+      ⏳ Pending Approvals
+      <span style="background:var(--amber);color:white;font-size:.6rem;font-family:var(--fm);padding:2px 7px;border-radius:10px">${PENDING_USERS.length}</span>
+    </div>
+    <div style="font-size:.75rem;color:#a04000;margin-bottom:14px">
+      These people have signed in and are waiting for access. Select their role and section, then click Approve.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${PENDING_USERS.map(u=>`
+        <div style="background:var(--white);border:1px solid #f0a070;border-radius:var(--rl);padding:13px 16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+          <div class="avatar" style="width:40px;height:40px;font-size:.9rem;background:${aColor(u.name)};flex-shrink:0">${inits(u.name)}</div>
+          <div style="flex:1;min-width:150px">
+            <div style="font-weight:600;font-size:.86rem">${esc(u.name)}</div>
+            <div style="font-size:.72rem;color:var(--muted);font-family:var(--fm)">${esc(u.email)}</div>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:2px">
+              Requested ${u.createdAt?.toDate?u.createdAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'recently'}
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;flex-shrink:0">
+            <div>
+              <div style="font-size:.58rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px">Role</div>
+              <select id="approve-role-${u.id}" class="form-select" style="font-size:.78rem;padding:6px 9px;width:165px">
+                <option value="reporter">Reporter</option>
+                <option value="section-editor">Section Editor</option>
+                <option value="producer">Producer</option>
+                <option value="editor">Editor</option>
+                ${isEIC()?'<option value="editor-in-chief">Editor-in-Chief</option>':''}
+              </select>
+            </div>
+            <div>
+              <div style="font-size:.58rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px">Section</div>
+              <select id="approve-section-${u.id}" class="form-select" style="font-size:.78rem;padding:6px 9px;width:150px">
+                <option>Campus News</option><option>Investigations</option>
+                <option>Arts &amp; Culture</option><option>Sports</option>
+                <option>Features</option><option>Opinion</option><option>All Sections</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-primary" style="padding:7px 16px" onclick="approveUser('${u.id}','${esc(u.name)}')">Approve</button>
+              <button class="btn btn-danger" style="padding:7px 14px" onclick="denyUser('${u.id}','${esc(u.name)}')">Deny</button>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`
+}
+
 function renderTeam(){
   document.getElementById('team-count').textContent=`${TEAM.length} member${TEAM.length!==1?'s':''} in the newsroom`
-  // Pending approvals
-  const pa=document.getElementById('pending-approvals-section')
-  if(isEIC()&&PENDING_USERS.length){
-    pa.style.display=''
-    pa.innerHTML=`<div style="font-family:var(--fd);font-size:.95rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:9px">Pending Approvals<span style="background:var(--amber);color:white;font-size:.6rem;font-family:var(--fm);padding:2px 7px;border-radius:10px">${PENDING_USERS.length}</span></div>
-    <div style="display:flex;flex-direction:column;gap:7px">${PENDING_USERS.map(u=>`
-      <div style="background:var(--white);border:1px solid #f0a070;border-radius:var(--rl);padding:13px 16px;display:flex;align-items:center;gap:13px">
-        <div class="avatar" style="width:38px;height:38px;font-size:.9rem;background:${aColor(u.name)};flex-shrink:0">${inits(u.name)}</div>
-        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.84rem">${esc(u.name)}</div><div style="font-size:.7rem;color:var(--muted);font-family:var(--fm)">${esc(u.email)}</div></div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          <button class="btn btn-primary" style="font-size:.72rem;padding:5px 12px" onclick="approveUser('${u.id}','${esc(u.name)}')">Approve</button>
-          <button class="btn btn-danger" style="font-size:.72rem;padding:5px 12px" onclick="denyUser('${u.id}','${esc(u.name)}')">Deny</button>
-        </div>
-      </div>`).join('')}</div>`
-  }else pa.style.display='none'
+  renderPendingApprovals()
   // Workload
   document.getElementById('workload-view').innerHTML=TEAM.map(u=>{
     const active=ASSIGNMENTS.filter(a=>a.assignedTo===u.id&&['assigned','draft','review'].includes(a.status)).length
@@ -1888,14 +1934,33 @@ function renderTeam(){
         <div style="text-align:center"><div class="team-stat-num">${pub}</div><div class="team-stat-lbl">Published</div></div>
         <div style="text-align:center"><div class="team-stat-num">${active}</div><div class="team-stat-lbl">Active</div></div>
       </div>
-      ${isEIC()&&!isMe?`<button class="btn btn-ghost" style="font-size:.67rem;color:var(--muted);margin-top:3px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change role</button>`:''}
+      ${(isEIC()||isEditor())&&!isMe?`<button class="btn btn-ghost" style="font-size:.67rem;color:var(--muted);margin-top:3px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change role</button>`:''}
     </div>`
   }).join('')
   document.getElementById('team-grid').innerHTML=cards+`<div class="team-card invite-card" onclick="openModal('invite')"><div style="font-size:1.8rem">+</div><div style="font-size:.8rem;font-weight:500">Invite a journalist</div><div style="font-size:.68rem">Share the newsroom link</div></div>`
 }
 window.approveUser=async(uid,name)=>{
-  try{await updateDoc(doc(db,'users',uid),{status:'approved',updatedAt:serverTimestamp()});await addDoc(collection(db,'notifications'),{userId:uid,message:'Your access to The Pressroom has been approved! Welcome to the team.',type:'success',read:false,createdAt:serverTimestamp()});toast(`${name} approved ✓`)}
-  catch(e){toast('Approval failed','error')}
+  // Read the role and section chosen by the approver
+  const roleEl=document.getElementById(`approve-role-${uid}`)
+  const sectionEl=document.getElementById(`approve-section-${uid}`)
+  const role=roleEl?.value||'reporter'
+  const section=sectionEl?.value||'Campus News'
+  try{
+    await updateDoc(doc(db,'users',uid),{
+      status:'approved',
+      role,
+      section,
+      approvedBy:ME.uid,
+      approvedAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+    })
+    await addDoc(collection(db,'notifications'),{
+      userId:uid,
+      message:`✓ Your access to The Pressroom has been approved! You've been added as ${role}. Welcome to the team.`,
+      type:'success',read:false,createdAt:serverTimestamp()
+    })
+    toast(`${name} approved as ${role} ✓`)
+  }catch(e){toast('Approval failed — check your connection','error');console.error(e)}
 }
 window.denyUser=async(uid,name)=>{
   if(!await confirm2('Deny Access',`Deny ${name}'s request?`))return
@@ -1923,7 +1988,15 @@ window.markRead=async id=>await updateDoc(doc(db,'notifications',id),{read:true}
 function renderNotifs(){
   const list=document.getElementById('notif-list')
   if(!NOTIFICATIONS.length){list.innerHTML='<div class="notif-empty">All caught up ✓</div>';return}
-  list.innerHTML=NOTIFICATIONS.map(n=>`<div class="notif-item" onclick="markRead('${n.id}')"><div>${esc(n.message)}</div><div class="notif-time">${n.createdAt?.toDate?n.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div></div>`).join('')
+  list.innerHTML=NOTIFICATIONS.map(n=>{
+    // Pending access notifications take you straight to Team page
+    const isPendingAlert=n.message?.toLowerCase().includes('requested access')
+    return`<div class="notif-item" onclick="${isPendingAlert?"nav('team');":""}markRead('${n.id}')">
+      ${isPendingAlert?'<div style="font-size:.6rem;font-family:var(--fm);color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">⏳ Approval needed → go to Team</div>':''}
+      <div>${esc(n.message)}</div>
+      <div class="notif-time">${n.createdAt?.toDate?n.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div>
+    </div>`
+  }).join('')
 }
 document.addEventListener('click',e=>{if(!document.getElementById('notif-btn').contains(e.target)&&!document.getElementById('notif-drop').contains(e.target))document.getElementById('notif-drop').classList.remove('open')})
 
