@@ -584,7 +584,7 @@ tr:hover td{background:var(--paper)}
                 <button class="toolbar-btn" onclick="fmtBlock('blockquote')">" Quote</button>
                 <div class="toolbar-sep"></div>
                 <button class="toolbar-btn" onclick="fmtLink()">⌖ Link</button>
-                <label class="toolbar-btn" style="cursor:pointer">⊡ Photo<input type="file" accept="image/*" style="display:none" onchange="insertPhoto(this)"></label>
+                <button class="toolbar-btn" onclick="insertDrivePhoto()" title="Insert photo from Google Drive link">⊡ Photo</button>
                 <div class="toolbar-sep"></div>
                 <button class="toolbar-btn" onclick="insertMention()" title="@mention a team member">@ Mention</button>
               </div>
@@ -619,7 +619,7 @@ tr:hover td{background:var(--paper)}
               </div>
               <div class="panel">
                 <div class="panel-hdr"><span class="panel-title">Media</span>
-                  <label class="btn btn-ghost" style="font-size:.67rem;padding:2px 7px;cursor:pointer">+ Upload<input type="file" accept="image/*,video/*,audio/*,.pdf" multiple style="display:none" onchange="uploadStoryMedia(this)"></label>
+                  <button class="btn btn-ghost" style="font-size:.67rem;padding:2px 7px" onclick="openModal('add-drive-media')">+ Add</button>
                 </div>
                 <div class="panel-body" id="ed-media"></div>
               </div>
@@ -677,11 +677,7 @@ tr:hover td{background:var(--paper)}
             <button class="btn btn-outline" style="font-size:.67rem;padding:4px 11px;border-radius:20px" onclick="filterMedia('document',this)">Docs</button>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <div id="upload-global-status" style="display:none;font-size:.76rem;color:var(--muted)">Uploading… <span id="upload-global-pct">0</span>%
-              <div class="upload-bar" style="height:4px;width:80px;display:inline-block;vertical-align:middle;margin-left:6px"><div class="upload-fill" id="upload-global-fill" style="width:0%"></div></div>
-            </div>
-            <label class="btn btn-outline" style="cursor:pointer">⊡ Upload Photo<input type="file" multiple accept="image/*" style="display:none" onchange="uploadLibraryMedia(this)"></label>
-            <button class="btn btn-primary" onclick="openModal('add-media-link')">+ Add Link</button>
+            <button class="btn btn-primary" onclick="openModal('add-media-link')">+ Add Media Link</button>
           </div>
         </div>
         <div class="media-grid" id="media-library-grid"><div class="empty-state" style="grid-column:1/-1"><div class="spinner"></div></div></div>
@@ -973,7 +969,8 @@ tr:hover td{background:var(--paper)}
     <div class="modal-hdr"><span class="modal-title">Add Media</span><button class="modal-close" onclick="closeModal('add-media-link')">✕</button></div>
     <div class="modal-body">
       <div style="background:var(--cream);border-radius:var(--r);padding:11px 13px;font-size:.76rem;color:var(--muted);line-height:1.6;margin-bottom:16px">
-        Paste a link to any media hosted online — YouTube, Vimeo, Google Drive, Dropbox, SoundCloud, or a direct image URL. Photos can also be uploaded directly using the Upload Photo button.
+        Paste a link to media hosted anywhere — Google Drive, YouTube, Vimeo, SoundCloud, or a direct image URL.<br><br>
+        <strong style="color:var(--ink)">For Google Drive:</strong> Right-click file → Share → "Anyone with the link" → Copy link.
       </div>
       <div class="form-group"><label class="form-label">File Name / Title</label><input class="form-input" id="ml-name" placeholder="e.g. Coach interview clip"></div>
       <div class="form-group"><label class="form-label">URL / Link</label><input class="form-input" id="ml-url" placeholder="https://youtube.com/watch?v=… or direct image URL" oninput="previewMediaLink()"></div>
@@ -992,6 +989,39 @@ tr:hover td{background:var(--paper)}
       </div>
     </div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('add-media-link')">Cancel</button><button class="btn btn-primary" onclick="saveMediaLink()">Add to Library</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-drive-media" onclick="if(event.target===this)closeModal('add-drive-media')">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Add Media from Google Drive</span><button class="modal-close" onclick="closeModal('add-drive-media')">✕</button></div>
+    <div class="modal-body">
+      <div style="background:var(--cream);border-radius:var(--r);padding:11px 13px;font-size:.76rem;color:var(--muted);line-height:1.65;margin-bottom:16px">
+        <strong style="color:var(--ink)">How to get a Google Drive link:</strong><br>
+        1. Upload your file to Google Drive<br>
+        2. Right-click it → <em>Share</em> → set to <em>"Anyone with the link"</em><br>
+        3. Click <em>Copy link</em> and paste it below
+      </div>
+      <div class="form-group"><label class="form-label">File Name</label><input class="form-input" id="dm-name" placeholder="e.g. Game day photo"></div>
+      <div class="form-group"><label class="form-label">Google Drive Link</label><input class="form-input" id="dm-url" placeholder="https://drive.google.com/file/d/…" oninput="previewDriveLink()"></div>
+      <div id="dm-preview" style="margin-top:10px;display:none">
+        <img id="dm-preview-img" style="max-width:100%;max-height:140px;border-radius:var(--r);border:1px solid var(--rule);display:none">
+        <div id="dm-preview-note" style="font-size:.72rem;color:var(--accent2);margin-top:5px;display:none">✓ Image preview loaded</div>
+        <div id="dm-preview-link" style="background:var(--cream);border-radius:var(--r);padding:8px 11px;font-size:.74rem;color:var(--muted);display:none"></div>
+      </div>
+      <div class="form-group" style="margin-top:14px"><label class="form-label">Type</label>
+        <select class="form-select" id="dm-type">
+          <option value="image">Photo / Image</option>
+          <option value="video">Video</option>
+          <option value="audio">Audio</option>
+          <option value="document">Document / PDF</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('add-drive-media')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDriveMedia()">Add to Story</button>
+    </div>
   </div>
 </div>
 
@@ -1727,32 +1757,73 @@ function setSaveStatus(s){
 window.fmt=cmd=>{document.execCommand(cmd,false,null);onEditorInput()}
 window.fmtBlock=tag=>{document.execCommand('formatBlock',false,tag);onEditorInput()}
 window.fmtLink=()=>{const u=prompt('Enter URL:');if(u)document.execCommand('createLink',false,u);onEditorInput()}
-window.insertPhoto=async input=>{
-  const file=input.files[0];if(!file)return
-  const strip=document.getElementById('upload-progress-strip'),fill=document.getElementById('upload-fill')
-  strip.style.display='';fill.style.width='20%'
-  try{
-    const formData=new FormData()
-    formData.append('image',file)
-    formData.append('key',IMGBB_KEY)
-    fill.style.width='50%'
-    const res=await fetch('https://api.imgbb.com/1/upload',{method:'POST',body:formData})
-    fill.style.width='85%'
-    if(!res.ok)throw new Error('Upload failed')
-    const data=await res.json()
-    if(!data.success)throw new Error(data.error?.message||'Upload rejected')
-    const url=data.data.url
-    fill.style.width='100%'
-    document.execCommand('insertImage',false,url)
-    strip.style.display='none'
-    onEditorInput()
-    toast('Photo inserted ✓')
-  }catch(e){
-    toast('Photo upload failed — try again','error')
-    strip.style.display='none'
-    console.error('insertPhoto error:',e)
+// ── Google Drive link helper ──────────────────────────
+// Converts any Google Drive share URL to a direct displayable URL
+function driveToDirectURL(url){
+  if(!url)return null
+  // Format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+  const m=url.match(/\/d\/([a-zA-Z0-9_-]{10,})/)
+  if(m)return`https://drive.google.com/uc?export=view&id=${m[1]}`
+  // Already a direct link or other format — return as-is
+  return url
+}
+
+// Toolbar "⊡ Photo" button — prompts for a Drive link and inserts image inline
+window.insertDrivePhoto=()=>{
+  const raw=prompt('Paste your Google Drive share link\n(Right-click file in Drive → Share → "Anyone with link" → Copy link):')
+  if(!raw||!raw.trim())return
+  const url=driveToDirectURL(raw.trim())
+  if(!url){toast('Could not parse that link — paste the full Google Drive share URL','error');return}
+  document.execCommand('insertImage',false,url)
+  onEditorInput()
+  toast('Photo inserted ✓')
+}
+
+// ── Story editor media panel ──────────────────────────
+window.uploadStoryMedia=async input=>{for(const f of Array.from(input.files))await doUpload(f,CURRENT_STORY?.id);input.value=''}
+
+// Drive link modal for story editor media panel
+window.previewDriveLink=()=>{
+  const raw=document.getElementById('dm-url').value.trim()
+  const preview=document.getElementById('dm-preview')
+  const img=document.getElementById('dm-preview-img')
+  const note=document.getElementById('dm-preview-note')
+  const lnk=document.getElementById('dm-preview-link')
+  if(!raw){preview.style.display='none';return}
+  preview.style.display=''
+  const url=driveToDirectURL(raw)
+  const type=document.getElementById('dm-type').value
+  if(type==='image'||/\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(raw)){
+    img.src=url;img.style.display='';note.style.display='';lnk.style.display='none'
+    img.onerror=()=>{img.style.display='none';note.style.display='none';lnk.textContent='Link saved (preview not available for this file type)';lnk.style.display=''}
+  }else{
+    img.style.display='none';note.style.display='none'
+    lnk.textContent=url.slice(0,80)+(url.length>80?'…':'');lnk.style.display=''
   }
-  input.value=''
+}
+window.saveDriveMedia=async()=>{
+  const name=document.getElementById('dm-name').value.trim()
+  const raw=document.getElementById('dm-url').value.trim()
+  if(!name){toast('Enter a file name','error');return}
+  if(!raw){toast('Paste a Google Drive link','error');return}
+  try{new URL(raw)}catch{toast('Enter a valid URL starting with https://','error');return}
+  const url=driveToDirectURL(raw)
+  const cat=document.getElementById('dm-type').value
+  try{
+    await addDoc(collection(db,'media'),{
+      name,downloadURL:url,thumbURL:url,deleteURL:null,path:null,
+      mimeType:cat==='image'?'image/jpeg':cat==='video'?'video/mp4':cat==='audio'?'audio/mpeg':'application/pdf',
+      category:cat,size:0,
+      storyId:CURRENT_STORY?.id||null,
+      uploadedById:ME.uid,uploadedByName:ME.name,
+      uploadedAt:serverTimestamp()
+    })
+    closeModal('add-drive-media')
+    document.getElementById('dm-name').value=''
+    document.getElementById('dm-url').value=''
+    document.getElementById('dm-preview').style.display='none'
+    toast('Media added ✓')
+  }catch(e){toast('Could not save media','error');console.error(e)}
 }
 
 // @Mention system
@@ -1928,14 +1999,14 @@ window.restoreVersion=async i=>{
 }
 function renderEditorMedia(){
   const sm=MEDIA_ALL.filter(m=>m.storyId===CURRENT_STORY?.id),container=document.getElementById('ed-media')
-  if(!sm.length){container.innerHTML='<label class="upload-zone" style="padding:12px;display:block;text-align:center;font-size:.72rem;cursor:pointer">Drop files or click to upload<input type="file" accept="image/*,video/*,audio/*,.pdf" multiple style="display:none" onchange="uploadStoryMedia(this)"></label>';return}
+  if(!sm.length){container.innerHTML='<div style=\"text-align:center;padding:14px 8px\"><div style=\"font-size:.72rem;color:var(--muted);margin-bottom:8px\">No media attached yet</div><button class=\"btn btn-outline\" style=\"font-size:.72rem\" onclick=\"openModal(\\'add-drive-media\\')\">+ Add from Google Drive</button></div>';return}
   container.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px">${sm.slice(0,4).map(m=>`
     <div style="aspect-ratio:16/10;background:var(--cream);border-radius:var(--r);border:1px solid var(--rule);overflow:hidden;position:relative;cursor:pointer" onclick="openLightbox('${m.id}')">
       ${m.category==='image'?`<img src="${m.downloadURL}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`:
         `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.4rem">${m.category==='video'?'🎬':m.category==='audio'?'🎤':'📄'}</div>`}
       <span class="media-type-badge">${m.mimeType?.split('/')[1]?.split(';')[0]||m.category}</span>
     </div>`).join('')}</div>
-  <label class="upload-zone" style="padding:7px 13px;display:block;text-align:center;font-size:.7rem;cursor:pointer">+ Add files<input type="file" accept="image/*,video/*,audio/*,.pdf" multiple style="display:none" onchange="uploadStoryMedia(this)"></label>`
+  <button class=\"btn btn-ghost\" style=\"width:100%;font-size:.7rem;justify-content:center\" onclick=\"openModal('add-drive-media')\">+ Add from Google Drive</button>\`
 }
 window.uploadStoryMedia=async input=>{for(const f of Array.from(input.files))await doUpload(f,CURRENT_STORY?.id);input.value=''}
 
@@ -2027,74 +2098,6 @@ function renderMediaLibrary(){
         </div>
       </div>
     </div>`}).join('')
-}
-window.uploadLibraryMedia=async input=>{for(const f of Array.from(input.files))await doUpload(f,null);input.value=''}
-
-// ImgBB free image hosting — no Firebase Storage needed, no credit card
-const IMGBB_KEY='5f49b50f0c5e3e3a4b6f8d2c1e9a7b3d' // free public API key
-async function doUpload(file,storyId){
-  if(!file.type.startsWith('image/')){
-    toast('Use "+ Add Link" for video, audio and documents','info')
-    return
-  }
-  const bar=document.getElementById('upload-global-status')
-  const pct=document.getElementById('upload-global-pct')
-  const fill=document.getElementById('upload-global-fill')
-  if(bar){bar.style.display='';if(pct)pct.textContent='0';if(fill)fill.style.width='0%'}
-
-  try{
-    // Show progress animation while uploading
-    let prog=0
-    const ticker=setInterval(()=>{
-      prog=Math.min(prog+8,90)
-      if(pct)pct.textContent=prog
-      if(fill)fill.style.width=prog+'%'
-    },200)
-
-    const formData=new FormData()
-    formData.append('image',file)
-    formData.append('key',IMGBB_KEY)
-    formData.append('name',file.name)
-
-    const res=await fetch('https://api.imgbb.com/1/upload',{method:'POST',body:formData})
-    clearInterval(ticker)
-
-    if(!res.ok){
-      const txt=await res.text()
-      throw new Error(`ImgBB error ${res.status}: ${txt.slice(0,120)}`)
-    }
-    const data=await res.json()
-    if(!data.success)throw new Error(data.error?.message||'Upload rejected by ImgBB')
-
-    if(pct)pct.textContent='100'
-    if(fill)fill.style.width='100%'
-
-    const url=data.data.url
-    const thumb=data.data.thumb?.url||url
-    const deleteUrl=data.data.delete_url||null
-
-    await addDoc(collection(db,'media'),{
-      name:file.name,
-      downloadURL:url,
-      thumbURL:thumb,
-      deleteURL:deleteUrl,
-      path:null, // no Firebase Storage path
-      mimeType:file.type,
-      category:'image',
-      size:file.size,
-      storyId:storyId||null,
-      uploadedById:ME.uid,
-      uploadedByName:ME.name,
-      uploadedAt:serverTimestamp()
-    })
-
-    if(bar)bar.style.display='none'
-    toast(`${file.name} uploaded ✓`)
-  }catch(e){
-    console.error('Upload error:',e)
-    if(bar)bar.style.display='none'
-    toast(`Upload failed: ${e.message}`,'error')
-  }
 }
 
 // Add any media by link (video, audio, PDF, Google Drive, etc.)
