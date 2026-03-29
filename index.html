@@ -1198,13 +1198,34 @@ window.nav=function(view){
 
 // ── FIRESTORE SUBSCRIPTIONS ──
 function subscribeAssignments(){
-  let q=isEditor()?query(collection(db,'assignments'),orderBy('createdAt','desc')):isSectionEditor()?query(collection(db,'assignments'),where('section','==',ME.section),orderBy('createdAt','desc')):query(collection(db,'assignments'),where('assignedTo','==',ME.uid),orderBy('createdAt','desc'))
+  // Editors and section editors use orderBy which works without a composite index
+  // on their queries. Reporters use a simple where() only — no orderBy — to avoid
+  // requiring a composite index that may not exist yet. We sort client-side instead.
+  let q
+  if(isEditor()){
+    q=query(collection(db,'assignments'),orderBy('createdAt','desc'))
+  }else if(isSectionEditor()){
+    q=query(collection(db,'assignments'),where('section','==',ME.section))
+  }else{
+    // Reporter — simple single-field query, no composite index needed
+    q=query(collection(db,'assignments'),where('assignedTo','==',ME.uid))
+  }
   onSnapshot(q,snap=>{
-    ASSIGNMENTS=snap.docs.map(d=>({id:d.id,...d.data()}))
+    // Sort client-side by createdAt descending so reporters see newest first
+    ASSIGNMENTS=snap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>{
+        const ta=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
+        const tb=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
+        return tb-ta
+      })
     renderDashboard();renderAssignments();renderBoard();renderArchive();renderCalendar()
     const mine=ASSIGNMENTS.filter(a=>a.assignedTo===ME.uid&&['assigned','draft'].includes(a.status))
     const nb=document.getElementById('nb-assign')
     mine.length?(nb.style.display='',nb.textContent=mine.length):nb.style.display='none'
+  },err=>{
+    // Log the error so it's visible in DevTools if Firestore rules block it
+    console.error('Assignment subscription error:',err.code,err.message)
   })
 }
 function subscribeTeam(){
@@ -1227,13 +1248,22 @@ function subscribeMedia(){
   })
 }
 function subscribeNotifs(){
-  const q=query(collection(db,'notifications'),where('userId','==',ME.uid),where('read','==',false),orderBy('createdAt','desc'),limit(20))
+  // Use single where() to avoid composite index requirement, filter and sort client-side
+  const q=query(collection(db,'notifications'),where('userId','==',ME.uid),limit(50))
   onSnapshot(q,snap=>{
-    NOTIFICATIONS=snap.docs.map(d=>({id:d.id,...d.data()}))
+    NOTIFICATIONS=snap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .filter(n=>!n.read)
+      .sort((a,b)=>{
+        const ta=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
+        const tb=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
+        return tb-ta
+      })
+      .slice(0,20)
     const dot=document.getElementById('notif-dot')
     NOTIFICATIONS.length?(dot.style.display='flex',dot.textContent=NOTIFICATIONS.length):dot.style.display='none'
     renderNotifs()
-  })
+  },err=>console.error('Notifications error:',err.code,err.message))
 }
 async function notify(uid,msg,type='info'){
   if(!uid||uid===ME.uid)return
@@ -1501,8 +1531,15 @@ window.openEditor=async assignId=>{
     document.getElementById('editor-loading').style.display='none'
     document.getElementById('editor-inner').style.display='block'
     storyUnsub=onSnapshot(doc(db,'stories',storyId),snap=>{if(snap.exists()){CURRENT_STORY={id:snap.id,...snap.data()};renderVersionHistory()}})
-    commentUnsub=onSnapshot(query(collection(db,'comments'),where('storyId','==',storyId),orderBy('createdAt','asc')),snap=>renderComments(snap.docs.map(d=>({id:d.id,...d.data()}))))
-    sourceUnsub=onSnapshot(query(collection(db,'sources'),where('storyId','==',storyId),orderBy('createdAt','asc')),snap=>{CURRENT_SOURCES=snap.docs.map(d=>({id:d.id,...d.data()}));renderSources()})
+    // Single where() only — sort client-side to avoid composite index requirement
+    commentUnsub=onSnapshot(query(collection(db,'comments'),where('storyId','==',storyId)),snap=>{
+      const sorted=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{const ta=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0),tb=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0);return ta-tb})
+      renderComments(sorted)
+    })
+    sourceUnsub=onSnapshot(query(collection(db,'sources'),where('storyId','==',storyId)),snap=>{
+      CURRENT_SOURCES=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{const ta=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0),tb=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0);return ta-tb})
+      renderSources()
+    })
   }catch(e){console.error(e);toast('Failed to load story','error')}
 }
 
