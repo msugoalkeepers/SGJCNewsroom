@@ -428,7 +428,7 @@ tr:hover td{background:var(--paper)}
     <div style="font-family:var(--fd);font-size:1.4rem;font-weight:700;margin-bottom:8px">Access Pending</div>
     <div style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:22px">Your account has been created. An editor-in-chief needs to approve your access before you can enter the newsroom.</div>
     <div style="background:var(--cream);border-radius:var(--r);padding:12px 14px;font-size:.76rem;color:var(--muted);margin-bottom:22px" id="pending-user-info"></div>
-    <button onclick="doSignOut()" style="background:none;border:1px solid var(--rule);border-radius:var(--r);padding:8px 18px;font-family:var(--fb);font-size:.8rem;color:var(--muted);cursor:pointer">Sign out</button>
+    <button onclick="pendingSignOut()" style="background:none;border:1px solid var(--rule);border-radius:var(--r);padding:8px 18px;font-family:var(--fb);font-size:.8rem;color:var(--muted);cursor:pointer">Sign out</button>
   </div>
 </div>
 
@@ -1044,10 +1044,21 @@ document.getElementById('tb-date').textContent=new Date().toLocaleDateString('en
 onAuthStateChanged(auth,async user=>{
   document.getElementById('splash').style.display='none'
   if(user){
-    try{ME=await loadProfile(user)}catch(e){console.error(e);ME={uid:user.uid,name:user.displayName||user.email,email:user.email,role:'reporter',section:'Campus News',status:'pending'}}
+    try{
+      ME=await loadProfile(user)
+    }catch(e){
+      console.error('Profile load error:',e)
+      // If Firestore fails, still show login — don't leave user stuck
+      showLogin()
+      return
+    }
     if(ME.status==='pending')showPending()
     else startApp()
-  }else showLogin()
+  }else{
+    // Signed out — always show login, never spin
+    ME=null
+    showLogin()
+  }
 })
 
 async function loadProfile(user){
@@ -1095,8 +1106,21 @@ window.doForgot=async()=>{
   }catch(e){showLoginErr(e.code?.includes('user')||e.code?.includes('email')?'No account found for this email.':'Could not send reset email.','email')}
 }
 window.doSignOut=async()=>{
-  if(!await confirm2('Sign out','Sign out of The Pressroom?'))return
-  await fbSignOut(auth);showLogin()
+  // Use native browser confirm — avoids dependency on app DOM elements
+  if(!window.confirm('Sign out of The Pressroom?'))return
+  try{
+    await fbSignOut(auth)
+    showLogin()
+  }catch(e){
+    console.error('Sign out error:',e)
+    // Force it even if Firebase errors
+    showLogin()
+  }
+}
+// Separate sign out for pending screen — no confirm needed, just sign them out
+window.pendingSignOut=async()=>{
+  try{await fbSignOut(auth)}catch(e){console.error(e)}
+  showLogin()
 }
 window.togglePw=()=>{const el=document.getElementById('li-pw'),b=el.nextElementSibling;el.type=el.type==='password'?'text':'password';b.textContent=el.type==='password'?'Show':'Hide'}
 function showLogin(){document.getElementById('app').style.display='none';document.getElementById('pending-screen').style.display='none';const ls=document.getElementById('login-screen');ls.style.display='flex';ls.style.animation='fadeIn .25s ease';setLoginLoading(false);setTimeout(()=>document.getElementById('li-email')?.focus(),300)}
