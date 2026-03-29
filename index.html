@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Pressroom — SGJC Newsroom</title>
+<title>Goalkeepers Pressroom — MSU SGJC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -16,10 +16,47 @@
   --fd:'Playfair Display',Georgia,serif;
   --fb:'DM Sans',sans-serif;--fm:'IBM Plex Mono',monospace;
   --r:4px;--rl:8px;
+  --app-font-size:15px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{font-size:15px}
+html{font-size:var(--app-font-size)}
 body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ── GRAMMAR CHECK ── */
+.grammar-issue{background:#fef9e7;border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:10px 13px;margin-bottom:8px;font-size:.8rem}
+.grammar-issue:last-child{margin-bottom:0}
+.grammar-issue-type{font-size:.6rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:3px}
+.grammar-issue-msg{font-weight:500;margin-bottom:4px}
+.grammar-issue-context{font-size:.75rem;color:var(--muted);font-style:italic;margin-bottom:6px}
+.grammar-suggestion{display:inline-block;background:var(--white);border:1px solid var(--rule);border-radius:var(--r);padding:2px 8px;font-size:.72rem;margin-right:4px;margin-bottom:3px;cursor:pointer;transition:all .15s}
+.grammar-suggestion:hover{background:var(--accent2);color:white;border-color:var(--accent2)}
+.grammar-ok{display:flex;align-items:center;gap:10px;padding:18px;color:var(--accent2);font-size:.84rem}
+
+/* ── EDITOR MARKUP ── */
+#story-content .editor-change{color:#c0392b;background:rgba(192,57,43,.06);border-radius:2px;padding:0 1px}
+#story-content .editor-deletion{color:#c0392b;text-decoration:line-through;opacity:.6}
+.markup-mode-banner{background:#fdf2e9;border:1px solid #f0a070;border-radius:var(--r);padding:7px 12px;font-size:.74rem;color:#784212;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.markup-toggle{display:flex;align-items:center;gap:6px;font-size:.72rem;font-family:var(--fm);color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:var(--r);border:1px solid var(--rule);background:transparent;transition:all .15s}
+.markup-toggle.active{background:#fdedec;color:var(--accent);border-color:#f5b7b1}
+
+/* ── CALENDAR ADDITIONS ── */
+.cal-event.assignment{background:#e67e22!important;color:white}
+.cal-event.holiday{background:#6c3483;color:white}
+.cal-event.custom{background:#1a5276;color:white}
+.cal-event.worldcup{background:#145a32;color:white}
+.cal-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:.68rem;font-family:var(--fm)}
+.cal-legend-item{display:flex;align-items:center;gap:4px}
+.cal-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── FONT SIZE SLIDER ── */
+.font-slider-wrap{display:flex;align-items:center;gap:6px;font-size:.7rem;font-family:var(--fm);color:var(--muted)}
+.font-slider-wrap input[type=range]{width:70px;accent-color:var(--accent);cursor:pointer}
+
+/* ── SEGMENT VIEWER MODAL ── */
+.seg-detail-row{display:flex;padding:9px 0;border-bottom:1px solid var(--cream);font-size:.82rem;gap:12px}
+.seg-detail-row:last-child{border-bottom:none}
+.seg-detail-label{width:130px;flex-shrink:0;font-size:.68rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:2px}
+.seg-detail-value{flex:1;line-height:1.5}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -394,13 +431,13 @@ tr:hover td{background:var(--paper)}
 <body>
 
 <!-- SPLASH -->
-<div id="splash"><div class="splash-title">The Pressroom</div><div class="splash-spin"></div></div>
+<div id="splash"><div class="splash-title">Goalkeepers Pressroom</div><div class="splash-spin"></div></div>
 
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="login-masthead">The Pressroom</div>
-    <div class="login-sub">SGJC Student Newsroom</div>
+    <div class="login-masthead">Goalkeepers Pressroom</div>
+    <div class="login-sub">MSU SGJC Student Newsroom for the Black SoccerLab</div>
     <div class="login-rule"></div>
     <div class="login-err" id="login-err"><span>✕</span><span id="login-err-msg"></span></div>
     <button class="g-btn" id="g-btn" onclick="signInGoogle()">
@@ -435,7 +472,7 @@ tr:hover td{background:var(--paper)}
 <!-- APP -->
 <div id="app">
   <aside class="sidebar">
-    <div class="sb-logo"><div class="sb-masthead">The Pressroom</div><div class="sb-edition">SGJC Student Newsroom</div></div>
+    <div class="sb-logo"><div class="sb-masthead">Goalkeepers Pressroom</div><div class="sb-edition">MSU SGJC · Black SoccerLab</div></div>
     <div class="sb-user">
       <div class="avatar" id="sb-avatar" style="width:29px;height:29px;font-size:.68rem"></div>
       <div><div class="sb-name" id="sb-name">Loading…</div><div class="sb-role" id="sb-role">reporter</div></div>
@@ -464,6 +501,11 @@ tr:hover td{background:var(--paper)}
     <header class="topbar">
       <div class="tb-title" id="tb-title">Daily Briefing</div>
       <div class="tb-date" id="tb-date"></div>
+      <div class="font-slider-wrap" title="Adjust font size">
+        <span style="font-size:.65rem">A</span>
+        <input type="range" min="12" max="20" value="15" step="1" id="font-slider" oninput="setFontSize(this.value)">
+        <span style="font-size:.85rem">A</span>
+      </div>
       <div class="notif-wrap">
         <button class="notif-btn" onclick="toggleNotifs()" id="notif-btn">🔔</button>
         <div class="notif-dot" id="notif-dot" style="display:none">0</div>
@@ -557,6 +599,7 @@ tr:hover td{background:var(--paper)}
             <span class="badge" id="ed-status-badge">draft</span>
             <span style="font-size:.73rem;color:var(--muted)">Reporter: <strong id="ed-reporter-name"></strong></span>
             <div style="flex:1"></div>
+            <button id="btn-markup-toggle" class="markup-toggle" onclick="toggleMarkupMode()" style="display:none" title="Toggle editor markup — your changes appear in red for the reporter">✏ Editor Markup</button>
             <div class="save-status"><div class="save-dot" id="save-dot"></div><span id="save-status-txt">Saved</span></div>
             <span style="font-size:.62rem;font-family:var(--fm);color:var(--muted)" id="word-count-display">0 words</span>
             <span id="read-receipt-info" style="font-size:.62rem;font-family:var(--fm);color:var(--accent2);display:none"></span>
@@ -566,6 +609,7 @@ tr:hover td{background:var(--paper)}
             <button class="btn btn-outline" id="btn-unlock" onclick="unlockStory()" style="display:none;font-size:.73rem">Unlock</button>
           </div>
           <div class="locked-banner" id="locked-banner" style="display:none">🔒 This story is published and locked. Only an editor-in-chief can unlock it.</div>
+          <div class="markup-mode-banner" id="markup-banner" style="display:none">✏ Editor Markup Mode — your changes will appear in <strong style="color:var(--accent)">red</strong> so the reporter can see what was edited.</div>
           <div class="editor-layout">
             <div>
               <div class="card" style="border-bottom:none;border-radius:var(--rl) var(--rl) 0 0;padding:14px 18px">
@@ -587,6 +631,8 @@ tr:hover td{background:var(--paper)}
                 <button class="toolbar-btn" onclick="insertDrivePhoto()" title="Insert photo from Google Drive link">⊡ Photo</button>
                 <div class="toolbar-sep"></div>
                 <button class="toolbar-btn" onclick="insertMention()" title="@mention a team member">@ Mention</button>
+                <div class="toolbar-sep"></div>
+                <button class="toolbar-btn" onclick="runGrammarCheck()" id="btn-grammar" title="Check spelling and grammar">✓ Grammar</button>
               </div>
               <div class="word-progress-wrap">
                 <span style="font-size:.62rem;font-family:var(--fm);color:var(--muted);white-space:nowrap" id="word-progress-label">0 / 0 words</span>
@@ -595,7 +641,7 @@ tr:hover td{background:var(--paper)}
               </div>
               <div class="upload-progress-strip" id="upload-progress-strip"><div class="upload-bar"><div class="upload-fill" id="upload-fill" style="width:0%"></div></div></div>
               <div class="editor-body" style="position:relative">
-                <div id="story-content" contenteditable="true" oninput="onEditorInput(event)" onkeyup="checkMention(event)"></div>
+                <div id="story-content" contenteditable="true" spellcheck="true" oninput="onEditorInput(event)" onkeyup="checkMention(event)"></div>
                 <div class="mention-dropdown" id="mention-dropdown"></div>
               </div>
             </div>
@@ -650,6 +696,15 @@ tr:hover td{background:var(--paper)}
           <div class="cal-title" id="cal-title"></div>
           <button class="btn btn-outline" onclick="calNav(1)">→</button>
           <button class="btn btn-ghost" onclick="calNav(0)" style="margin-left:4px">Today</button>
+          <div style="flex:1"></div>
+          <button class="btn btn-outline" onclick="openModal('add-cal-event')" style="font-size:.76rem">+ Add Event</button>
+          <label class="btn btn-outline" style="cursor:pointer;font-size:.76rem" title="Import .ics calendar file">⊕ Import .ics<input type="file" accept=".ics" style="display:none" onchange="importICS(this)"></label>
+        </div>
+        <div class="cal-legend">
+          <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#e67e22"></div>Assignments</div>
+          <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#6c3483"></div>U.S. Holidays</div>
+          <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#145a32"></div>World Cup 2026</div>
+          <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#1a5276"></div>Custom Events</div>
         </div>
         <div class="cal-grid" id="cal-grid"></div>
       </div>
@@ -992,6 +1047,73 @@ tr:hover td{background:var(--paper)}
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-grammar" onclick="if(event.target===this)closeModal('grammar')">
+  <div class="modal" style="width:600px">
+    <div class="modal-hdr">
+      <div>
+        <span class="modal-title">Grammar &amp; Spelling Check</span>
+        <div id="grammar-summary" style="font-size:.72rem;color:var(--muted);margin-top:3px"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('grammar')">✕</button>
+    </div>
+    <div class="modal-body" id="grammar-results" style="max-height:420px;overflow-y:auto">
+      <div style="display:flex;justify-content:center;padding:24px"><div class="spinner"></div></div>
+    </div>
+    <div class="modal-footer">
+      <div style="flex:1;font-size:.72rem;color:var(--muted)">Powered by LanguageTool — checks grammar, spelling, punctuation, and style.</div>
+      <button class="btn btn-outline" onclick="closeModal('grammar')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-cal-event" onclick="if(event.target===this)closeModal('add-cal-event')">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title" id="cal-event-modal-title">Add Calendar Event</span><button class="modal-close" onclick="closeModal('add-cal-event')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Event Title</label><input class="form-input" id="ce-title" placeholder="e.g. Spring Break, Staff Meeting"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="ce-date"></div>
+        <div class="form-group"><label class="form-label">End Date (optional)</label><input class="form-input" type="date" id="ce-end-date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Time (optional)</label><input class="form-input" type="time" id="ce-time"></div>
+        <div class="form-group"><label class="form-label">Type</label>
+          <select class="form-select" id="ce-type">
+            <option value="custom">Custom Event</option>
+            <option value="holiday">Holiday / No School</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="ce-notes" rows="2" placeholder="Optional details…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('add-cal-event')">Cancel</button><button class="btn btn-primary" onclick="saveCalEvent()">Add to Calendar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-view-segment" onclick="if(event.target===this)closeModal('view-segment')">
+  <div class="modal" style="width:600px">
+    <div class="modal-hdr">
+      <div>
+        <span class="modal-title" id="vseg-title">Segment Detail</span>
+        <div id="vseg-type-badge" style="margin-top:4px"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('view-segment')">✕</button>
+    </div>
+    <div class="modal-body" id="vseg-body"></div>
+    <div class="modal-footer" id="vseg-footer">
+      <button class="btn btn-outline" onclick="closeModal('view-segment')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-view-cal-event" onclick="if(event.target===this)closeModal('view-cal-event')">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title" id="vce-title">Event Detail</span><button class="modal-close" onclick="closeModal('view-cal-event')">✕</button></div>
+    <div class="modal-body" id="vce-body"></div>
+    <div class="modal-footer" id="vce-footer"><button class="btn btn-outline" onclick="closeModal('view-cal-event')">Close</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-add-drive-media" onclick="if(event.target===this)closeModal('add-drive-media')">
   <div class="modal">
     <div class="modal-hdr"><span class="modal-title">Add Media from Google Drive</span><button class="modal-close" onclick="closeModal('add-drive-media')">✕</button></div>
@@ -1203,7 +1325,7 @@ window.doForgot=async()=>{
 }
 window.doSignOut=async()=>{
   // Use native browser confirm — avoids dependency on app DOM elements
-  if(!window.confirm('Sign out of The Pressroom?'))return
+  if(!window.confirm('Sign out of Goalkeepers Pressroom?'))return
   try{
     await fbSignOut(auth)
     showLogin()
@@ -1241,7 +1363,7 @@ function startApp(){
   ;['btn-new-assign-sb','btn-new-assign2'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=canCreate?'':'none'})
   document.getElementById('btn-templates').style.display=canCreate?'':'none'
   // Subscriptions
-  subscribeAssignments();subscribeTeam();subscribeMedia();subscribeNotifs();subscribeRundowns()
+  subscribeAssignments();subscribeTeam();subscribeMedia();subscribeNotifs();subscribeRundowns();subscribeCalendarEvents()
   const h=new Date().getHours()
   toast(`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${ME.name.split(' ')[0]} — welcome back.`,'info')
 }
@@ -1689,6 +1811,15 @@ function renderEditorUI(){
   document.getElementById('btn-publish').style.display=isEIC()&&a.status==='review'?'':'none'
   document.getElementById('btn-unlock').style.display=isEIC()&&locked?'':'none'
   document.getElementById('locked-banner').style.display=locked?'':'none'
+  // Show markup toggle for editors/EIC when story is in review
+  const markupBtn=document.getElementById('btn-markup-toggle')
+  if(markupBtn)markupBtn.style.display=(isEditor()||isEIC())&&a.status==='review'?'':'none'
+  // Reset markup mode when opening a new story
+  markupModeOn=false
+  if(markupBtn)markupBtn.classList.remove('active')
+  if(markupBtn)markupBtn.textContent='✏ Editor Markup'
+  document.getElementById('markup-banner').style.display='none'
+  if(document.getElementById('story-content'))document.getElementById('story-content').dataset.markup=''
   // Read receipt info for editors
   if(isEditor()&&a.readAt){
     const rr=document.getElementById('read-receipt-info')
@@ -2025,14 +2156,38 @@ function renderCalendar(){
   const grid=document.getElementById('cal-grid')
   const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
   let html=days.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('')
+
+  // Combine all event sources for this month
+  const allStaticEvents=[...US_HOLIDAYS,...WC2026,...WC2026_BASES].map((e,i)=>({...e,_hardcoded:true,_tempId:`hc-${i}`}))
+  const allEvents=[...allStaticEvents,...CALENDAR_EVENTS]
+
   for(let i=0;i<startDay;i++)html+=`<div class="cal-day other-month"></div>`
   for(let d=1;d<=last.getDate();d++){
     const date=new Date(calYear,calMonth,d)
     const isToday=date.toDateString()===today.toDateString()
-    const dayAssigns=ASSIGNMENTS.filter(a=>{if(!a.deadline)return false;const dd=new Date(a.deadline);return dd.getDate()===d&&dd.getMonth()===calMonth&&dd.getFullYear()===calYear})
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+
+    // Assignments due this day
+    const dayAssigns=ASSIGNMENTS.filter(a=>{if(!a.deadline)return false;const dd=new Date(a.deadline+'T12:00:00');return dd.getDate()===d&&dd.getMonth()===calMonth&&dd.getFullYear()===calYear})
+    // Other events on this day
+    const dayEvents=allEvents.filter(e=>{
+      if(!e.date)return false
+      if(e.date===dateStr)return true
+      // Multi-day events
+      if(e.endDate&&e.endDate>=dateStr&&e.date<=dateStr)return true
+      return false
+    })
+
+    const assignHTML=dayAssigns.map(a=>`<div class="cal-event assignment" onclick="event.stopPropagation();viewCalEvent('${a.id}',true)" title="${esc(a.title||'')}">${esc((a.title||'Untitled').slice(0,16))}</div>`).join('')
+    const eventHTML=dayEvents.map(e=>{
+      const id=e.id||e._tempId
+      const cls=e.type==='holiday'?'holiday':e.type==='worldcup'?'worldcup':'custom'
+      return`<div class="cal-event ${cls}" onclick="event.stopPropagation();viewCalEvent('${id}',false)" title="${esc(e.title)}">${esc(e.title.slice(0,16))}</div>`
+    }).join('')
+
     html+=`<div class="cal-day${isToday?' today':''}">
       <div class="cal-day-num">${d}</div>
-      ${dayAssigns.map(a=>`<div class="cal-event ${a.status}" onclick="openEditor('${a.id}')" title="${esc(a.title||'Untitled')}">${esc((a.title||'Untitled').slice(0,18))}</div>`).join('')}
+      ${assignHTML}${eventHTML}
     </div>`
   }
   grid.innerHTML=html
@@ -2297,7 +2452,7 @@ window.approveUser=async(uid,name)=>{
     })
     await addDoc(collection(db,'notifications'),{
       userId:uid,
-      message:`✓ Your access to The Pressroom has been approved! You've been added as ${role}. Welcome to the team.`,
+      message:`✓ Your access to Goalkeepers Pressroom has been approved! You've been added as ${role}. Welcome to the team.`,
       type:'success',read:false,createdAt:serverTimestamp()
     })
     toast(`${name} approved as ${role} ✓`)
@@ -2330,8 +2485,8 @@ window.sendInvite=()=>{
   const email=document.getElementById('inv-email').value.trim()
   if(!email){toast('Enter an email address','error');return}
   const role=document.getElementById('inv-role').value,section=document.getElementById('inv-section').value
-  const sub=encodeURIComponent('Invitation to join The Pressroom — SGJC Newsroom')
-  const body=encodeURIComponent(`Hi,\n\nYou've been invited to join The Pressroom, the SGJC student newsroom, as a ${role}.\n\nVisit the link below and sign in with your Google account:\nhttps://msugoalkeepers.github.io/SGJCNewsroom/\n\nYour section: ${section}\n\nSee you in the newsroom!\n${ME.name}`)
+  const sub=encodeURIComponent('Invitation to join Goalkeepers Pressroom — MSU SGJC')
+  const body=encodeURIComponent(`Hi,\n\nYou've been invited to join Goalkeepers Pressroom, the MSU SGJC student newsroom for the Black SoccerLab, as a ${role}.\n\nVisit the link below and sign in with your Google account:\nhttps://msugoalkeepers.github.io/SGJCNewsroom/\n\nYour section: ${section}\n\nSee you in the newsroom!\n${ME.name}`)
   window.open(`mailto:${email}?subject=${sub}&body=${body}`)
   closeModal('invite');document.getElementById('inv-email').value='';toast(`Invite email opened for ${email} ✓`)
 }
@@ -2497,7 +2652,7 @@ function renderActiveRundown(){
     const cls=typeClass[seg.type]||'seg-VO'
     const btSecs=seg._backtime
     const btOver=btSecs<0
-    return`<tr class="seg-row" id="segrow-${seg.id}" draggable="${canBuild}" ondragstart="rdDragStart(event,'${seg.id}')" ondragover="rdDragOver(event,'${seg.id}')" ondrop="rdDrop(event,'${seg.id}')" ondragend="rdDragEnd()">
+    return`<tr class="seg-row" id="segrow-${seg.id}" draggable="${canBuild}" ondragstart="rdDragStart(event,'${seg.id}')" ondragover="rdDragOver(event,'${seg.id}')" ondrop="rdDrop(event,'${seg.id}')" ondragend="rdDragEnd()" onclick="viewSegment('${seg.id}')" style="cursor:pointer" title="Click to view full segment details">
       <td class="seg-drag-handle" style="cursor:${canBuild?'grab':'default'}">${canBuild?'⠿':''}</td>
       <td class="seg-time" style="color:var(--muted)">${idx+1}</td>
       <td class="seg-cell"><span class="seg-type ${cls}">${esc(seg.type||'VO')}</span></td>
@@ -2517,8 +2672,8 @@ function renderActiveRundown(){
       <td class="seg-cell"><div style="font-size:.74rem;color:${seg.liveLocation?'var(--accent)':'var(--muted)'};font-weight:${seg.liveLocation?600:400}">${esc(seg.liveLocation||'—')}</div></td>
       <td class="seg-cell">
         ${canBuild?`<div style="display:flex;gap:3px">
-          <button onclick="editSegment('${seg.id}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.76rem;padding:2px 4px" title="Edit">✎</button>
-          <button onclick="deleteSegment('${seg.id}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.76rem;padding:2px 4px" title="Delete">✕</button>
+          <button onclick="event.stopPropagation();editSegment('${seg.id}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.76rem;padding:2px 4px" title="Edit">✎</button>
+          <button onclick="event.stopPropagation();deleteSegment('${seg.id}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.76rem;padding:2px 4px" title="Delete">✕</button>
         </div>`:''}
       </td>
     </tr>`
@@ -2704,6 +2859,412 @@ window.openModal=id=>{
 // ── Producer badge ────────────────────────────────────
 // Extend renderTeam badge to include producer
 // (badge-producer CSS class already defined above)
+
+// ══════════════════════════════════════════════════════
+// FONT SIZE
+// ══════════════════════════════════════════════════════
+window.setFontSize=size=>{
+  document.documentElement.style.setProperty('--app-font-size',size+'px')
+  localStorage.setItem('pressroom-font-size',size)
+}
+// Restore saved font size on load
+;(()=>{const saved=localStorage.getItem('pressroom-font-size');if(saved){document.documentElement.style.setProperty('--app-font-size',saved+'px');const sl=document.getElementById('font-slider');if(sl)sl.value=saved}})()
+
+// ══════════════════════════════════════════════════════
+// EDITOR MARKUP MODE
+// ══════════════════════════════════════════════════════
+let markupModeOn=false
+window.toggleMarkupMode=()=>{
+  markupModeOn=!markupModeOn
+  const btn=document.getElementById('btn-markup-toggle')
+  const banner=document.getElementById('markup-banner')
+  const content=document.getElementById('story-content')
+  if(markupModeOn){
+    btn.classList.add('active')
+    btn.textContent='✏ Markup ON'
+    banner.style.display=''
+    // Override the execCommand behavior to wrap new text in red spans
+    content.dataset.markup='on'
+  }else{
+    btn.classList.remove('active')
+    btn.textContent='✏ Editor Markup'
+    banner.style.display='none'
+    content.dataset.markup=''
+  }
+}
+// Intercept typing in markup mode to wrap in red spans
+document.addEventListener('keydown',e=>{
+  const content=document.getElementById('story-content')
+  if(!content||content.dataset.markup!=='on')return
+  // Only intercept printable characters, not ctrl/cmd combos
+  if(e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){
+    e.preventDefault()
+    const sel=window.getSelection()
+    if(!sel.rangeCount)return
+    const range=sel.getRangeAt(0)
+    range.deleteContents()
+    const span=document.createElement('span')
+    span.className='editor-change'
+    span.textContent=e.key
+    range.insertNode(span)
+    // Move cursor after the span
+    const newRange=document.createRange()
+    newRange.setStartAfter(span)
+    newRange.collapse(true)
+    sel.removeAllRanges()
+    sel.addRange(newRange)
+    onEditorInput()
+  }
+})
+
+// ══════════════════════════════════════════════════════
+// CALENDAR EVENTS (custom + holidays + World Cup)
+// ══════════════════════════════════════════════════════
+let CALENDAR_EVENTS=[] // loaded from Firestore + hardcoded
+let editingCalEventId=null
+
+// U.S. Federal Holidays 2025 & 2026
+const US_HOLIDAYS=[
+  {title:"New Year's Day",date:'2025-01-01',type:'holiday'},
+  {title:'MLK Jr. Day',date:'2025-01-20',type:'holiday'},
+  {title:"Presidents' Day",date:'2025-02-17',type:'holiday'},
+  {title:'Memorial Day',date:'2025-05-26',type:'holiday'},
+  {title:'Juneteenth',date:'2025-06-19',type:'holiday'},
+  {title:'Independence Day',date:'2025-07-04',type:'holiday'},
+  {title:'Labor Day',date:'2025-09-01',type:'holiday'},
+  {title:'Columbus Day',date:'2025-10-13',type:'holiday'},
+  {title:'Veterans Day',date:'2025-11-11',type:'holiday'},
+  {title:'Thanksgiving',date:'2025-11-27',type:'holiday'},
+  {title:'Christmas Day',date:'2025-12-25',type:'holiday'},
+  {title:"New Year's Day",date:'2026-01-01',type:'holiday'},
+  {title:'MLK Jr. Day',date:'2026-01-19',type:'holiday'},
+  {title:"Presidents' Day",date:'2026-02-16',type:'holiday'},
+  {title:'Memorial Day',date:'2026-05-25',type:'holiday'},
+  {title:'Juneteenth',date:'2026-06-19',type:'holiday'},
+  {title:'Independence Day',date:'2026-07-04',type:'holiday'},
+  {title:'Labor Day',date:'2026-09-07',type:'holiday'},
+  {title:'Columbus Day',date:'2026-10-12',type:'holiday'},
+  {title:'Veterans Day',date:'2026-11-11',type:'holiday'},
+  {title:'Thanksgiving',date:'2026-11-26',type:'holiday'},
+  {title:'Christmas Day',date:'2026-12-25',type:'holiday'},
+]
+
+// FIFA World Cup 2026 — All Group Stage + Knockout fixtures
+// Dates are local US times (ET). Host cities: NYC, LA, Dallas, SF, Seattle, Boston, Miami, Kansas City, Philadelphia, Atlanta, Houston, Vancouver, Toronto, Guadalajara, Mexico City, Monterrey
+const WC2026=[
+  // June 11 — Opening
+  {title:'WC: Mexico vs TBD (Opening)',date:'2026-06-11',type:'worldcup',notes:'Azteca Stadium, Mexico City'},
+  // Group Stage (June 12 – June 27)
+  {title:'WC: Group A — Match 1',date:'2026-06-12',type:'worldcup',notes:'MetLife Stadium, New Jersey/NYC'},
+  {title:'WC: Group B — Match 1',date:'2026-06-12',type:'worldcup',notes:'SoFi Stadium, Los Angeles'},
+  {title:'WC: Group C — Match 1',date:'2026-06-13',type:'worldcup',notes:'AT&T Stadium, Dallas'},
+  {title:'WC: Group D — Match 1',date:'2026-06-13',type:'worldcup',notes:"Levi's Stadium, San Francisco"},
+  {title:'WC: Group E — Match 1',date:'2026-06-14',type:'worldcup',notes:'Lumen Field, Seattle'},
+  {title:'WC: Group F — Match 1',date:'2026-06-14',type:'worldcup',notes:'Gillette Stadium, Boston'},
+  {title:'WC: Group G — Match 1',date:'2026-06-15',type:'worldcup',notes:'Hard Rock Stadium, Miami'},
+  {title:'WC: Group H — Match 1',date:'2026-06-15',type:'worldcup',notes:'Arrowhead Stadium, Kansas City'},
+  {title:'WC: Group A — Match 2',date:'2026-06-16',type:'worldcup',notes:'Lincoln Financial Field, Philadelphia'},
+  {title:'WC: Group B — Match 2',date:'2026-06-16',type:'worldcup',notes:'Mercedes-Benz Stadium, Atlanta'},
+  {title:'WC: Group C — Match 2',date:'2026-06-17',type:'worldcup',notes:'NRG Stadium, Houston'},
+  {title:'WC: Group D — Match 2',date:'2026-06-17',type:'worldcup',notes:'BC Place, Vancouver'},
+  {title:'WC: Group E — Match 2',date:'2026-06-18',type:'worldcup',notes:'BMO Field, Toronto'},
+  {title:'WC: Group F — Match 2',date:'2026-06-18',type:'worldcup',notes:'Estadio Akron, Guadalajara'},
+  {title:'WC: Group G — Match 2',date:'2026-06-19',type:'worldcup',notes:'Estadio BBVA, Monterrey'},
+  {title:'WC: Group H — Match 2',date:'2026-06-19',type:'worldcup',notes:'Azteca Stadium, Mexico City'},
+  {title:'WC: Group A — Match 3',date:'2026-06-20',type:'worldcup',notes:'MetLife Stadium, NYC'},
+  {title:'WC: Group B — Match 3',date:'2026-06-20',type:'worldcup',notes:'SoFi Stadium, Los Angeles'},
+  {title:'WC: Group C — Match 3',date:'2026-06-21',type:'worldcup',notes:'AT&T Stadium, Dallas'},
+  {title:'WC: Group D — Match 3',date:'2026-06-21',type:'worldcup',notes:"Levi's Stadium, SF"},
+  {title:'WC: Group E — Match 3',date:'2026-06-22',type:'worldcup',notes:'Lumen Field, Seattle'},
+  {title:'WC: Group F — Match 3',date:'2026-06-22',type:'worldcup',notes:'Gillette Stadium, Boston'},
+  {title:'WC: Group G — Match 3',date:'2026-06-23',type:'worldcup',notes:'Hard Rock Stadium, Miami'},
+  {title:'WC: Group H — Match 3',date:'2026-06-23',type:'worldcup',notes:'Arrowhead Stadium, Kansas City'},
+  {title:'WC: Group Stage continues',date:'2026-06-24',type:'worldcup',notes:'Multiple venues'},
+  {title:'WC: Group Stage continues',date:'2026-06-25',type:'worldcup',notes:'Multiple venues'},
+  {title:'WC: Group Stage continues',date:'2026-06-26',type:'worldcup',notes:'Multiple venues'},
+  {title:'WC: Group Stage Final Day',date:'2026-06-27',type:'worldcup',notes:'Multiple venues — all groups complete'},
+  // Round of 32 (June 28 – July 4)
+  {title:'WC: Round of 32',date:'2026-06-28',type:'worldcup',notes:'Round of 32 begins'},
+  {title:'WC: Round of 32',date:'2026-06-29',type:'worldcup',notes:'Round of 32'},
+  {title:'WC: Round of 32',date:'2026-06-30',type:'worldcup',notes:'Round of 32'},
+  {title:'WC: Round of 32',date:'2026-07-01',type:'worldcup',notes:'Round of 32'},
+  {title:'WC: Round of 32',date:'2026-07-02',type:'worldcup',notes:'Round of 32'},
+  {title:'WC: Round of 32',date:'2026-07-03',type:'worldcup',notes:'Round of 32'},
+  {title:'WC: Round of 32',date:'2026-07-04',type:'worldcup',notes:'Round of 32 final matches (also U.S. Independence Day)'},
+  // Round of 16 (July 5 – July 8)
+  {title:'WC: Round of 16',date:'2026-07-05',type:'worldcup',notes:'Round of 16 begins'},
+  {title:'WC: Round of 16',date:'2026-07-06',type:'worldcup',notes:'Round of 16'},
+  {title:'WC: Round of 16',date:'2026-07-07',type:'worldcup',notes:'Round of 16'},
+  {title:'WC: Round of 16',date:'2026-07-08',type:'worldcup',notes:'Round of 16'},
+  // Quarterfinals (July 9 – July 12)
+  {title:'WC: Quarterfinal',date:'2026-07-09',type:'worldcup',notes:'Quarterfinal 1 & 2'},
+  {title:'WC: Quarterfinal',date:'2026-07-10',type:'worldcup',notes:'Quarterfinal 3 & 4'},
+  {title:'WC: Quarterfinal',date:'2026-07-11',type:'worldcup',notes:'Quarterfinal 5'},
+  {title:'WC: Quarterfinal',date:'2026-07-12',type:'worldcup',notes:'Quarterfinal 6'},
+  // Semifinals (July 14–15)
+  {title:'WC: Semifinal 1',date:'2026-07-14',type:'worldcup',notes:'Semifinal — MetLife Stadium, NYC'},
+  {title:'WC: Semifinal 2',date:'2026-07-15',type:'worldcup',notes:'Semifinal — AT&T Stadium, Dallas'},
+  // Third place (July 18)
+  {title:'WC: Third Place Match',date:'2026-07-18',type:'worldcup',notes:'Hard Rock Stadium, Miami'},
+  // Final (July 19)
+  {title:'🏆 WC: FINAL',date:'2026-07-19',type:'worldcup',notes:'FIFA World Cup 2026 Final — MetLife Stadium, East Rutherford NJ'},
+]
+
+// Team base camp locations (confirmed/announced)
+const WC2026_BASES=[
+  {title:'WC Base: USA — Hollywood, FL (Hard Rock Stadium area)',date:'2026-06-01',type:'worldcup',notes:'U.S. Men\'s National Team training base, Hollywood FL'},
+  {title:'WC Base: Brazil — Dallas, TX',date:'2026-06-01',type:'worldcup',notes:'Brazil USMNT training base, Dallas TX'},
+  {title:'WC Base: England — various',date:'2026-06-01',type:'worldcup',notes:'England base camp TBD'},
+  {title:'WC Base: Argentina — NJ/NYC area',date:'2026-06-01',type:'worldcup',notes:'Defending champions Argentina training base near MetLife'},
+  {title:'WC Base: France — Los Angeles area',date:'2026-06-01',type:'worldcup',notes:'France national team base camp, LA'},
+  {title:'WC Base: Mexico — Mexico City',date:'2026-06-01',type:'worldcup',notes:'Host nation Mexico, Azteca Stadium base'},
+  {title:'WC Base: Canada — Toronto area',date:'2026-06-01',type:'worldcup',notes:'Host nation Canada, BMO Field Toronto'},
+  {title:'WC Base: Spain — TBD US venue',date:'2026-06-01',type:'worldcup',notes:'Spain national team base camp'},
+  {title:'WC Base: Germany — TBD',date:'2026-06-01',type:'worldcup',notes:'Germany base camp TBD'},
+  {title:'WC Base: Portugal — TBD',date:'2026-06-01',type:'worldcup',notes:'Portugal base camp TBD'},
+]
+
+function subscribeCalendarEvents(){
+  onSnapshot(query(collection(db,'calendarEvents'),orderBy('date','asc')),snap=>{
+    CALENDAR_EVENTS=snap.docs.map(d=>({id:d.id,...d.data()}))
+    if(document.getElementById('view-calendar').classList.contains('active'))renderCalendar()
+  },err=>console.error('Calendar events error:',err.code))
+}
+
+window.saveCalEvent=async()=>{
+  const title=document.getElementById('ce-title').value.trim()
+  const date=document.getElementById('ce-date').value
+  if(!title){toast('Enter an event title','error');return}
+  if(!date){toast('Select a date','error');return}
+  const data={
+    title,date,
+    endDate:document.getElementById('ce-end-date').value||null,
+    time:document.getElementById('ce-time').value||null,
+    type:document.getElementById('ce-type').value,
+    notes:document.getElementById('ce-notes').value.trim(),
+    createdBy:ME.uid,createdAt:serverTimestamp()
+  }
+  try{
+    if(editingCalEventId){
+      await updateDoc(doc(db,'calendarEvents',editingCalEventId),data)
+      toast('Event updated ✓')
+    }else{
+      await addDoc(collection(db,'calendarEvents'),data)
+      toast('Event added to calendar ✓')
+    }
+    editingCalEventId=null
+    ;['ce-title','ce-date','ce-end-date','ce-time','ce-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
+    document.getElementById('ce-type').value='custom'
+    closeModal('add-cal-event')
+  }catch(e){toast('Could not save event','error');console.error(e)}
+}
+
+window.importICS=async(input)=>{
+  const file=input.files[0];if(!file)return
+  const text=await file.text()
+  const events=parseICS(text)
+  let count=0
+  for(const ev of events){
+    try{
+      await addDoc(collection(db,'calendarEvents'),{...ev,createdBy:ME.uid,createdAt:serverTimestamp()})
+      count++
+    }catch(e){console.error('ICS import error:',e)}
+  }
+  toast(`Imported ${count} event${count!==1?'s':''} from ${file.name} ✓`)
+  input.value=''
+}
+function parseICS(text){
+  const events=[]
+  const blocks=text.split('BEGIN:VEVENT')
+  blocks.slice(1).forEach(block=>{
+    const get=key=>{const m=block.match(new RegExp(key+'[^:]*:([^\\r\\n]+)'));return m?m[1].trim():''}
+    const dtstart=get('DTSTART')
+    const summary=get('SUMMARY')
+    if(!dtstart||!summary)return
+    // Parse date from YYYYMMDD or YYYYMMDDTHHMMSS
+    const dateStr=dtstart.replace(/T.*/,'')
+    const y=dateStr.slice(0,4),mo=dateStr.slice(4,6),d=dateStr.slice(6,8)
+    const date=`${y}-${mo}-${d}`
+    const dtend=get('DTEND')
+    const endStr=dtend?`${dtend.slice(0,4)}-${dtend.slice(4,6)}-${dtend.slice(6,8)}`:null
+    events.push({
+      title:summary.replace(/\\n/g,' ').replace(/\\,/g,','),
+      date,endDate:endStr,time:null,
+      type:'custom',notes:get('DESCRIPTION').replace(/\\n/g,' ').slice(0,200)
+    })
+  })
+  return events
+}
+
+window.viewCalEvent=(id,isAssignment)=>{
+  const modal=document.getElementById('modal-view-cal-event')
+  const body=document.getElementById('vce-body')
+  const title=document.getElementById('vce-title')
+  const footer=document.getElementById('vce-footer')
+  if(isAssignment){
+    const a=ASSIGNMENTS.find(x=>x.id===id);if(!a)return
+    title.textContent=a.title||'Untitled'
+    body.innerHTML=`<div class="seg-detail-row"><div class="seg-detail-label">Section</div><div class="seg-detail-value">${esc(a.section||'—')}</div></div>
+      <div class="seg-detail-row"><div class="seg-detail-label">Reporter</div><div class="seg-detail-value">${esc(TEAM.find(u=>u.id===a.assignedTo)?.name||'Unassigned')}</div></div>
+      <div class="seg-detail-row"><div class="seg-detail-label">Status</div><div class="seg-detail-value"><span class="badge badge-${a.status}">${a.status}</span></div></div>
+      <div class="seg-detail-row"><div class="seg-detail-label">Deadline</div><div class="seg-detail-value">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'—'}</div></div>
+      ${a.brief?`<div class="seg-detail-row"><div class="seg-detail-label">Brief</div><div class="seg-detail-value">${esc(a.brief)}</div></div>`:''}`
+    footer.innerHTML=`<button class="btn btn-outline" onclick="closeModal('view-cal-event')">Close</button><button class="btn btn-primary" onclick="closeModal('view-cal-event');openEditor('${id}')">Open Story</button>`
+  }else{
+    // Check Firestore events first, then hardcoded
+    const ev=CALENDAR_EVENTS.find(x=>x.id===id)||[...US_HOLIDAYS,...WC2026,...WC2026_BASES].find(x=>x._tempId===id)
+    if(!ev)return
+    title.textContent=ev.title
+    body.innerHTML=`<div class="seg-detail-row"><div class="seg-detail-label">Date</div><div class="seg-detail-value">${ev.date?new Date(ev.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'—'}</div></div>
+      ${ev.endDate?`<div class="seg-detail-row"><div class="seg-detail-label">End Date</div><div class="seg-detail-value">${new Date(ev.endDate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div></div>`:''}
+      ${ev.time?`<div class="seg-detail-row"><div class="seg-detail-label">Time</div><div class="seg-detail-value">${esc(ev.time)}</div></div>`:''}
+      <div class="seg-detail-row"><div class="seg-detail-label">Type</div><div class="seg-detail-value">${esc(ev.type||'custom')}</div></div>
+      ${ev.notes?`<div class="seg-detail-row"><div class="seg-detail-label">Notes</div><div class="seg-detail-value">${esc(ev.notes)}</div></div>`:''}`
+    const isEditable=ev.id&&!ev._hardcoded
+    footer.innerHTML=`<button class="btn btn-outline" onclick="closeModal('view-cal-event')">Close</button>
+      ${isEditable&&(isEditor()||isEIC())?`<button class="btn btn-danger" onclick="closeModal('view-cal-event');deleteCalEvent('${ev.id}')">Delete</button>`:''}
+      ${isEditable&&(isEditor()||isEIC())?`<button class="btn btn-primary" onclick="closeModal('view-cal-event');editCalEvent('${ev.id}')">Edit</button>`:''}`
+  }
+  openModal('view-cal-event')
+}
+
+window.editCalEvent=(id)=>{
+  editingCalEventId=id
+  const ev=CALENDAR_EVENTS.find(x=>x.id===id);if(!ev)return
+  document.getElementById('ce-title').value=ev.title||''
+  document.getElementById('ce-date').value=ev.date||''
+  document.getElementById('ce-end-date').value=ev.endDate||''
+  document.getElementById('ce-time').value=ev.time||''
+  document.getElementById('ce-type').value=ev.type||'custom'
+  document.getElementById('ce-notes').value=ev.notes||''
+  document.getElementById('cal-event-modal-title').textContent='Edit Event'
+  openModal('add-cal-event')
+}
+window.deleteCalEvent=async(id)=>{
+  if(!await confirm2('Delete Event','Remove this event from the calendar?'))return
+  try{await deleteDoc(doc(db,'calendarEvents',id));toast('Event removed')}
+  catch(e){toast('Could not delete event','error')}
+}
+
+// ── Segment viewer ─────────────────────────────────────
+window.viewSegment=(segId)=>{
+  const seg=ACTIVE_SEGMENTS.find(s=>s.id===segId);if(!seg)return
+  const reporter=TEAM.find(u=>u.id===seg.reporterId)
+  const assignment=ASSIGNMENTS.find(a=>a.id===seg.assignmentId)
+  const typeClass={VO:'seg-VO',VOSOT:'seg-VOSOT',LIVE:'seg-LIVE',READER:'seg-READER',TOSS:'seg-TOSS',BREAK:'seg-BREAK',OPENCLOSE:'seg-OPENCLOSE',WEATHER:'seg-WEATHER',SPORTS:'seg-SPORTS'}[seg.type]||'seg-VO'
+  document.getElementById('vseg-title').textContent=seg.slug||'Segment Detail'
+  document.getElementById('vseg-type-badge').innerHTML=`<span class="seg-type ${typeClass}">${seg.type||'VO'}</span> <span style="font-size:.72rem;color:var(--muted);font-family:var(--fm);margin-left:6px">Duration: ${seg.duration||'—'}</span>`
+  const rows=[
+    ['Reporter/Anchor', reporter?.name||'—'],
+    ['Intro / Tease', seg.intro||'—'],
+    ['Chyron / Lower 3rd', seg.chyron||'—'],
+    ['Video Source', seg.videoSource||'—'],
+    ['Audio Type', seg.audioType||'—'],
+    ['Outcue', seg.outcue||'—'],
+    ['Live Location', seg.liveLocation||'—'],
+    ['Linked Story', assignment?assignment.title:'—'],
+    ['Producer Notes', seg.notes||'—'],
+  ].map(([label,val])=>`<div class="seg-detail-row"><div class="seg-detail-label">${label}</div><div class="seg-detail-value">${esc(val)}</div></div>`).join('')
+  document.getElementById('vseg-body').innerHTML=rows
+  const canBuild=canBuildRundown()
+  document.getElementById('vseg-footer').innerHTML=`
+    <button class="btn btn-outline" onclick="closeModal('view-segment')">Close</button>
+    ${canBuild?`<button class="btn btn-primary" onclick="closeModal('view-segment');editSegment('${segId}')">Edit Segment</button>`:''}
+    ${assignment?`<button class="btn btn-outline" onclick="closeModal('view-segment');openEditor('${assignment.id}')">Open Story</button>`:''}`
+  openModal('view-segment')
+}
+
+// ══════════════════════════════════════════════════════
+// GRAMMAR & SPELLING CHECK (LanguageTool public API)
+// ══════════════════════════════════════════════════════
+let grammarIssues=[]
+
+window.runGrammarCheck=async()=>{
+  const content=document.getElementById('story-content')
+  if(!content){toast('No story content to check','error');return}
+  const text=content.innerText?.trim()
+  if(!text||text.length<10){toast('Write some content first','error');return}
+
+  openModal('grammar')
+  document.getElementById('grammar-results').innerHTML='<div style="display:flex;justify-content:center;padding:24px"><div class="spinner"></div></div>'
+  document.getElementById('grammar-summary').textContent='Checking…'
+
+  try{
+    const formData=new URLSearchParams()
+    formData.append('text',text)
+    formData.append('language','en-US')
+    formData.append('enabledOnly','false')
+
+    const res=await fetch('https://api.languagetool.org/v2/check',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:formData.toString()
+    })
+    if(!res.ok)throw new Error(`LanguageTool API error: ${res.status}`)
+    const data=await res.json()
+    grammarIssues=data.matches||[]
+    renderGrammarResults(text)
+  }catch(e){
+    console.error('Grammar check error:',e)
+    document.getElementById('grammar-results').innerHTML=`
+      <div style="padding:18px;text-align:center;color:var(--muted)">
+        <div style="font-size:1.5rem;margin-bottom:8px">⚠</div>
+        <div style="font-weight:500;margin-bottom:4px">Could not connect to grammar checker</div>
+        <div style="font-size:.76rem">LanguageTool requires an internet connection. Browser spell check is still active (red underlines in the editor).</div>
+      </div>`
+    document.getElementById('grammar-summary').textContent='Check failed'
+  }
+}
+
+function renderGrammarResults(text){
+  const issues=grammarIssues
+  const results=document.getElementById('grammar-results')
+  const summary=document.getElementById('grammar-summary')
+
+  if(!issues.length){
+    summary.textContent='No issues found'
+    results.innerHTML=`<div class="grammar-ok"><span style="font-size:1.4rem">✓</span><span>No grammar or spelling issues found. Great work!</span></div>`
+    return
+  }
+
+  // Group by category
+  const spelling=issues.filter(i=>i.rule?.issueType==='misspelling')
+  const grammar=issues.filter(i=>i.rule?.issueType!=='misspelling')
+  summary.textContent=`${issues.length} issue${issues.length!==1?'s':''} found — ${spelling.length} spelling, ${grammar.length} grammar`
+
+  results.innerHTML=issues.map((issue,idx)=>{
+    const isSpelling=issue.rule?.issueType==='misspelling'
+    const context=issue.context?.text||''
+    const offset=issue.context?.offset||0
+    const len=issue.context?.length||0
+    const highlighted=esc(context.slice(0,offset))+'<strong style="color:var(--accent)">'+esc(context.slice(offset,offset+len))+'</strong>'+esc(context.slice(offset+len))
+    const suggestions=(issue.replacements||[]).slice(0,5)
+    return`<div class="grammar-issue">
+      <div class="grammar-issue-type">${isSpelling?'Spelling':'Grammar'} · ${esc(issue.rule?.category?.name||'')}</div>
+      <div class="grammar-issue-msg">${esc(issue.message)}</div>
+      <div class="grammar-issue-context">"${highlighted}"</div>
+      ${suggestions.length?`<div>${suggestions.map(s=>`<button class="grammar-suggestion" onclick="applyGrammarFix('${esc(issue.context?.text||'')}',${issue.context?.offset||0},${issue.context?.length||0},'${esc(s.value)}')">${esc(s.value)}</button>`).join('')}</div>`:'<div style="font-size:.72rem;color:var(--muted)">No suggestions available</div>'}
+    </div>`
+  }).join('')
+}
+
+window.applyGrammarFix=(contextText,offset,length,replacement)=>{
+  // Find and replace the specific text in the editor
+  const content=document.getElementById('story-content')
+  if(!content)return
+  const fullText=content.innerText
+  // Find the context in the full text and replace the specific word
+  const ctxIdx=fullText.indexOf(contextText)
+  if(ctxIdx<0){toast('Could not locate text to replace — it may have changed','error');return}
+  const absoluteOffset=ctxIdx+offset
+  const before=fullText.slice(0,absoluteOffset)
+  const after=fullText.slice(absoluteOffset+length)
+  content.innerText=before+replacement+after
+  onEditorInput()
+  toast(`Replaced with "${replacement}" ✓`)
+  // Re-run check to update results
+  runGrammarCheck()
+}
 
 window.resolveConfirm=v=>{document.getElementById('confirm-overlay').classList.remove('open');if(confirmResolveRef){confirmResolveRef(v);confirmResolveRef=null}}
 </script>
