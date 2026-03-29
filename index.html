@@ -59,7 +59,13 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 .diff-add{background:#d4edda;color:#155724;border-radius:2px;padding:0 2px}
 .diff-del{background:#f8d7da;color:#721c24;border-radius:2px;padding:0 2px;text-decoration:line-through}
 
-/* ── ACTIVITY FEED ── */
+/* ── COMMENT REACTIONS ── */
+.reaction-bar{display:flex;align-items:center;gap:5px;margin-top:6px;flex-wrap:wrap}
+.reaction-btn{background:var(--cream);border:1px solid var(--rule);border-radius:20px;padding:2px 8px;font-size:.72rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:3px;line-height:1}
+.reaction-btn:hover{background:var(--rule);border-color:var(--muted)}
+.reaction-btn.mine{background:#e8f4fd;border-color:var(--sky);color:var(--sky)}
+.reaction-add{background:none;border:1px dashed var(--rule);border-radius:20px;padding:2px 7px;font-size:.72rem;cursor:pointer;color:var(--muted);transition:all .15s}
+.reaction-add:hover{background:var(--cream);border-color:var(--muted);color:var(--ink)}
 .activity-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--cream);font-size:.75rem;align-items:flex-start}
 .activity-item:last-child{border-bottom:none}
 .activity-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:1px}
@@ -572,9 +578,13 @@ tr:hover td{background:var(--paper)}
           <div class="stat-card green"><div class="stat-lbl">Published</div><div class="stat-num" id="ds-pub">—</div><div class="stat-sub">this semester</div></div>
           <div class="stat-card sky"><div class="stat-lbl">Team Members</div><div class="stat-num" id="ds-team">—</div><div class="stat-sub">active journalists</div></div>
         </div>
+        <div id="ds-team-roster" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:18px;padding:10px 14px;background:var(--white);border:1px solid var(--rule);border-radius:var(--r)">
+          <span style="font-size:.72rem;font-family:var(--fm);color:var(--muted);flex-shrink:0">Newsroom:</span>
+          <div id="ds-team-avatars" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+        </div>
         <div id="deadline-pressure-bar" style="display:none;background:#fdf2e9;border:1px solid #f0a070;border-radius:var(--r);padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span style="font-size:.8rem">⚠</span>
-          <span style="font-size:.78rem;font-weight:600;color:#784212">Deadline Pressure:</span>
+          <span style="font-size:.8rem">⏰</span>
+          <span style="font-size:.78rem;font-weight:600;color:#784212">Deadline Reminders:</span>
           <span style="font-size:.78rem;color:#784212" id="deadline-pressure-txt"></span>
           <div id="deadline-pressure-list" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:4px"></div>
         </div>
@@ -1624,6 +1634,18 @@ function renderDashboard(){
   document.getElementById('ds-review').textContent=ASSIGNMENTS.filter(a=>a.status==='review').length
   document.getElementById('ds-pub').textContent=ASSIGNMENTS.filter(a=>a.status==='published').length
 
+  // ── Team Roster Avatars ──
+  const avatarsEl=document.getElementById('ds-team-avatars')
+  if(avatarsEl&&TEAM.length){
+    avatarsEl.innerHTML=TEAM.map(u=>{
+      const roleLabel={reporter:'Reporter','section-editor':'Section Ed.',producer:'Producer',editor:'Editor','editor-in-chief':'EIC'}[u.role]||u.role
+      return`<div style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:default" title="${esc(u.name)} · ${esc(roleLabel)}">
+        <div class="avatar" style="width:28px;height:28px;font-size:.6rem;background:${aColor(u.name)};border:2px solid var(--white);box-shadow:0 0 0 1px ${aColor(u.name)}40">${inits(u.name)}</div>
+        <span style="font-size:.5rem;font-family:var(--fm);color:var(--muted);max-width:32px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">${esc(u.name.split(' ')[0])}</span>
+      </div>`
+    }).join('')
+  }
+
   // ── Deadline Pressure ──
   const now=new Date()
   const in48=new Date(now.getTime()+48*60*60*1000)
@@ -1639,7 +1661,11 @@ function renderDashboard(){
     const overdue=urgent.filter(a=>new Date(a.deadline+'T23:59:59')<now)
     document.getElementById('deadline-pressure-list').innerHTML=urgent.map(a=>{
       const isOver=new Date(a.deadline+'T23:59:59')<now
-      return`<span class="deadline-chip${isOver?'':' soon'}" onclick="openEditor('${a.id}')" title="Open story">${esc((a.title||'Untitled').slice(0,20))} ${isOver?'⚠ OVERDUE':new Date(a.deadline+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`
+      const assignee=TEAM.find(u=>u.id===a.assignedTo)
+      const avatarInitials=assignee?inits(assignee.name):'?'
+      const dateLabel=isOver?'⚠ OVERDUE':new Date(a.deadline+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})
+      const tooltip=`${assignee?.name||'Unassigned'} — "${a.title||'Untitled'}" — ${isOver?'OVERDUE':dateLabel}`
+      return`<span class="deadline-chip${isOver?'':' soon'}" onclick="openEditor('${a.id}')" title="${esc(tooltip)}" style="display:inline-flex;align-items:center;gap:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.3);font-size:.5rem;font-weight:700;flex-shrink:0">${esc(avatarInitials)}</span>${esc((a.title||'Untitled').slice(0,18))} · ${dateLabel}</span>`
     }).join('')
   }else{
     bar.style.display='none'
@@ -2287,30 +2313,89 @@ function renderComments(comments){
     document.getElementById('comment-list').innerHTML='<div style="font-size:.75rem;color:var(--muted)">No comments yet.</div>'
     return
   }
+  const REACTION_EMOJIS=['❤️','👍','👎']
+  const REACTION_ICONS={
+    '❤️':'<svg width="13" height="13" viewBox="0 0 24 24" fill="#1a5276" style="flex-shrink:0;vertical-align:middle"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>',
+    '👍':'<svg width="13" height="13" viewBox="0 0 24 24" fill="#6D4C41" style="flex-shrink:0;vertical-align:middle"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>',
+    '👎':'<svg width="13" height="13" viewBox="0 0 24 24" fill="#6D4C41" style="flex-shrink:0;vertical-align:middle"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>',
+  }
   document.getElementById('comment-list').innerHTML=comments.map(c=>{
     const isOwn=c.authorId===ME?.uid
-    const isEditing=c._editing
     const time=c.createdAt?.toDate?c.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''
     const editedNote=c.editedAt?` <span style="font-size:.58rem;color:var(--muted)">(edited)</span>`:''
+
+    // Build reaction summary — reactions stored as {emoji: {uid: true, ...}, ...}
+    const reactions=c.reactions||{}
+    const reactionHTML=REACTION_EMOJIS.map(emoji=>{
+      const users=reactions[emoji]||{}
+      const count=Object.keys(users).length
+      const iMine=!!(users[ME?.uid])
+      if(count===0)return''
+      const whoReacted=Object.keys(users).map(uid=>TEAM.find(u=>u.id===uid)?.name||'Someone').filter(Boolean).join(', ')
+      const icon=REACTION_ICONS[emoji]||emoji
+      return`<button class="reaction-btn${iMine?' mine':''}" onclick="toggleReaction('${c.id}','${emoji}')" title="${esc(whoReacted)}">${icon} <span>${count}</span></button>`
+    }).join('')
+
+    // Add-reaction picker
+    const myReactions=REACTION_EMOJIS.filter(e=>!!(reactions[e]||{})[ME?.uid])
+    const availablePicker=REACTION_EMOJIS.filter(e=>!(reactions[e]||{})[ME?.uid])
+    const pickerHTML=availablePicker.length?`<span style="position:relative;display:inline-block">
+      <button class="reaction-add" onclick="toggleReactionPicker('picker-${c.id}')" title="Add reaction">＋</button>
+      <div id="picker-${c.id}" style="display:none;position:absolute;bottom:24px;left:0;background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:5px 8px;box-shadow:var(--shadow);display:none;gap:4px;z-index:100">
+        ${availablePicker.map(e=>{const icon=REACTION_ICONS[e]||e;return`<button onclick="toggleReaction('${c.id}','${e}');document.getElementById('picker-${c.id}').style.display='none'" style="background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;transition:background .1s;display:inline-flex;align-items:center" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='none'">${icon}</button>`}).join('')}
+      </div>
+    </span>`:''
+
     return`<div class="comment" id="comment-${c.id}">
       <div class="comment-hdr">
         <div class="avatar" style="width:20px;height:20px;font-size:.54rem;background:${aColor(c.authorName)}">${inits(c.authorName)}</div>
         <span style="font-size:.75rem;font-weight:500">${esc(c.authorName)}</span>
         <span style="font-size:.6rem;color:var(--muted);font-family:var(--fm);margin-left:auto">${time}${editedNote}</span>
-        ${isOwn?`<button onclick="editComment('${c.id}')" title="Edit comment" style="background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:0 3px;margin-left:4px">✎</button>
-                 <button onclick="deleteComment('${c.id}')" title="Delete comment" style="background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:0 3px">✕</button>`:''}
+        ${isOwn?`<button onclick="editComment('${c.id}')" title="Edit" style="background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:0 3px;margin-left:4px">✎</button>
+                 <button onclick="deleteComment('${c.id}')" title="Delete" style="background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:0 3px">✕</button>`:''}
       </div>
       <div class="comment-body" id="comment-body-${c.id}">${highlightMentions(esc(c.body))}</div>
       <div id="comment-edit-${c.id}" style="display:none;margin-top:6px">
         <textarea class="form-textarea" id="comment-edit-text-${c.id}" rows="2" style="font-size:.78rem;min-height:44px">${esc(c.body)}</textarea>
         <div style="display:flex;gap:6px;margin-top:4px;justify-content:flex-end">
-          <button class="btn btn-outline" style="font-size:.67rem;padding:3px 8px" onclick="cancelEditComment('${c.id}','${esc(c.body).replace(/'/g,"\\'")}')">Cancel</button>
+          <button class="btn btn-outline" style="font-size:.67rem;padding:3px 8px" onclick="cancelEditComment('${c.id}')">Cancel</button>
           <button class="btn btn-primary" style="font-size:.67rem;padding:3px 8px" onclick="saveEditComment('${c.id}')">Save</button>
         </div>
       </div>
+      <div class="reaction-bar">${reactionHTML}${pickerHTML}</div>
     </div>`
   }).join('')
 }
+window.toggleReaction=async(commentId,emoji)=>{
+  if(!ME?.uid)return
+  try{
+    const cRef=doc(db,'comments',commentId)
+    const snap=await getDoc(cRef)
+    if(!snap.exists())return
+    const reactions=snap.data().reactions||{}
+    const emojiReactions=reactions[emoji]||{}
+    const alreadyReacted=!!(emojiReactions[ME.uid])
+    // Toggle: remove if already reacted, add if not
+    const updatedEmoji=alreadyReacted
+      ?Object.fromEntries(Object.entries(emojiReactions).filter(([k])=>k!==ME.uid))
+      :{...emojiReactions,[ME.uid]:true}
+    await updateDoc(cRef,{[`reactions.${emoji}`]:updatedEmoji})
+  }catch(e){console.error('Reaction error:',e);toast('Could not update reaction','error')}
+}
+window.toggleReactionPicker=(pickerId)=>{
+  const picker=document.getElementById(pickerId)
+  if(!picker)return
+  const isVisible=picker.style.display==='flex'
+  // Close all open pickers first
+  document.querySelectorAll('[id^="picker-"]').forEach(p=>p.style.display='none')
+  if(!isVisible)picker.style.display='flex'
+}
+// Close pickers when clicking outside
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.reaction-add')&&!e.target.closest('[id^="picker-"]')){
+    document.querySelectorAll('[id^="picker-"]').forEach(p=>p.style.display='none')
+  }
+})
 window.editComment=(id)=>{
   document.getElementById(`comment-body-${id}`).style.display='none'
   document.getElementById(`comment-edit-${id}`).style.display=''
