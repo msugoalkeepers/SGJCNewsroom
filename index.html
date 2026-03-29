@@ -39,6 +39,12 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 .markup-toggle{display:flex;align-items:center;gap:6px;font-size:.72rem;font-family:var(--fm);color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:var(--r);border:1px solid var(--rule);background:transparent;transition:all .15s}
 .markup-toggle.active{background:#fdedec;color:var(--accent);border-color:#f5b7b1}
 
+/* ── CALENDAR FILTER PILLS ── */
+.cal-filter-pill{padding:3px 10px;border-radius:20px;border:1px solid var(--rule);background:var(--white);font-size:.68rem;font-family:var(--fm);cursor:pointer;transition:all .15s;color:var(--muted);white-space:nowrap}
+.cal-filter-pill:hover{background:var(--cream);color:var(--ink)}
+.cal-filter-pill.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.cal-filter-pill[style*="--fp-color"].active{background:var(--fp-color,var(--ink));border-color:var(--fp-color,var(--ink));color:white}
+
 /* ── CALENDAR ADDITIONS ── */
 .cal-event.assignment{background:#e67e22!important;color:white}
 .cal-event.holiday{background:#6c3483;color:white}
@@ -700,11 +706,13 @@ tr:hover td{background:var(--paper)}
           <button class="btn btn-outline" onclick="openModal('add-cal-event')" style="font-size:.76rem">+ Add Event</button>
           <label class="btn btn-outline" style="cursor:pointer;font-size:.76rem" title="Import .ics calendar file">⊕ Import .ics<input type="file" accept=".ics" style="display:none" onchange="importICS(this)"></label>
         </div>
-        <div class="cal-legend">
-          <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#e67e22"></div>Assignments</div>
-          <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#6c3483"></div>U.S. Holidays</div>
-          <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#145a32"></div>World Cup 2026</div>
-          <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#1a5276"></div>Custom Events</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <span style="font-size:.68rem;font-family:var(--fm);color:var(--muted);flex-shrink:0">Show:</span>
+          <button class="cal-filter-pill active" id="cfp-all" onclick="setCalFilter('all',this)">All</button>
+          <button class="cal-filter-pill" id="cfp-assignment" onclick="setCalFilter('assignment',this)" style="--fp-color:#e67e22">● Assignments</button>
+          <button class="cal-filter-pill" id="cfp-holiday" onclick="setCalFilter('holiday',this)" style="--fp-color:#6c3483">● U.S. Holidays</button>
+          <button class="cal-filter-pill" id="cfp-worldcup" onclick="setCalFilter('worldcup',this)" style="--fp-color:#145a32">● World Cup 2026</button>
+          <button class="cal-filter-pill" id="cfp-custom" onclick="setCalFilter('custom',this)" style="--fp-color:#1a5276">● Custom Events</button>
         </div>
         <div class="cal-grid" id="cal-grid"></div>
       </div>
@@ -1206,6 +1214,7 @@ let ASSIGN_FILTER='all',MEDIA_FILTER='all',DRAG_ID=null
 let saveTimer=null,commentUnsub=null,storyUnsub=null,sourceUnsub=null
 let confirmResolveRef=null,editingAssignId=null,editingRoleUid=null
 let calYear=new Date().getFullYear(),calMonth=new Date().getMonth()
+let calFilter='all'
 let mentionStart=-1,commentMentionStart=-1
 
 const AC=['#c0392b','#2c6e49','#e67e22','#1a5276','#6c3483','#7a7570','#16a085','#2980b9']
@@ -2190,6 +2199,12 @@ function renderEditorMedia(){
 
 // ── CALENDAR ──
 window.calNav=dir=>{if(dir===0){calYear=new Date().getFullYear();calMonth=new Date().getMonth()}else{calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}else if(calMonth<0){calMonth=11;calYear--}};renderCalendar()}
+window.setCalFilter=(filter,btn)=>{
+  calFilter=filter
+  document.querySelectorAll('.cal-filter-pill').forEach(p=>p.classList.remove('active'))
+  if(btn)btn.classList.add('active')
+  renderCalendar()
+}
 function renderCalendar(){
   if(!document.getElementById('view-calendar').classList.contains('active'))return
   const months=['January','February','March','April','May','June','July','August','September','October','November','December']
@@ -2202,9 +2217,14 @@ function renderCalendar(){
 
   // Build all events — expand recurring ones into individual occurrences
   const allStaticEvents=[...US_HOLIDAYS,...WC2026,...WC2026_BASES].map((e,i)=>({...e,_hardcoded:true,_tempId:`hc-${i}`}))
-  // Expand recurring Firestore events into all their dates
   const expandedCustom=CALENDAR_EVENTS.flatMap(e=>expandRecurring(e))
   const allEvents=[...allStaticEvents,...expandedCustom]
+
+  // Apply category filter
+  const showAssign=calFilter==='all'||calFilter==='assignment'
+  const showHoliday=calFilter==='all'||calFilter==='holiday'
+  const showWC=calFilter==='all'||calFilter==='worldcup'
+  const showCustom=calFilter==='all'||calFilter==='custom'
 
   for(let i=0;i<startDay;i++)html+=`<div class="cal-day other-month"></div>`
   for(let d=1;d<=last.getDate();d++){
@@ -2212,15 +2232,19 @@ function renderCalendar(){
     const isToday=date.toDateString()===today.toDateString()
     const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
 
-    // Assignments due this day
-    const dayAssigns=ASSIGNMENTS.filter(a=>{
+    const dayAssigns=showAssign?ASSIGNMENTS.filter(a=>{
       if(!a.deadline)return false
       const dd=new Date(a.deadline+'T12:00:00')
       return dd.getDate()===d&&dd.getMonth()===calMonth&&dd.getFullYear()===calYear
-    })
-    // Other events on this day (single-day match or within multi-day span)
+    }):[]
+
     const dayEvents=allEvents.filter(e=>{
       if(!e.date)return false
+      // Category filter
+      if(e.type==='holiday'&&!showHoliday)return false
+      if(e.type==='worldcup'&&!showWC)return false
+      if(e.type==='custom'&&!showCustom)return false
+      // Date match
       if(e.date===dateStr)return true
       if(e.endDate&&!e._recurring&&e.endDate>=dateStr&&e.date<=dateStr)return true
       return false
