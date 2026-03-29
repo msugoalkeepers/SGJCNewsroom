@@ -1047,7 +1047,6 @@ tr:hover td{background:var(--paper)}
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'
 import{getAuth,signInWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,signOut as fbSignOut,onAuthStateChanged,sendPasswordResetEmail}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'
 import{getFirestore,collection,doc,addDoc,updateDoc,deleteDoc,getDoc,setDoc,getDocs,onSnapshot,query,where,orderBy,serverTimestamp,arrayUnion,limit}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'
-import{getStorage,ref,deleteObject}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js'
 
 const firebaseConfig={
   apiKey:"AIzaSyAbiUhGY6pr8JWopViJx5pL7xF6jTeM_ow",
@@ -1059,7 +1058,7 @@ const firebaseConfig={
   measurementId:"G-J6J0793TQ1"
 }
 const fb=initializeApp(firebaseConfig)
-const auth=getAuth(fb),db=getFirestore(fb),storage=getStorage(fb)
+const auth=getAuth(fb),db=getFirestore(fb)
 const gProv=new GoogleAuthProvider()
 gProv.setCustomParameters({prompt:'select_account'})
 
@@ -1780,7 +1779,6 @@ window.insertDrivePhoto=()=>{
 }
 
 // ── Story editor media panel ──────────────────────────
-window.uploadStoryMedia=async input=>{for(const f of Array.from(input.files))await doUpload(f,CURRENT_STORY?.id);input.value=''}
 
 // Drive link modal for story editor media panel
 window.previewDriveLink=()=>{
@@ -2008,7 +2006,6 @@ function renderEditorMedia(){
     </div>`).join('')}</div>
   <button class=\"btn btn-ghost\" style=\"width:100%;font-size:.7rem;justify-content:center\" onclick=\"openModal('add-drive-media')\">+ Add from Google Drive</button>\`
 }
-window.uploadStoryMedia=async input=>{for(const f of Array.from(input.files))await doUpload(f,CURRENT_STORY?.id);input.value=''}
 
 // ── CALENDAR ──
 window.calNav=dir=>{if(dir===0){calYear=new Date().getFullYear();calMonth=new Date().getMonth()}else{calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}else if(calMonth<0){calMonth=11;calYear--}};renderCalendar()}
@@ -2147,10 +2144,6 @@ window.saveMediaLink=async()=>{
 window.deleteMedia=async(id,path)=>{
   if(!await confirm2('Delete File','Remove this file from the library?'))return
   try{
-    // Only attempt Firebase Storage delete if there's an actual storage path
-    if(path){
-      try{const r=ref(storage,path);await deleteObject(r)}catch(e){console.warn('Storage delete skipped:',e.code)}
-    }
     await deleteDoc(doc(db,'media',id))
     toast('File removed from library')
   }catch(e){toast('Delete failed','error');console.error(e)}
@@ -2417,55 +2410,6 @@ function subscribeRundowns(){
     todayCount?(nb.style.display='',nb.textContent=todayCount):nb.style.display='none'
     if(document.getElementById('view-rundown').classList.contains('active'))renderRundownView()
   },err=>console.error('Rundowns subscription error:',err.code,err.message))
-}
-
-// ── Select and load a rundown ─────────────────────────
-window.selectRundown=async rdId=>{
-  ACTIVE_RUNDOWN=RUNDOWNS.find(r=>r.id===rdId)||null
-  if(!ACTIVE_RUNDOWN)return
-  // Load segments with try/catch
-  try{
-    const snap=await getDocs(query(collection(db,'rundowns',rdId,'segments'),orderBy('order','asc')))
-    ACTIVE_SEGMENTS=snap.docs.map(d=>({id:d.id,...d.data()}))
-  }catch(e){
-    console.error('Failed to load segments:',e.code,e.message)
-    ACTIVE_SEGMENTS=[]
-  }
-  // Subscribe to live segment updates
-  onSnapshot(
-    query(collection(db,'rundowns',rdId,'segments'),orderBy('order','asc')),
-    snap2=>{
-      ACTIVE_SEGMENTS=snap2.docs.map(d=>({id:d.id,...d.data()}))
-      if(ACTIVE_RUNDOWN?.id===rdId)renderActiveRundown()
-    },
-    err=>console.error('Segments listener error:',err.code,err.message)
-  )
-  renderRundownView()
-  document.getElementById('rd-active-rundown').style.display=''
-}
-function renderRundownView(){
-  const canBuild=canBuildRundown()
-  // Role note
-  const roleNote=document.getElementById('rd-role-note')
-  if(canBuild)roleNote.textContent=`You can create and edit rundowns as ${ME.role}.`
-  else roleNote.textContent=`View-only mode — contact a producer or editor to make changes.`
-  // New rundown button
-  document.getElementById('btn-new-rundown').style.display=canBuild?'':'none'
-  // Show selector pills
-  const sel=document.getElementById('rd-show-selector')
-  if(!RUNDOWNS.length){
-    sel.innerHTML=''
-    document.getElementById('rd-active-rundown').style.display='none'
-    document.getElementById('rd-empty').style.display='flex'
-    return
-  }
-  document.getElementById('rd-empty').style.display='none'
-  sel.innerHTML=RUNDOWNS.slice(0,12).map(r=>`
-    <button class="rd-show-pill${ACTIVE_RUNDOWN?.id===r.id?' active':''}" onclick="selectRundown('${r.id}')">
-      ${esc(r.name)}<br><span style="font-size:.62rem;opacity:.7">${r.airDate||''} ${r.airTime||''}</span>
-    </button>`).join('')
-  if(!ACTIVE_RUNDOWN&&RUNDOWNS.length)selectRundown(RUNDOWNS[0].id)
-  else if(ACTIVE_RUNDOWN)renderActiveRundown()
 }
 
 // ── Select and load a rundown ─────────────────────────
