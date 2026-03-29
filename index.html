@@ -1072,11 +1072,11 @@ tr:hover td{background:var(--paper)}
     <div class="modal-body">
       <div class="form-group"><label class="form-label">Event Title</label><input class="form-input" id="ce-title" placeholder="e.g. Spring Break, Staff Meeting"></div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="ce-date"></div>
-        <div class="form-group"><label class="form-label">End Date (optional)</label><input class="form-input" type="date" id="ce-end-date"></div>
+        <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" type="date" id="ce-date"></div>
+        <div class="form-group"><label class="form-label">Time (optional)</label><input class="form-input" type="time" id="ce-time"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Time (optional)</label><input class="form-input" type="time" id="ce-time"></div>
+        <div class="form-group"><label class="form-label">End Date (optional)</label><input class="form-input" type="date" id="ce-end-date"></div>
         <div class="form-group"><label class="form-label">Type</label>
           <select class="form-select" id="ce-type">
             <option value="custom">Custom Event</option>
@@ -1085,6 +1085,21 @@ tr:hover td{background:var(--paper)}
         </div>
       </div>
       <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="ce-notes" rows="2" placeholder="Optional details…"></textarea></div>
+      <div style="border-top:1px solid var(--rule);margin:12px 0 14px"></div>
+      <div class="form-group">
+        <label class="form-label">Repeating</label>
+        <select class="form-select" id="ce-freq" onchange="toggleRecurFields()">
+          <option value="">Does not repeat</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Every 2 weeks</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+        </select>
+      </div>
+      <div id="ce-recur-fields" style="display:none">
+        <div class="form-group"><label class="form-label">Repeat Until</label><input class="form-input" type="date" id="ce-until" placeholder="End date for series"></div>
+      </div>
     </div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('add-cal-event')">Cancel</button><button class="btn btn-primary" onclick="saveCalEvent()">Add to Calendar</button></div>
   </div>
@@ -1199,13 +1214,41 @@ const inits=n=>(n||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(
 const esc=s=>{const d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML}
 const fmtD=ts=>{if(!ts)return'—';const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
 const fmtSz=b=>b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/1048576).toFixed(1)+'MB'
+// Convert 24-hour time string "HH:MM" to 12-hour format "H:MM AM/PM"
+const fmtTime12=t=>{if(!t)return'';const[h,m]=t.split(':').map(Number);const ampm=h>=12?'PM':'AM';const h12=h%12||12;return`${h12}:${String(m).padStart(2,'0')} ${ampm}`}
 const isPast=ts=>{if(!ts)return false;const d=typeof ts==='string'?new Date(ts):ts?.toDate?ts.toDate():new Date(ts);return d<new Date()}
 // Role helpers — Section Editor has editor powers within their section
 const isEIC=()=>ME?.role==='editor-in-chief'
 const isEditor=()=>['editor','editor-in-chief'].includes(ME?.role)
 const isProducer=()=>ME?.role==='producer'
 const isSectionEditor=()=>ME?.role==='section-editor'
-const canBuildRundown=()=>isProducer()||isEditor()
+const canBuildRundown=()=>isProducer()||isEditor()||isEIC()
+
+// ── Main rundown view renderer ────────────────────────
+function renderRundownView(){
+  const canBuild=canBuildRundown()
+  const roleNote=document.getElementById('rd-role-note')
+  if(roleNote)roleNote.textContent=canBuild?`You can create and edit rundowns as ${ME?.role}.`:`View-only — contact a producer or editor to make changes.`
+  const newBtn=document.getElementById('btn-new-rundown')
+  if(newBtn)newBtn.style.display=canBuild?'':'none'
+  const sel=document.getElementById('rd-show-selector')
+  if(!RUNDOWNS.length){
+    if(sel)sel.innerHTML=''
+    const active=document.getElementById('rd-active-rundown')
+    if(active)active.style.display='none'
+    const empty=document.getElementById('rd-empty')
+    if(empty)empty.style.display='flex'
+    return
+  }
+  const empty=document.getElementById('rd-empty')
+  if(empty)empty.style.display='none'
+  if(sel)sel.innerHTML=RUNDOWNS.slice(0,12).map(r=>`
+    <button class="rd-show-pill${ACTIVE_RUNDOWN?.id===r.id?' active':''}" onclick="selectRundown('${r.id}')">
+      ${esc(r.name)}<br><span style="font-size:.62rem;opacity:.7">${r.airDate||''} ${r.airTime?fmtTime12(r.airTime):''}</span>
+    </button>`).join('')
+  if(!ACTIVE_RUNDOWN&&RUNDOWNS.length)selectRundown(RUNDOWNS[0].id)
+  else if(ACTIVE_RUNDOWN)renderActiveRundown()
+}
 const canAssign=a=>isEditor()||( isSectionEditor()&&(!a||a.section===ME?.section) )
 const canReview=a=>isEditor()||( isSectionEditor()&&a?.section===ME?.section )
 
@@ -2157,9 +2200,11 @@ function renderCalendar(){
   const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
   let html=days.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('')
 
-  // Combine all event sources for this month
+  // Build all events — expand recurring ones into individual occurrences
   const allStaticEvents=[...US_HOLIDAYS,...WC2026,...WC2026_BASES].map((e,i)=>({...e,_hardcoded:true,_tempId:`hc-${i}`}))
-  const allEvents=[...allStaticEvents,...CALENDAR_EVENTS]
+  // Expand recurring Firestore events into all their dates
+  const expandedCustom=CALENDAR_EVENTS.flatMap(e=>expandRecurring(e))
+  const allEvents=[...allStaticEvents,...expandedCustom]
 
   for(let i=0;i<startDay;i++)html+=`<div class="cal-day other-month"></div>`
   for(let d=1;d<=last.getDate();d++){
@@ -2168,13 +2213,16 @@ function renderCalendar(){
     const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
 
     // Assignments due this day
-    const dayAssigns=ASSIGNMENTS.filter(a=>{if(!a.deadline)return false;const dd=new Date(a.deadline+'T12:00:00');return dd.getDate()===d&&dd.getMonth()===calMonth&&dd.getFullYear()===calYear})
-    // Other events on this day
+    const dayAssigns=ASSIGNMENTS.filter(a=>{
+      if(!a.deadline)return false
+      const dd=new Date(a.deadline+'T12:00:00')
+      return dd.getDate()===d&&dd.getMonth()===calMonth&&dd.getFullYear()===calYear
+    })
+    // Other events on this day (single-day match or within multi-day span)
     const dayEvents=allEvents.filter(e=>{
       if(!e.date)return false
       if(e.date===dateStr)return true
-      // Multi-day events
-      if(e.endDate&&e.endDate>=dateStr&&e.date<=dateStr)return true
+      if(e.endDate&&!e._recurring&&e.endDate>=dateStr&&e.date<=dateStr)return true
       return false
     })
 
@@ -2182,7 +2230,10 @@ function renderCalendar(){
     const eventHTML=dayEvents.map(e=>{
       const id=e.id||e._tempId
       const cls=e.type==='holiday'?'holiday':e.type==='worldcup'?'worldcup':'custom'
-      return`<div class="cal-event ${cls}" onclick="event.stopPropagation();viewCalEvent('${id}',false)" title="${esc(e.title)}">${esc(e.title.slice(0,16))}</div>`
+      const timeLabel=e.time?` ${fmtTime12(e.time)}`:''
+      const recurMark=e._recurring?' ↻':''
+      const label=esc((e.title+timeLabel+recurMark).slice(0,18))
+      return`<div class="cal-event ${cls}" onclick="event.stopPropagation();viewCalEvent('${id}',false)" title="${esc(e.title)}${e.time?' at '+fmtTime12(e.time):''}">${label}</div>`
     }).join('')
 
     html+=`<div class="cal-day${isToday?' today':''}">
@@ -2610,7 +2661,7 @@ function renderActiveRundown(){
   document.getElementById('rd-show-title').textContent=rd.name||'Untitled Show'
   const meta=[]
   if(rd.airDate)meta.push(new Date(rd.airDate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}))
-  if(rd.airTime)meta.push(rd.airTime)
+  if(rd.airTime)meta.push(fmtTime12(rd.airTime))
   if(rd.duration)meta.push(`${rd.duration} show`)
   const prod=TEAM.find(u=>u.id===rd.producerId)
   if(prod)meta.push(`Producer: ${prod.name}`)
@@ -3031,17 +3082,47 @@ function subscribeCalendarEvents(){
   },err=>console.error('Calendar events error:',err.code))
 }
 
+window.toggleRecurFields=()=>{
+  const freq=document.getElementById('ce-freq').value
+  document.getElementById('ce-recur-fields').style.display=freq?'':'none'
+}
+
+function expandRecurring(ev){
+  if(!ev.freq||!ev.date)return[ev]
+  const dates=[]
+  const start=new Date(ev.date+'T12:00:00')
+  const until=ev.until?new Date(ev.until+'T23:59:59'):new Date(start.getTime()+2*365*24*60*60*1000)
+  let cur=new Date(start),safety=0
+  while(cur<=until&&safety++<500){
+    const dateStr=cur.toISOString().slice(0,10)
+    dates.push({...ev,date:dateStr,_recurring:true})
+    switch(ev.freq){
+      case'daily':    cur.setDate(cur.getDate()+1);break
+      case'weekly':   cur.setDate(cur.getDate()+7);break
+      case'biweekly': cur.setDate(cur.getDate()+14);break
+      case'monthly':  cur.setMonth(cur.getMonth()+1);break
+      case'yearly':   cur.setFullYear(cur.getFullYear()+1);break
+      default: return[ev]
+    }
+  }
+  return dates
+}
+
 window.saveCalEvent=async()=>{
   const title=document.getElementById('ce-title').value.trim()
   const date=document.getElementById('ce-date').value
   if(!title){toast('Enter an event title','error');return}
   if(!date){toast('Select a date','error');return}
+  const freq=document.getElementById('ce-freq').value
+  const until=document.getElementById('ce-until')?.value||null
   const data={
     title,date,
     endDate:document.getElementById('ce-end-date').value||null,
     time:document.getElementById('ce-time').value||null,
     type:document.getElementById('ce-type').value,
     notes:document.getElementById('ce-notes').value.trim(),
+    freq:freq||null,
+    until:freq&&until?until:null,
     createdBy:ME.uid,createdAt:serverTimestamp()
   }
   try{
@@ -3050,11 +3131,14 @@ window.saveCalEvent=async()=>{
       toast('Event updated ✓')
     }else{
       await addDoc(collection(db,'calendarEvents'),data)
-      toast('Event added to calendar ✓')
+      toast(freq?'Recurring event added ✓':'Event added to calendar ✓')
     }
     editingCalEventId=null
-    ;['ce-title','ce-date','ce-end-date','ce-time','ce-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
+    ;['ce-title','ce-date','ce-end-date','ce-time','ce-notes','ce-until'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
     document.getElementById('ce-type').value='custom'
+    document.getElementById('ce-freq').value=''
+    document.getElementById('ce-recur-fields').style.display='none'
+    document.getElementById('cal-event-modal-title').textContent='Add Calendar Event'
     closeModal('add-cal-event')
   }catch(e){toast('Could not save event','error');console.error(e)}
 }
@@ -3065,10 +3149,8 @@ window.importICS=async(input)=>{
   const events=parseICS(text)
   let count=0
   for(const ev of events){
-    try{
-      await addDoc(collection(db,'calendarEvents'),{...ev,createdBy:ME.uid,createdAt:serverTimestamp()})
-      count++
-    }catch(e){console.error('ICS import error:',e)}
+    try{await addDoc(collection(db,'calendarEvents'),{...ev,createdBy:ME.uid,createdAt:serverTimestamp()});count++}
+    catch(e){console.error('ICS import error:',e)}
   }
   toast(`Imported ${count} event${count!==1?'s':''} from ${file.name} ✓`)
   input.value=''
@@ -3077,53 +3159,55 @@ function parseICS(text){
   const events=[]
   const blocks=text.split('BEGIN:VEVENT')
   blocks.slice(1).forEach(block=>{
-    const get=key=>{const m=block.match(new RegExp(key+'[^:]*:([^\\r\\n]+)'));return m?m[1].trim():''}
-    const dtstart=get('DTSTART')
-    const summary=get('SUMMARY')
+    const get=key=>{const m=block.match(new RegExp(key+'[^:]*:([^\r\n]+)'));return m?m[1].trim():''}
+    const dtstart=get('DTSTART'),summary=get('SUMMARY')
     if(!dtstart||!summary)return
-    // Parse date from YYYYMMDD or YYYYMMDDTHHMMSS
     const dateStr=dtstart.replace(/T.*/,'')
     const y=dateStr.slice(0,4),mo=dateStr.slice(4,6),d=dateStr.slice(6,8)
     const date=`${y}-${mo}-${d}`
     const dtend=get('DTEND')
     const endStr=dtend?`${dtend.slice(0,4)}-${dtend.slice(4,6)}-${dtend.slice(6,8)}`:null
-    events.push({
-      title:summary.replace(/\\n/g,' ').replace(/\\,/g,','),
-      date,endDate:endStr,time:null,
-      type:'custom',notes:get('DESCRIPTION').replace(/\\n/g,' ').slice(0,200)
-    })
+    const rrule=get('RRULE')
+    let freq=null,until=null
+    if(rrule){
+      const fm=rrule.match(/FREQ=(\w+)/);if(fm)freq=fm[1].toLowerCase()
+      const um=rrule.match(/UNTIL=(\d{8})/);if(um)until=`${um[1].slice(0,4)}-${um[1].slice(4,6)}-${um[1].slice(6,8)}`
+    }
+    events.push({title:summary.replace(/\\n/g,' ').replace(/\\,/g,','),date,endDate:endStr,time:null,type:'custom',notes:get('DESCRIPTION').replace(/\\n/g,' ').slice(0,200),freq,until})
   })
   return events
 }
 
 window.viewCalEvent=(id,isAssignment)=>{
-  const modal=document.getElementById('modal-view-cal-event')
   const body=document.getElementById('vce-body')
   const title=document.getElementById('vce-title')
   const footer=document.getElementById('vce-footer')
   if(isAssignment){
     const a=ASSIGNMENTS.find(x=>x.id===id);if(!a)return
     title.textContent=a.title||'Untitled'
-    body.innerHTML=`<div class="seg-detail-row"><div class="seg-detail-label">Section</div><div class="seg-detail-value">${esc(a.section||'—')}</div></div>
+    body.innerHTML=`
+      <div class="seg-detail-row"><div class="seg-detail-label">Section</div><div class="seg-detail-value">${esc(a.section||'—')}</div></div>
       <div class="seg-detail-row"><div class="seg-detail-label">Reporter</div><div class="seg-detail-value">${esc(TEAM.find(u=>u.id===a.assignedTo)?.name||'Unassigned')}</div></div>
       <div class="seg-detail-row"><div class="seg-detail-label">Status</div><div class="seg-detail-value"><span class="badge badge-${a.status}">${a.status}</span></div></div>
-      <div class="seg-detail-row"><div class="seg-detail-label">Deadline</div><div class="seg-detail-value">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'—'}</div></div>
+      <div class="seg-detail-row"><div class="seg-detail-label">Deadline</div><div class="seg-detail-value">${a.deadline?new Date(a.deadline+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'—'}</div></div>
       ${a.brief?`<div class="seg-detail-row"><div class="seg-detail-label">Brief</div><div class="seg-detail-value">${esc(a.brief)}</div></div>`:''}`
     footer.innerHTML=`<button class="btn btn-outline" onclick="closeModal('view-cal-event')">Close</button><button class="btn btn-primary" onclick="closeModal('view-cal-event');openEditor('${id}')">Open Story</button>`
   }else{
-    // Check Firestore events first, then hardcoded
     const ev=CALENDAR_EVENTS.find(x=>x.id===id)||[...US_HOLIDAYS,...WC2026,...WC2026_BASES].find(x=>x._tempId===id)
     if(!ev)return
     title.textContent=ev.title
-    body.innerHTML=`<div class="seg-detail-row"><div class="seg-detail-label">Date</div><div class="seg-detail-value">${ev.date?new Date(ev.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'—'}</div></div>
+    const timeStr=ev.time?` at ${fmtTime12(ev.time)}`:''
+    body.innerHTML=`
+      <div class="seg-detail-row"><div class="seg-detail-label">Date</div><div class="seg-detail-value">${ev.date?new Date(ev.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'—'}${timeStr}</div></div>
       ${ev.endDate?`<div class="seg-detail-row"><div class="seg-detail-label">End Date</div><div class="seg-detail-value">${new Date(ev.endDate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div></div>`:''}
-      ${ev.time?`<div class="seg-detail-row"><div class="seg-detail-label">Time</div><div class="seg-detail-value">${esc(ev.time)}</div></div>`:''}
+      ${ev.freq?`<div class="seg-detail-row"><div class="seg-detail-label">Repeats</div><div class="seg-detail-value">${esc(ev.freq)}${ev.until?' until '+new Date(ev.until+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):''}</div></div>`:''}
       <div class="seg-detail-row"><div class="seg-detail-label">Type</div><div class="seg-detail-value">${esc(ev.type||'custom')}</div></div>
       ${ev.notes?`<div class="seg-detail-row"><div class="seg-detail-label">Notes</div><div class="seg-detail-value">${esc(ev.notes)}</div></div>`:''}`
     const isEditable=ev.id&&!ev._hardcoded
-    footer.innerHTML=`<button class="btn btn-outline" onclick="closeModal('view-cal-event')">Close</button>
-      ${isEditable&&(isEditor()||isEIC())?`<button class="btn btn-danger" onclick="closeModal('view-cal-event');deleteCalEvent('${ev.id}')">Delete</button>`:''}
-      ${isEditable&&(isEditor()||isEIC())?`<button class="btn btn-primary" onclick="closeModal('view-cal-event');editCalEvent('${ev.id}')">Edit</button>`:''}`
+    footer.innerHTML=`
+      <button class="btn btn-outline" onclick="closeModal('view-cal-event')">Close</button>
+      ${isEditable?`<button class="btn btn-danger" style="margin-left:auto" onclick="closeModal('view-cal-event');deleteCalEvent('${ev.id}')">Delete</button>`:''}
+      ${isEditable?`<button class="btn btn-primary" onclick="closeModal('view-cal-event');editCalEvent('${ev.id}')">Edit</button>`:''}`
   }
   openModal('view-cal-event')
 }
@@ -3137,6 +3221,10 @@ window.editCalEvent=(id)=>{
   document.getElementById('ce-time').value=ev.time||''
   document.getElementById('ce-type').value=ev.type||'custom'
   document.getElementById('ce-notes').value=ev.notes||''
+  document.getElementById('ce-freq').value=ev.freq||''
+  const until=document.getElementById('ce-until')
+  if(until)until.value=ev.until||''
+  document.getElementById('ce-recur-fields').style.display=ev.freq?'':'none'
   document.getElementById('cal-event-modal-title').textContent='Edit Event'
   openModal('add-cal-event')
 }
@@ -3145,7 +3233,6 @@ window.deleteCalEvent=async(id)=>{
   try{await deleteDoc(doc(db,'calendarEvents',id));toast('Event removed')}
   catch(e){toast('Could not delete event','error')}
 }
-
 // ── Segment viewer ─────────────────────────────────────
 window.viewSegment=(segId)=>{
   const seg=ACTIVE_SEGMENTS.find(s=>s.id===segId);if(!seg)return
