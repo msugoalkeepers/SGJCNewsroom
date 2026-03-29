@@ -1996,15 +1996,22 @@ window.restoreVersion=async i=>{
   toast(`Restored to ${v.label} ✓`)
 }
 function renderEditorMedia(){
-  const sm=MEDIA_ALL.filter(m=>m.storyId===CURRENT_STORY?.id),container=document.getElementById('ed-media')
-  if(!sm.length){container.innerHTML='<div style=\"text-align:center;padding:14px 8px\"><div style=\"font-size:.72rem;color:var(--muted);margin-bottom:8px\">No media attached yet</div><button class=\"btn btn-outline\" style=\"font-size:.72rem\" onclick=\"openModal(\\'add-drive-media\\')\">+ Add from Google Drive</button></div>';return}
-  container.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px">${sm.slice(0,4).map(m=>`
-    <div style="aspect-ratio:16/10;background:var(--cream);border-radius:var(--r);border:1px solid var(--rule);overflow:hidden;position:relative;cursor:pointer" onclick="openLightbox('${m.id}')">
-      ${m.category==='image'?`<img src="${m.downloadURL}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`:
-        `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.4rem">${m.category==='video'?'🎬':m.category==='audio'?'🎤':'📄'}</div>`}
-      <span class="media-type-badge">${m.mimeType?.split('/')[1]?.split(';')[0]||m.category}</span>
-    </div>`).join('')}</div>
-  <button class=\"btn btn-ghost\" style=\"width:100%;font-size:.7rem;justify-content:center\" onclick=\"openModal('add-drive-media')\">+ Add from Google Drive</button>\`
+  const sm=MEDIA_ALL.filter(m=>m.storyId===CURRENT_STORY?.id)
+  const container=document.getElementById('ed-media')
+  if(!container)return
+  if(!sm.length){
+    container.innerHTML='<div style="text-align:center;padding:14px 8px"><div style="font-size:.72rem;color:var(--muted);margin-bottom:8px">No media attached yet</div><button class="btn btn-outline" style="font-size:.72rem" onclick="openModal(\'add-drive-media\')">+ Add from Google Drive</button></div>'
+    return
+  }
+  const thumbs=sm.slice(0,4).map(m=>{
+    const src=m.thumbURL||m.downloadURL||''
+    const icon=m.category==='video'?'🎬':m.category==='audio'?'🎤':'📄'
+    const inner=m.category==='image'
+      ?`<img src="${esc(src)}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
+      :`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.4rem">${icon}</div>`
+    return`<div style="aspect-ratio:16/10;background:var(--cream);border-radius:var(--r);border:1px solid var(--rule);overflow:hidden;position:relative;cursor:pointer" onclick="openLightbox('${m.id}')">${inner}<span class="media-type-badge">${esc(m.category)}</span></div>`
+  }).join('')
+  container.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px">${thumbs}</div><button class="btn btn-ghost" style="width:100%;font-size:.7rem;justify-content:center" onclick="openModal('add-drive-media')">+ Add from Google Drive</button>`
 }
 
 // ── CALENDAR ──
