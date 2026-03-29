@@ -1412,7 +1412,6 @@ const TEMPLATES=[
   {name:'Investigative',desc:'Long-form investigative report',section:'Investigations',length:'feature',wordTarget:1500,assets:['Photos','Video','Graphics'],brief:'Multiple sources required. Document everything. Get official responses on record.'},
   {name:'Breaking News',desc:'Quick-turn news story',section:'Campus News',length:'brief',wordTarget:250,assets:[],brief:'Answer who/what/when/where immediately. Update with additional details as gathered.'},
 ]
-window.openModal('templates') // will be called onclick, not auto
 document.getElementById('template-grid').innerHTML=TEMPLATES.map((t,i)=>`
   <div class="template-card" onclick="applyTemplate(${i})">
     <div class="template-name">${t.name}</div>
