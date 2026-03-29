@@ -1064,12 +1064,40 @@ onAuthStateChanged(auth,async user=>{
 async function loadProfile(user){
   const r=doc(db,'users',user.uid),snap=await getDoc(r)
   if(snap.exists())return{id:snap.id,...snap.data()}
-  const p={uid:user.uid,name:user.displayName||user.email.split('@')[0],email:user.email,photoURL:user.photoURL||null,role:'reporter',section:'Campus News',status:'pending',createdAt:serverTimestamp()}
+
+  // Check if ANY other users exist — if not, this is the very first user
+  // Make them editor-in-chief automatically so the system has an admin
+  const allUsers=await getDocs(collection(db,'users'))
+  const isFirstUser=allUsers.empty
+
+  const p={
+    uid:user.uid,
+    name:user.displayName||user.email.split('@')[0],
+    email:user.email,
+    photoURL:user.photoURL||null,
+    role:isFirstUser?'editor-in-chief':'reporter',
+    section:'All Sections',
+    status:isFirstUser?'approved':'pending',
+    createdAt:serverTimestamp()
+  }
   await setDoc(r,p)
-  // notify all EICs
-  const eq=query(collection(db,'users'),where('role','==','editor-in-chief'))
+
+  if(isFirstUser){
+    // First user — let them straight in as EIC, no approval needed
+    console.log('First user detected — auto-promoted to editor-in-chief')
+    return p
+  }
+
+  // Not first user — notify all existing EICs and editors
+  const eq=query(collection(db,'users'),where('role','in',['editor-in-chief','editor']))
   const es=await getDocs(eq)
-  es.forEach(async e=>{await addDoc(collection(db,'notifications'),{userId:e.id,message:`${p.name} (${p.email}) requested access`,type:'info',read:false,createdAt:serverTimestamp()})})
+  es.forEach(async e=>{
+    await addDoc(collection(db,'notifications'),{
+      userId:e.id,
+      message:`${p.name} (${p.email}) requested access to the newsroom`,
+      type:'info',read:false,createdAt:serverTimestamp()
+    })
+  })
   return p
 }
 
@@ -1958,7 +1986,11 @@ function renderTeam(){
         <div style="text-align:center"><div class="team-stat-num">${pub}</div><div class="team-stat-lbl">Published</div></div>
         <div style="text-align:center"><div class="team-stat-num">${active}</div><div class="team-stat-lbl">Active</div></div>
       </div>
-      ${(isEIC()||isEditor())&&!isMe?`<button class="btn btn-ghost" style="font-size:.67rem;color:var(--muted);margin-top:3px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change role</button>`:''}
+      ${isEIC()?
+        `<button class="btn btn-outline" style="font-size:.67rem;margin-top:5px;padding:4px 10px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change role</button>`:
+        isEditor()&&!isMe&&!['editor','editor-in-chief'].includes(u.role)?
+        `<button class="btn btn-ghost" style="font-size:.67rem;color:var(--muted);margin-top:3px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change role</button>`:
+        isMe?`<span style="font-size:.62rem;color:var(--muted);margin-top:4px">That's you</span>`:''}
     </div>`
   }).join('')
   document.getElementById('team-grid').innerHTML=cards+`<div class="team-card invite-card" onclick="openModal('invite')"><div style="font-size:1.8rem">+</div><div style="font-size:.8rem;font-weight:500">Invite a journalist</div><div style="font-size:.68rem">Share the newsroom link</div></div>`
@@ -1990,10 +2022,24 @@ window.denyUser=async(uid,name)=>{
   if(!await confirm2('Deny Access',`Deny ${name}'s request?`))return
   try{await deleteDoc(doc(db,'users',uid));toast(`${name}'s request denied`)}catch(e){toast('Failed','error')}
 }
-window.openRoleModal=(uid,name,role)=>{editingRoleUid=uid;document.getElementById('role-name').value=name;document.getElementById('role-select').value=role;openModal('role')}
+window.openRoleModal=(uid,name,role)=>{
+  editingRoleUid=uid
+  document.getElementById('role-name').value=name
+  document.getElementById('role-select').value=role||'reporter'
+  openModal('role')
+}
 window.saveRole=async()=>{
-  if(!editingRoleUid)return;const role=document.getElementById('role-select').value
-  try{await updateDoc(doc(db,'users',editingRoleUid),{role});closeModal('role');toast('Role updated ✓')}catch(e){toast('Update failed','error')}
+  if(!editingRoleUid)return
+  const role=document.getElementById('role-select').value
+  try{
+    await updateDoc(doc(db,'users',editingRoleUid),{role,updatedAt:serverTimestamp()})
+    closeModal('role')
+    toast(`Role updated to ${role} ✓`)
+    editingRoleUid=null
+  }catch(e){
+    toast('Update failed — check your connection','error')
+    console.error(e)
+  }
 }
 window.sendInvite=()=>{
   const email=document.getElementById('inv-email').value.trim()
