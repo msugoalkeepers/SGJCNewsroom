@@ -1511,36 +1511,81 @@ window.openEditor=async assignId=>{
   if(commentUnsub){commentUnsub();commentUnsub=null}
   if(storyUnsub){storyUnsub();storyUnsub=null}
   if(sourceUnsub){sourceUnsub();sourceUnsub=null}
+
+  // ── Step 1: Load assignment ──
+  let aSnap
+  try{aSnap=await getDoc(doc(db,'assignments',assignId))}
+  catch(e){console.error('Failed to load assignment:',e);_editorFail('Could not load assignment. Check your connection.');return}
+  if(!aSnap.exists()){_editorFail('Assignment not found.');return}
+  CURRENT_ASSIGN={id:aSnap.id,...aSnap.data()}
+
+  // ── Step 2: Mark as read ──
   try{
-    const aSnap=await getDoc(doc(db,'assignments',assignId))
-    if(!aSnap.exists()){toast('Assignment not found','error');return}
-    CURRENT_ASSIGN={id:aSnap.id,...aSnap.data()}
-    // Mark as read (read receipt)
-    if(CURRENT_ASSIGN.assignedTo===ME.uid&&!CURRENT_ASSIGN.readAt){
+    if(CURRENT_ASSIGN.assignedTo===ME.uid&&!CURRENT_ASSIGN.readAt)
       await updateDoc(doc(db,'assignments',assignId),{readAt:serverTimestamp()})
-    }
-    // Find or create story
+  }catch(e){console.warn('Could not mark as read:',e)}
+
+  // ── Step 3: Find or create story doc ──
+  let storyId
+  try{
     const sq=await getDocs(query(collection(db,'stories'),where('assignmentId','==',assignId),limit(1)))
-    let storyId
-    if(!sq.empty){storyId=sq.docs[0].id;CURRENT_STORY={id:storyId,...sq.docs[0].data()}}
-    else{
-      const r=await addDoc(collection(db,'stories'),{assignmentId,authorId:ME.uid,title:CURRENT_ASSIGN.title||'',deck:'',content:'',wordCount:0,status:'draft',versions:[],createdAt:serverTimestamp(),updatedAt:serverTimestamp()})
-      storyId=r.id;CURRENT_STORY={id:storyId,assignmentId,authorId:ME.uid,title:CURRENT_ASSIGN.title||'',deck:'',content:'',wordCount:0,status:'draft',versions:[]}
+    if(!sq.empty){
+      storyId=sq.docs[0].id
+      CURRENT_STORY={id:storyId,...sq.docs[0].data()}
+    }else{
+      const r=await addDoc(collection(db,'stories'),{
+        assignmentId,authorId:ME.uid,
+        title:CURRENT_ASSIGN.title||'',deck:'',content:'',
+        wordCount:0,status:'draft',versions:[],
+        createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+      })
+      storyId=r.id
+      CURRENT_STORY={id:storyId,assignmentId,authorId:ME.uid,title:CURRENT_ASSIGN.title||'',deck:'',content:'',wordCount:0,status:'draft',versions:[]}
     }
-    renderEditorUI()
-    document.getElementById('editor-loading').style.display='none'
-    document.getElementById('editor-inner').style.display='block'
-    storyUnsub=onSnapshot(doc(db,'stories',storyId),snap=>{if(snap.exists()){CURRENT_STORY={id:snap.id,...snap.data()};renderVersionHistory()}})
-    // Single where() only — sort client-side to avoid composite index requirement
+  }catch(e){console.error('Failed to load/create story:',e);_editorFail('Could not load story document. Check your connection.');return}
+
+  // ── Step 4: Render UI ──
+  try{renderEditorUI()}
+  catch(e){console.error('renderEditorUI error:',e)}
+
+  // Always hide spinner and show editor regardless of render errors
+  document.getElementById('editor-loading').style.display='none'
+  document.getElementById('editor-inner').style.display='block'
+
+  // ── Step 5: Start live listeners ──
+  try{
+    storyUnsub=onSnapshot(doc(db,'stories',storyId),snap=>{
+      if(snap.exists()){CURRENT_STORY={id:snap.id,...snap.data()};renderVersionHistory()}
+    })
     commentUnsub=onSnapshot(query(collection(db,'comments'),where('storyId','==',storyId)),snap=>{
-      const sorted=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{const ta=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0),tb=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0);return ta-tb})
+      const sorted=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+        const ta=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
+        const tb=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
+        return ta-tb
+      })
       renderComments(sorted)
     })
     sourceUnsub=onSnapshot(query(collection(db,'sources'),where('storyId','==',storyId)),snap=>{
-      CURRENT_SOURCES=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{const ta=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0),tb=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0);return ta-tb})
+      CURRENT_SOURCES=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+        const ta=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
+        const tb=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
+        return ta-tb
+      })
       renderSources()
     })
-  }catch(e){console.error(e);toast('Failed to load story','error')}
+  }catch(e){console.error('Listener setup error:',e)}
+}
+
+function _editorFail(msg){
+  document.getElementById('editor-loading').style.display='none'
+  document.getElementById('editor-inner').innerHTML=`
+    <div class="empty-state">
+      <div class="empty-icon">✕</div>
+      <div class="empty-title">Could not load story</div>
+      <div class="empty-sub">${esc(msg)}</div>
+      <button class="btn btn-outline" onclick="nav('assignments')" style="margin-top:8px">← Back to Assignments</button>
+    </div>`
+  document.getElementById('editor-inner').style.display='block'
 }
 
 function renderEditorUI(){
