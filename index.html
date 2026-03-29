@@ -1356,7 +1356,7 @@ window.sendInvite=()=>{
   const role=document.getElementById('inv-role').value
   const section=document.getElementById('inv-section').value
   const subject=encodeURIComponent('Invitation to join The Pressroom — SGJC Newsroom')
-  const body=encodeURIComponent(`Hi,\n\nYou've been invited to join The Pressroom, the SGJC student newsroom platform, as a ${role}.\n\nClick the link below to sign in with your Google account:\nhttps://msugoalkeepers.github.io/\n\nYour section: ${section}\n\nSee you in the newsroom!\n${ME.name}`)
+  const body=encodeURIComponent(`Hi,\n\nYou've been invited to join The Pressroom, the SGJC student newsroom platform, as a ${role}.\n\nClick the link below to sign in with your Google account:\nhttps://msugoalkeepers.github.io/SGJCNewsroom/\n\nYour section: ${section}\n\nSee you in the newsroom!\n${ME.name}`)
   window.open(`mailto:${email}?subject=${subject}&body=${body}`)
   closeModal('invite')
   document.getElementById('inv-email').value=''
