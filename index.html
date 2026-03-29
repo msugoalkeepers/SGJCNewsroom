@@ -6,6 +6,13 @@
 <title>Goalkeepers Pressroom — MSU SGJC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style id="print-styles">
+@media print{
+  body>*{display:none!important}
+  #pdf-print-frame{display:block!important}
+}
+#pdf-print-frame{display:none}
+</style>
 <style>
 :root{
   --ink:#0f0e0c;--paper:#f5f2eb;--cream:#ede9df;--rule:#d4cfc3;
@@ -39,6 +46,28 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 .markup-toggle{display:flex;align-items:center;gap:6px;font-size:.72rem;font-family:var(--fm);color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:var(--r);border:1px solid var(--rule);background:transparent;transition:all .15s}
 .markup-toggle.active{background:#fdedec;color:var(--accent);border-color:#f5b7b1}
 
+/* ── PITCH BOARD ── */
+.pitch-card{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px;transition:box-shadow .15s}
+.pitch-card:hover{box-shadow:var(--shadow)}
+.pitch-status-pending{color:var(--amber);font-weight:600}
+.pitch-status-approved{color:var(--accent2);font-weight:600}
+.pitch-status-rejected{color:var(--muted);font-weight:600}
+.pitch-status-hold{color:var(--sky);font-weight:600}
+.pitch-section-hdr{font-size:.68rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:10px 0 6px;margin-top:8px;border-bottom:1px solid var(--rule);margin-bottom:6px}
+
+/* ── DIFF VIEW ── */
+.diff-add{background:#d4edda;color:#155724;border-radius:2px;padding:0 2px}
+.diff-del{background:#f8d7da;color:#721c24;border-radius:2px;padding:0 2px;text-decoration:line-through}
+
+/* ── ACTIVITY FEED ── */
+.activity-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--cream);font-size:.75rem;align-items:flex-start}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:1px}
+
+/* ── DEADLINE PRESSURE ── */
+.deadline-chip{background:var(--accent);color:white;border-radius:var(--r);padding:2px 8px;font-size:.67rem;font-family:var(--fm);cursor:pointer;white-space:nowrap}
+.deadline-chip.soon{background:var(--amber)}
+
 /* ── CALENDAR FILTER PILLS ── */
 .cal-filter-pill{padding:3px 10px;border-radius:20px;border:1px solid var(--rule);background:var(--white);font-size:.68rem;font-family:var(--fm);cursor:pointer;transition:all .15s;color:var(--muted);white-space:nowrap}
 .cal-filter-pill:hover{background:var(--cream);color:var(--ink)}
@@ -48,7 +77,7 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 /* ── CALENDAR ADDITIONS ── */
 .cal-event.assignment{background:#e67e22!important;color:white}
 .cal-event.holiday{background:#6c3483;color:white}
-.cal-event.custom{background:#1a5276;color:white}
+.cal-event.custom{background:#1a1a1a;color:white}
 .cal-event.worldcup{background:#145a32;color:white}
 .cal-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:.68rem;font-family:var(--fm)}
 .cal-legend-item{display:flex;align-items:center;gap:4px}
@@ -491,6 +520,7 @@ tr:hover td{background:var(--paper)}
       <div class="nav-item" id="nav-editor" style="display:none" onclick="nav('editor')"><span class="nav-icon">✎</span>Story Editor</div>
       <div class="nav-item" id="nav-calendar" onclick="nav('calendar')"><span class="nav-icon">▦</span>Calendar</div>
       <div class="nav-item" id="nav-archive" onclick="nav('archive')"><span class="nav-icon">⊟</span>Archive</div>
+      <div class="nav-item" id="nav-pitch" onclick="nav('pitch')"><span class="nav-icon">💡</span>Pitch Board<span class="nav-badge" id="nb-pitch" style="display:none;background:var(--purple)">0</span></div>
       <div class="nav-item" id="nav-rundown" onclick="nav('rundown')"><span class="nav-icon">▤</span>Rundowns<span class="nav-badge" id="nb-rundown" style="display:none;background:var(--sky)">0</span></div>
       <div class="sb-section-lbl">Assets</div>
       <div class="nav-item" onclick="nav('media')"><span class="nav-icon">⊡</span>Media Library</div>
@@ -541,6 +571,12 @@ tr:hover td{background:var(--paper)}
           <div class="stat-card amber"><div class="stat-lbl">In Review</div><div class="stat-num" id="ds-review">—</div><div class="stat-sub">awaiting editor</div></div>
           <div class="stat-card green"><div class="stat-lbl">Published</div><div class="stat-num" id="ds-pub">—</div><div class="stat-sub">this semester</div></div>
           <div class="stat-card sky"><div class="stat-lbl">Team Members</div><div class="stat-num" id="ds-team">—</div><div class="stat-sub">active journalists</div></div>
+        </div>
+        <div id="deadline-pressure-bar" style="display:none;background:#fdf2e9;border:1px solid #f0a070;border-radius:var(--r);padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-size:.8rem">⚠</span>
+          <span style="font-size:.78rem;font-weight:600;color:#784212">Deadline Pressure:</span>
+          <span style="font-size:.78rem;color:#784212" id="deadline-pressure-txt"></span>
+          <div id="deadline-pressure-list" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:4px"></div>
         </div>
         <div style="display:grid;grid-template-columns:2fr 1fr;gap:22px">
           <div>
@@ -613,6 +649,7 @@ tr:hover td{background:var(--paper)}
             <button class="btn btn-outline" id="btn-send-back" onclick="sendBack()" style="display:none;font-size:.73rem">↩ Send Back</button>
             <button class="btn btn-primary" id="btn-publish" onclick="publishStory()" style="display:none;font-size:.73rem">Approve &amp; Publish</button>
             <button class="btn btn-outline" id="btn-unlock" onclick="unlockStory()" style="display:none;font-size:.73rem">Unlock</button>
+            <button class="btn btn-outline" id="btn-export-pdf" onclick="exportStoryPDF()" style="display:none;font-size:.73rem">⬇ Export PDF</button>
           </div>
           <div class="locked-banner" id="locked-banner" style="display:none">🔒 This story is published and locked. Only an editor-in-chief can unlock it.</div>
           <div class="markup-mode-banner" id="markup-banner" style="display:none">✏ Editor Markup Mode — your changes will appear in <strong style="color:var(--accent)">red</strong> so the reporter can see what was edited.</div>
@@ -687,7 +724,7 @@ tr:hover td{background:var(--paper)}
                 </div>
               </div>
               <div class="panel">
-                <div class="panel-hdr"><span class="panel-title">Version History</span></div>
+                <div class="panel-hdr"><span class="panel-title">Version History</span><button id="btn-diff" class="btn btn-ghost" style="font-size:.67rem;padding:2px 6px;display:none" onclick="openDiff()" title="Compare reporter draft vs editor version">⇄ Compare</button></div>
                 <div class="panel-body" id="version-list"></div>
               </div>
             </div>
@@ -712,9 +749,22 @@ tr:hover td{background:var(--paper)}
           <button class="cal-filter-pill" id="cfp-assignment" onclick="setCalFilter('assignment',this)" style="--fp-color:#e67e22">● Assignments</button>
           <button class="cal-filter-pill" id="cfp-holiday" onclick="setCalFilter('holiday',this)" style="--fp-color:#6c3483">● U.S. Holidays</button>
           <button class="cal-filter-pill" id="cfp-worldcup" onclick="setCalFilter('worldcup',this)" style="--fp-color:#145a32">● World Cup 2026</button>
-          <button class="cal-filter-pill" id="cfp-custom" onclick="setCalFilter('custom',this)" style="--fp-color:#1a5276">● Custom Events</button>
+          <button class="cal-filter-pill" id="cfp-custom" onclick="setCalFilter('custom',this)" style="--fp-color:#1a1a1a">● Black SoccerLab Events</button>
         </div>
         <div class="cal-grid" id="cal-grid"></div>
+      </div>
+
+      <!-- PITCH BOARD -->
+      <div class="view" id="view-pitch">
+        <div class="section-hdr">
+          <div>
+            <div class="section-title">Editorial Pitch Board</div>
+            <div style="font-size:.74rem;color:var(--muted);margin-top:2px">Propose a story idea. Editors approve, hold, or reject pitches.</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('new-pitch')">+ Submit Pitch</button>
+        </div>
+        <hr class="section-rule">
+        <div id="pitch-board-content"></div>
       </div>
 
       <!-- ARCHIVE -->
@@ -1170,6 +1220,61 @@ tr:hover td{background:var(--paper)}
   </div>
 </div>
 
+<!-- PITCH MODAL -->
+<div class="modal-overlay" id="modal-new-pitch" onclick="if(event.target===this)closeModal('new-pitch')">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title" id="pitch-modal-title">Submit a Story Pitch</span><button class="modal-close" onclick="closeModal('new-pitch')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Story Headline / Working Title</label><input class="form-input" id="pitch-title" placeholder="e.g. MSU Soccer Aims for Conference Title"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Section</label>
+          <select class="form-select" id="pitch-section">
+            <option value="">— Select —</option>
+            <option>News</option><option>Sports</option><option>Features</option><option>Opinion</option><option>Multimedia</option><option>Broadcast</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Story Type</label>
+          <select class="form-select" id="pitch-type">
+            <option value="news">News</option><option value="feature">Feature</option><option value="profile">Profile</option>
+            <option value="investigative">Investigative</option><option value="opinion">Opinion/Column</option><option value="broadcast">Broadcast Segment</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Story Idea / Brief</label><textarea class="form-textarea" id="pitch-brief" rows="3" placeholder="What's the story? Why does it matter? What's the angle?"></textarea></div>
+      <div class="form-group"><label class="form-label">Sources / Access</label><textarea class="form-textarea" id="pitch-sources" rows="2" placeholder="Who do you plan to interview? Do you have access?"></textarea></div>
+      <div class="form-group"><label class="form-label">Proposed Deadline</label><input class="form-input" type="date" id="pitch-deadline"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('new-pitch')">Cancel</button><button class="btn btn-primary" onclick="submitPitch()">Submit Pitch</button></div>
+  </div>
+</div>
+
+<!-- DIFF MODAL -->
+<div class="modal-overlay" id="modal-diff" onclick="if(event.target===this)closeModal('diff')" style="align-items:flex-start;padding-top:40px">
+  <div class="modal" style="width:900px;max-height:85vh;display:flex;flex-direction:column">
+    <div class="modal-hdr" style="flex-shrink:0">
+      <div>
+        <span class="modal-title">Story Diff — Reporter vs Editor</span>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:3px">
+          <span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="background:#d4edda;border-radius:2px;padding:0 4px;font-size:.7rem">added</span>Editor additions</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="background:#f8d7da;border-radius:2px;padding:0 4px;font-size:.7rem;text-decoration:line-through">removed</span>Reporter text changed</span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('diff')">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;overflow:hidden;border-top:1px solid var(--rule)">
+      <div style="padding:16px;overflow-y:auto;border-right:1px solid var(--rule)">
+        <div style="font-size:.68rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px">Reporter's Last Draft</div>
+        <div id="diff-left" style="font-size:.82rem;line-height:1.8;color:var(--ink)"></div>
+      </div>
+      <div style="padding:16px;overflow-y:auto">
+        <div style="font-size:.68rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px">Current Version (with Editor Changes)</div>
+        <div id="diff-right" style="font-size:.82rem;line-height:1.8;color:var(--ink)"></div>
+      </div>
+    </div>
+    <div class="modal-footer" style="flex-shrink:0"><button class="btn btn-outline" onclick="closeModal('diff')">Close</button></div>
+  </div>
+</div>
+
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="closeLightbox()"><div id="lightbox-inner"></div></div>
 
@@ -1415,13 +1520,13 @@ function startApp(){
   ;['btn-new-assign-sb','btn-new-assign2'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=canCreate?'':'none'})
   document.getElementById('btn-templates').style.display=canCreate?'':'none'
   // Subscriptions
-  subscribeAssignments();subscribeTeam();subscribeMedia();subscribeNotifs();subscribeRundowns();subscribeCalendarEvents()
+  subscribeAssignments();subscribeTeam();subscribeMedia();subscribeNotifs();subscribeRundowns();subscribeCalendarEvents();subscribeActivity();subscribePitches()
   const h=new Date().getHours()
   toast(`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${ME.name.split(' ')[0]} — welcome back.`,'info')
 }
 
 // ── NAV ──
-const TITLES={dashboard:'Daily Briefing',assignments:'All Assignments',board:'Story Board',editor:'Story Editor',calendar:'Publishing Calendar',archive:'Story Archive',media:'Media Library',team:'Team',rundown:'Broadcast Rundowns'}
+const TITLES={dashboard:'Daily Briefing',assignments:'All Assignments',board:'Story Board',editor:'Story Editor',calendar:'Publishing Calendar',archive:'Story Archive',media:'Media Library',team:'Team',rundown:'Broadcast Rundowns',pitch:'Pitch Board'}
 window.nav=function(view){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'))
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))
@@ -1435,6 +1540,7 @@ window.nav=function(view){
   if(view==='calendar')renderCalendar()
   if(view==='archive')renderArchive()
   if(view==='rundown')renderRundownView()
+  if(view==='pitch')renderPitchBoard()
   if(view==='team'){renderTeam();renderPendingApprovals()}
 }
 
@@ -1517,6 +1623,28 @@ function renderDashboard(){
   document.getElementById('ds-active').textContent=ASSIGNMENTS.filter(a=>['assigned','draft','review'].includes(a.status)).length
   document.getElementById('ds-review').textContent=ASSIGNMENTS.filter(a=>a.status==='review').length
   document.getElementById('ds-pub').textContent=ASSIGNMENTS.filter(a=>a.status==='published').length
+
+  // ── Deadline Pressure ──
+  const now=new Date()
+  const in48=new Date(now.getTime()+48*60*60*1000)
+  const urgent=ASSIGNMENTS.filter(a=>{
+    if(!a.deadline||a.status==='published')return false
+    const dl=new Date(a.deadline+'T23:59:59')
+    return dl<=in48
+  }).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline))
+  const bar=document.getElementById('deadline-pressure-bar')
+  if(urgent.length){
+    bar.style.display='flex'
+    document.getElementById('deadline-pressure-txt').textContent=`${urgent.length} stor${urgent.length===1?'y':'ies'} due within 48 hours:`
+    const overdue=urgent.filter(a=>new Date(a.deadline+'T23:59:59')<now)
+    document.getElementById('deadline-pressure-list').innerHTML=urgent.map(a=>{
+      const isOver=new Date(a.deadline+'T23:59:59')<now
+      return`<span class="deadline-chip${isOver?'':' soon'}" onclick="openEditor('${a.id}')" title="Open story">${esc((a.title||'Untitled').slice(0,20))} ${isOver?'⚠ OVERDUE':new Date(a.deadline+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`
+    }).join('')
+  }else{
+    bar.style.display='none'
+  }
+
   // My assignments banner
   const myActive=ASSIGNMENTS.filter(a=>a.assignedTo===ME.uid&&['assigned','draft','review'].includes(a.status))
   const banner=document.getElementById('my-assign-banner')
@@ -1543,6 +1671,7 @@ function renderDashboard(){
       </div>`
     }).join('')
   }else banner.style.display='none'
+
   // Recent table
   const rows=ASSIGNMENTS.slice(0,6).map(a=>{
     const r=TEAM.find(u=>u.id===a.assignedTo),ov=a.deadline&&isPast(a.deadline)&&a.status!=='published'
@@ -1862,10 +1991,14 @@ function renderEditorUI(){
   document.getElementById('btn-send-back').style.display=canRev&&a.status==='review'?'':'none'
   document.getElementById('btn-publish').style.display=isEIC()&&a.status==='review'?'':'none'
   document.getElementById('btn-unlock').style.display=isEIC()&&locked?'':'none'
+  document.getElementById('btn-export-pdf').style.display=locked?'':'none'
   document.getElementById('locked-banner').style.display=locked?'':'none'
   // Show markup toggle for editors/EIC when story is in review
   const markupBtn=document.getElementById('btn-markup-toggle')
   if(markupBtn)markupBtn.style.display=(isEditor()||isEIC())&&a.status==='review'?'':'none'
+  // Show compare button when there are 2+ versions (review or published)
+  const diffBtn=document.getElementById('btn-diff')
+  if(diffBtn)diffBtn.style.display=(['review','published'].includes(a.status)&&(s?.versions||[]).length>=2)?'':'none'
   // Reset markup mode when opening a new story
   markupModeOn=false
   if(markupBtn)markupBtn.classList.remove('active')
@@ -2075,12 +2208,14 @@ window.submitForReview=async()=>{
   CURRENT_ASSIGN.status='review'
   const eds=TEAM.filter(u=>['editor','editor-in-chief','section-editor'].includes(u.role)&&(u.role!=='section-editor'||u.section===CURRENT_ASSIGN.section))
   for(const e of eds)await notify(e.id,`"${CURRENT_ASSIGN.title}" submitted for review by ${ME.name}`)
+  await logActivity('submitted',`${ME.name} submitted "${CURRENT_ASSIGN.title}" for review`)
   renderEditorUI();renderAssignments();renderBoard();toast('Submitted for editor review ✓')
 }
 window.sendBack=async()=>{
   await updateDoc(doc(db,'assignments',CURRENT_ASSIGN.id),{status:'draft',updatedAt:serverTimestamp()})
   CURRENT_ASSIGN.status='draft'
   await notify(CURRENT_ASSIGN.assignedTo,`"${CURRENT_ASSIGN.title}" sent back for edits by ${ME.name}`)
+  await logActivity('reviewed',`${ME.name} sent "${CURRENT_ASSIGN.title}" back for edits`)
   renderEditorUI();renderAssignments();renderBoard();toast('Story sent back for edits','info')
 }
 window.publishStory=async()=>{
@@ -2089,6 +2224,7 @@ window.publishStory=async()=>{
   await updateDoc(doc(db,'assignments',CURRENT_ASSIGN.id),{status:'published',publishedAt:serverTimestamp(),updatedAt:serverTimestamp()})
   CURRENT_ASSIGN.status='published'
   await notify(CURRENT_ASSIGN.assignedTo,`🎉 "${CURRENT_ASSIGN.title}" has been published!`)
+  await logActivity('published',`${ME.name} published "${CURRENT_ASSIGN.title}"`)
   renderEditorUI();renderAssignments();renderBoard();toast('Story published ✓')
 }
 window.unlockStory=async()=>{
@@ -2147,15 +2283,59 @@ window.postComment=async()=>{
 function renderComments(comments){
   const cnt=document.getElementById('comment-count')
   comments.length?(cnt.style.display='',cnt.textContent=comments.length):cnt.style.display='none'
-  document.getElementById('comment-list').innerHTML=comments.map(c=>`
-    <div class="comment">
+  if(!comments.length){
+    document.getElementById('comment-list').innerHTML='<div style="font-size:.75rem;color:var(--muted)">No comments yet.</div>'
+    return
+  }
+  document.getElementById('comment-list').innerHTML=comments.map(c=>{
+    const isOwn=c.authorId===ME?.uid
+    const isEditing=c._editing
+    const time=c.createdAt?.toDate?c.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''
+    const editedNote=c.editedAt?` <span style="font-size:.58rem;color:var(--muted)">(edited)</span>`:''
+    return`<div class="comment" id="comment-${c.id}">
       <div class="comment-hdr">
         <div class="avatar" style="width:20px;height:20px;font-size:.54rem;background:${aColor(c.authorName)}">${inits(c.authorName)}</div>
         <span style="font-size:.75rem;font-weight:500">${esc(c.authorName)}</span>
-        <span style="font-size:.6rem;color:var(--muted);font-family:var(--fm);margin-left:auto">${c.createdAt?.toDate?c.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</span>
+        <span style="font-size:.6rem;color:var(--muted);font-family:var(--fm);margin-left:auto">${time}${editedNote}</span>
+        ${isOwn?`<button onclick="editComment('${c.id}')" title="Edit comment" style="background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:0 3px;margin-left:4px">✎</button>
+                 <button onclick="deleteComment('${c.id}')" title="Delete comment" style="background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:0 3px">✕</button>`:''}
       </div>
-      <div class="comment-body">${highlightMentions(esc(c.body))}</div>
-    </div>`).join('')||'<div style="font-size:.75rem;color:var(--muted)">No comments yet.</div>'
+      <div class="comment-body" id="comment-body-${c.id}">${highlightMentions(esc(c.body))}</div>
+      <div id="comment-edit-${c.id}" style="display:none;margin-top:6px">
+        <textarea class="form-textarea" id="comment-edit-text-${c.id}" rows="2" style="font-size:.78rem;min-height:44px">${esc(c.body)}</textarea>
+        <div style="display:flex;gap:6px;margin-top:4px;justify-content:flex-end">
+          <button class="btn btn-outline" style="font-size:.67rem;padding:3px 8px" onclick="cancelEditComment('${c.id}','${esc(c.body).replace(/'/g,"\\'")}')">Cancel</button>
+          <button class="btn btn-primary" style="font-size:.67rem;padding:3px 8px" onclick="saveEditComment('${c.id}')">Save</button>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+window.editComment=(id)=>{
+  document.getElementById(`comment-body-${id}`).style.display='none'
+  document.getElementById(`comment-edit-${id}`).style.display=''
+  const ta=document.getElementById(`comment-edit-text-${id}`)
+  if(ta){ta.focus();ta.selectionStart=ta.value.length}
+}
+window.cancelEditComment=(id)=>{
+  document.getElementById(`comment-body-${id}`).style.display=''
+  document.getElementById(`comment-edit-${id}`).style.display='none'
+}
+window.saveEditComment=async(id)=>{
+  const ta=document.getElementById(`comment-edit-text-${id}`)
+  const body=ta?.value?.trim()
+  if(!body){toast('Comment cannot be empty','error');return}
+  try{
+    await updateDoc(doc(db,'comments',id),{body,editedAt:serverTimestamp()})
+    toast('Comment updated ✓')
+  }catch(e){toast('Could not update comment','error');console.error(e)}
+}
+window.deleteComment=async(id)=>{
+  if(!await confirm2('Delete Comment','Permanently delete this comment?'))return
+  try{
+    await deleteDoc(doc(db,'comments',id))
+    toast('Comment deleted')
+  }catch(e){toast('Could not delete comment','error');console.error(e)}
 }
 function highlightMentions(html){return html.replace(/@([A-Za-z][A-Za-z ]*[A-Za-z])/g,'<span class="comment-mention">@$1</span>')}
 function renderVersionHistory(){
@@ -3375,6 +3555,356 @@ window.applyGrammarFix=(contextText,offset,length,replacement)=>{
   toast(`Replaced with "${replacement}" ✓`)
   // Re-run check to update results
   runGrammarCheck()
+}
+
+// ══════════════════════════════════════════════════════
+// PDF EXPORT — published stories
+// ══════════════════════════════════════════════════════
+window.exportStoryPDF=()=>{
+  const a=CURRENT_ASSIGN,s=CURRENT_STORY
+  if(!a||!s){toast('No story loaded','error');return}
+
+  const reporter=TEAM.find(u=>u.id===a.assignedTo)
+  const pubDate=a.publishedAt
+    ?(a.publishedAt.toDate?a.publishedAt.toDate():new Date(a.publishedAt))
+        .toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+    :new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+
+  // Strip editor markup spans from body — remove color styling but keep text
+  const rawContent=s.content||''
+  const tempDiv=document.createElement('div')
+  tempDiv.innerHTML=rawContent
+  // Unwrap editor-change spans (keep text, remove red styling)
+  tempDiv.querySelectorAll('.editor-change,.editor-deletion').forEach(span=>{
+    if(span.classList.contains('editor-deletion')){
+      span.remove() // remove struck-through deletions from PDF
+    }else{
+      span.replaceWith(document.createTextNode(span.textContent))
+    }
+  })
+  const cleanContent=tempDiv.innerHTML
+
+  // Build print document
+  const printHTML=`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>${esc(a.title||'Story')} — Goalkeepers Pressroom</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;font-size:11pt;color:#1a1a1a;background:white;line-height:1.7;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:letter;margin:1in 1in 1in 1in}
+
+  /* Masthead */
+  .pdf-masthead{border-bottom:3px solid #c0392b;padding-bottom:10px;margin-bottom:22px;display:flex;align-items:flex-end;justify-content:space-between}
+  .pdf-pub-name{font-family:'Playfair Display',Georgia,serif;font-size:18pt;font-weight:700;color:#c0392b;letter-spacing:-.02em}
+  .pdf-pub-sub{font-size:7.5pt;color:#888;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+  .pdf-pub-date{font-size:8pt;color:#888;text-align:right;line-height:1.5}
+
+  /* Story header */
+  .pdf-headline{font-family:'Playfair Display',Georgia,serif;font-size:26pt;font-weight:700;line-height:1.2;color:#0f0e0c;margin-bottom:8px}
+  .pdf-deck{font-size:13pt;color:#444;line-height:1.4;margin-bottom:14px;font-style:italic}
+  .pdf-byline-row{display:flex;align-items:center;gap:18px;padding:9px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd;margin-bottom:22px;font-size:8.5pt;color:#666}
+  .pdf-byline-name{font-weight:600;color:#1a1a1a;font-size:9.5pt}
+  .pdf-meta-item{display:flex;align-items:center;gap:4px}
+  .pdf-status-badge{background:#2c6e49;color:white;padding:2px 8px;border-radius:3px;font-size:7.5pt;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+
+  /* Story body */
+  .pdf-body{font-size:11pt;line-height:1.8;color:#222}
+  .pdf-body p{margin-bottom:14px}
+  .pdf-body h2{font-family:'Playfair Display',Georgia,serif;font-size:14pt;font-weight:700;margin:22px 0 8px;color:#0f0e0c}
+  .pdf-body h3{font-family:'Playfair Display',Georgia,serif;font-size:12pt;font-weight:600;margin:18px 0 6px;color:#0f0e0c}
+  .pdf-body blockquote{border-left:3px solid #c0392b;padding-left:14px;color:#555;font-style:italic;margin:18px 0}
+  .pdf-body img{max-width:100%;height:auto;margin:12px 0;border-radius:3px}
+  .pdf-body strong{font-weight:600}
+  .pdf-body em{font-style:italic}
+  .pdf-body a{color:#c0392b;text-decoration:none}
+
+  /* Footer */
+  .pdf-footer{margin-top:32px;padding-top:10px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:7.5pt;color:#aaa}
+
+  @media print{
+    body{font-size:11pt}
+    .pdf-headline{font-size:24pt}
+    a{color:#c0392b!important}
+  }
+</style>
+</head>
+<body>
+  <div class="pdf-masthead">
+    <div>
+      <div class="pdf-pub-name">Goalkeepers Pressroom</div>
+      <div class="pdf-pub-sub">MSU SGJC · Black SoccerLab</div>
+    </div>
+    <div class="pdf-pub-date">Published ${pubDate}<br>${a.section?'Section: '+a.section:''}</div>
+  </div>
+
+  <h1 class="pdf-headline">${esc(a.title||'Untitled')}</h1>
+  ${a.deck?`<div class="pdf-deck">${esc(a.deck)}</div>`:''}
+
+  <div class="pdf-byline-row">
+    <div>
+      <div class="pdf-byline-name">${esc(a.byline||reporter?.name||'')}</div>
+      <div style="font-size:8pt;color:#888;margin-top:1px">Goalkeepers Pressroom</div>
+    </div>
+    <div class="pdf-meta-item"><span class="pdf-status-badge">Published</span></div>
+    ${a.wordCount?`<div class="pdf-meta-item">${a.wordCount} words</div>`:''}
+    ${a.slug?`<div class="pdf-meta-item" style="font-family:monospace;font-size:8pt">${esc(a.slug)}</div>`:''}
+  </div>
+
+  <div class="pdf-body">${cleanContent}</div>
+
+  <div class="pdf-footer">
+    <span>Goalkeepers Pressroom · MSU SGJC Student Newsroom for the Black SoccerLab</span>
+    <span>${pubDate}</span>
+  </div>
+</body>
+</html>`
+
+  // Write to hidden frame and print
+  let frame=document.getElementById('pdf-print-frame')
+  if(!frame){
+    frame=document.createElement('div')
+    frame.id='pdf-print-frame'
+    frame.style.display='none'
+    document.body.appendChild(frame)
+  }
+  frame.innerHTML=printHTML
+
+  // Use a fresh window for clean print dialog
+  const win=window.open('','_blank','width=800,height=900')
+  if(!win){toast('Pop-up blocked — allow pop-ups and try again','error');return}
+  win.document.write(printHTML)
+  win.document.close()
+  // Wait for fonts to load then trigger print
+  win.onload=()=>{
+    setTimeout(()=>{
+      win.focus()
+      win.print()
+    },600)
+  }
+  toast('PDF export opened — use "Save as PDF" in the print dialog')
+}
+
+// ══════════════════════════════════════════════════════
+// ACTIVITY FEED
+// ══════════════════════════════════════════════════════
+let ACTIVITY=[]
+function subscribeActivity(){
+  const q=query(collection(db,'activity'),orderBy('createdAt','desc'),limit(20))
+  onSnapshot(q,snap=>{
+    ACTIVITY=snap.docs.map(d=>({id:d.id,...d.data()}))
+    renderActivityFeed()
+  },err=>console.error('Activity feed error:',err.code))
+}
+function renderActivityFeed(){
+  const el=document.getElementById('activity-feed');if(!el)return
+  if(!ACTIVITY.length){el.innerHTML='<div style="font-size:.75rem;color:var(--muted)">No recent activity.</div>';return}
+  const icons={submitted:'📝',published:'🎉',commented:'💬',assigned:'📋',approved:'✅',rejected:'✗',pitch:'💡',reviewed:'👁'}
+  el.innerHTML=ACTIVITY.map(a=>{
+    const icon=icons[a.type]||'•'
+    const bg={submitted:'#e8f4fd',published:'#d4edda',commented:'#fff3cd',assigned:'#f0f0f0',approved:'#d4edda',pitch:'#f3e5f5'}[a.type]||'var(--cream)'
+    const time=a.createdAt?.toDate?a.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''
+    return`<div class="activity-item">
+      <div class="activity-icon" style="background:${bg}">${icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.74rem;line-height:1.4">${esc(a.message)}</div>
+        <div style="font-size:.62rem;color:var(--muted);font-family:var(--fm);margin-top:2px">${time}</div>
+      </div>
+    </div>`
+  }).join('')
+}
+async function logActivity(type,message){
+  try{await addDoc(collection(db,'activity'),{type,message,userId:ME?.uid,userName:ME?.name||'Someone',createdAt:serverTimestamp()})}
+  catch(e){console.warn('Activity log error:',e.code)}
+}
+
+// ══════════════════════════════════════════════════════
+// PITCH BOARD
+// ══════════════════════════════════════════════════════
+let PITCHES=[]
+function subscribePitches(){
+  onSnapshot(query(collection(db,'pitches'),orderBy('createdAt','desc')),snap=>{
+    PITCHES=snap.docs.map(d=>({id:d.id,...d.data()}))
+    // Badge for pending pitches (editors/EIC only)
+    if(isEditor()||isEIC()){
+      const pending=PITCHES.filter(p=>p.status==='pending').length
+      const nb=document.getElementById('nb-pitch')
+      pending?(nb.style.display='',nb.textContent=pending):nb.style.display='none'
+    }
+    if(document.getElementById('view-pitch')?.classList.contains('active'))renderPitchBoard()
+  },err=>console.error('Pitches error:',err.code))
+}
+function renderPitchBoard(){
+  const el=document.getElementById('pitch-board-content');if(!el)return
+  if(!PITCHES.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">💡</div><div class="empty-title">No pitches yet</div><div class="empty-sub">Click "+ Submit Pitch" to propose a story idea.</div></div>`
+    return
+  }
+  const groups={pending:[],approved:[],hold:[],rejected:[]}
+  PITCHES.forEach(p=>{(groups[p.status]||groups.pending).push(p)})
+  const statusMeta={pending:{label:'Pending Review',cls:'pitch-status-pending'},approved:{label:'Approved',cls:'pitch-status-approved'},hold:{label:'On Hold',cls:'pitch-status-hold'},rejected:{label:'Not Moving Forward',cls:'pitch-status-rejected'}}
+  const canDecide=isEditor()||isEIC()
+  el.innerHTML=Object.entries(groups).filter(([,arr])=>arr.length).map(([status,arr])=>`
+    <div class="pitch-section-hdr">${statusMeta[status]?.label||status} (${arr.length})</div>
+    ${arr.map(p=>{
+      const submitter=TEAM.find(u=>u.id===p.submittedBy)
+      const time=p.createdAt?.toDate?p.createdAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):''
+      return`<div class="pitch-card">
+        <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:.88rem;margin-bottom:4px">${esc(p.title||'Untitled Pitch')}</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:7px;display:flex;gap:10px;flex-wrap:wrap">
+              ${p.section?`<span>${esc(p.section)}</span>`:''}
+              ${p.type?`<span>${esc(p.type)}</span>`:''}
+              <span>by ${esc(submitter?.name||'Unknown')}</span>
+              ${time?`<span>${time}</span>`:''}
+            </div>
+            ${p.brief?`<div style="font-size:.78rem;color:var(--ink);margin-bottom:6px;line-height:1.5">${esc(p.brief)}</div>`:''}
+            ${p.sources?`<div style="font-size:.72rem;color:var(--muted)"><strong>Sources:</strong> ${esc(p.sources)}</div>`:''}
+            ${p.deadline?`<div style="font-size:.72rem;color:var(--muted);margin-top:4px"><strong>Proposed deadline:</strong> ${new Date(p.deadline+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>`:''}
+            ${p.editorNote?`<div style="font-size:.72rem;color:var(--sky);margin-top:6px;padding:5px 8px;background:#e8f4fd;border-radius:var(--r)"><strong>Editor note:</strong> ${esc(p.editorNote)}</div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0">
+            <span class="${statusMeta[status]?.cls||''}" style="font-size:.72rem">${statusMeta[status]?.label||status}</span>
+            ${canDecide&&status==='pending'?`
+              <button class="btn btn-primary" style="font-size:.67rem;padding:3px 9px" onclick="decidePitch('${p.id}','approved')">✓ Approve</button>
+              <button class="btn btn-outline" style="font-size:.67rem;padding:3px 9px" onclick="decidePitch('${p.id}','hold')">⏸ Hold</button>
+              <button class="btn btn-outline" style="font-size:.67rem;padding:3px 9px;color:var(--muted)" onclick="decidePitch('${p.id}','rejected')">✕ Pass</button>`:''}
+            ${canDecide&&status==='approved'?`<button class="btn btn-primary" style="font-size:.67rem;padding:3px 9px" onclick="pitchToAssignment('${p.id}')">→ Create Assignment</button>`:''}
+            ${p.submittedBy===ME?.uid&&status==='pending'?`<button class="btn btn-outline" style="font-size:.67rem;padding:3px 9px;color:var(--muted)" onclick="deletePitch('${p.id}')">Withdraw</button>`:''}
+          </div>
+        </div>
+      </div>`
+    }).join('')}`).join('')
+}
+window.submitPitch=async()=>{
+  const title=document.getElementById('pitch-title').value.trim()
+  const brief=document.getElementById('pitch-brief').value.trim()
+  if(!title){toast('Enter a story headline','error');return}
+  if(!brief){toast('Describe your story idea','error');return}
+  try{
+    await addDoc(collection(db,'pitches'),{
+      title,brief,
+      section:document.getElementById('pitch-section').value,
+      type:document.getElementById('pitch-type').value,
+      sources:document.getElementById('pitch-sources').value.trim(),
+      deadline:document.getElementById('pitch-deadline').value||null,
+      submittedBy:ME.uid,submittedByName:ME.name,
+      status:'pending',createdAt:serverTimestamp()
+    })
+    await logActivity('pitch',`${ME.name} pitched: "${title}"`)
+    ;['pitch-title','pitch-brief','pitch-sources','pitch-deadline'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
+    document.getElementById('pitch-section').value=''
+    document.getElementById('pitch-type').value='news'
+    closeModal('new-pitch')
+    toast('Pitch submitted ✓')
+  }catch(e){toast('Could not submit pitch','error');console.error(e)}
+}
+window.decidePitch=async(id,decision)=>{
+  const note=decision==='rejected'?await promptText('Editor Note (optional)','Add a note for the reporter (optional):')??'':''
+  try{
+    await updateDoc(doc(db,'pitches',id),{status:decision,editorNote:note||null,decidedBy:ME.uid,decidedAt:serverTimestamp()})
+    const p=PITCHES.find(x=>x.id===id)
+    if(p){
+      await notify(p.submittedBy,`Your pitch "${p.title}" was ${decision==='approved'?'✓ approved':decision==='hold'?'put on hold':'not selected'} by ${ME.name}`)
+      await logActivity(decision,`${ME.name} ${decision} pitch: "${p.title}"`)
+    }
+    toast(`Pitch ${decision} ✓`)
+  }catch(e){toast('Could not update pitch','error');console.error(e)}
+}
+window.pitchToAssignment=async(id)=>{
+  const p=PITCHES.find(x=>x.id===id);if(!p)return
+  try{
+    const ref=await addDoc(collection(db,'assignments'),{
+      title:p.title,slug:'',byline:'',section:p.section||'',brief:p.brief,
+      status:'assigned',assignedTo:p.submittedBy,
+      deadline:p.deadline||null,wordTarget:600,
+      digitalAssets:[],createdBy:ME.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+    })
+    await updateDoc(doc(db,'pitches',id),{status:'approved',convertedToAssignment:ref.id})
+    await notify(p.submittedBy,`Your pitch "${p.title}" was approved and converted to an assignment!`)
+    await logActivity('assigned',`${ME.name} converted pitch to assignment: "${p.title}"`)
+    toast('Assignment created from pitch ✓')
+    nav('assignments')
+  }catch(e){toast('Could not create assignment','error');console.error(e)}
+}
+window.deletePitch=async(id)=>{
+  if(!await confirm2('Withdraw Pitch','Remove your pitch from the board?'))return
+  try{await deleteDoc(doc(db,'pitches',id));toast('Pitch withdrawn')}
+  catch(e){toast('Could not withdraw pitch','error')}
+}
+// Simple text prompt helper
+async function promptText(title,msg){
+  return new Promise(res=>{
+    const val=window.prompt(msg,'')
+    res(val)
+  })
+}
+
+// ══════════════════════════════════════════════════════
+// STORY DIFF VIEW
+// ══════════════════════════════════════════════════════
+window.openDiff=()=>{
+  const s=CURRENT_STORY
+  if(!s){toast('No story loaded','error');return}
+  const versions=s.versions||[]
+  if(versions.length<2){toast('Need at least 2 saved versions to compare','info');return}
+
+  // Reporter's last draft = the version BEFORE the first editor markup appears
+  // Strategy: find the last version where the author is the reporter (not an editor)
+  // Fallback: use the second-to-last version as "reporter draft"
+  const reporterVersion=versions.slice().reverse().find(v=>!v.hasEditorMarkup)||versions[versions.length-2]||versions[0]
+  const editorVersion=versions[versions.length-1]
+
+  const leftHTML=reporterVersion?.content||''
+  const rightHTML=editorVersion?.content||s.content||''
+
+  // Strip HTML to plain text for diffing, then re-apply diff highlighting
+  const leftText=htmlToText(leftHTML)
+  const rightText=htmlToText(rightHTML)
+
+  document.getElementById('diff-left').innerHTML=renderDiffSide(leftText,rightText,'left')
+  document.getElementById('diff-right').innerHTML=renderDiffSide(leftText,rightText,'right')
+  openModal('diff')
+}
+
+function htmlToText(html){
+  const d=document.createElement('div');d.innerHTML=html;return d.innerText||d.textContent||''
+}
+
+// Word-level diff
+function diffWords(oldStr,newStr){
+  const oldW=oldStr.split(/(\s+)/)
+  const newW=newStr.split(/(\s+)/)
+  const dp=Array.from({length:oldW.length+1},()=>new Array(newW.length+1).fill(0))
+  for(let i=oldW.length-1;i>=0;i--)for(let j=newW.length-1;j>=0;j--){
+    if(oldW[i]===newW[j])dp[i][j]=dp[i+1][j+1]+1
+    else dp[i][j]=Math.max(dp[i+1][j],dp[i][j+1])
+  }
+  const ops=[];let i=0,j=0
+  while(i<oldW.length||j<newW.length){
+    if(i<oldW.length&&j<newW.length&&oldW[i]===newW[j]){ops.push({type:'eq',text:oldW[i]});i++;j++}
+    else if(j<newW.length&&(i>=oldW.length||dp[i][j+1]>=dp[i+1][j])){ops.push({type:'add',text:newW[j]});j++}
+    else{ops.push({type:'del',text:oldW[i]});i++}
+  }
+  return ops
+}
+
+function renderDiffSide(leftText,rightText,side){
+  const ops=diffWords(leftText,rightText)
+  // Limit diff to avoid browser hang on very long stories
+  const limited=ops.slice(0,5000)
+  return limited.map(op=>{
+    const t=esc(op.text)
+    if(op.type==='eq')return t
+    if(op.type==='add'&&side==='right')return`<span class="diff-add">${t}</span>`
+    if(op.type==='del'&&side==='left')return`<span class="diff-del">${t}</span>`
+    if(op.type==='add'&&side==='left')return'' // additions not shown on left
+    if(op.type==='del'&&side==='right')return'' // deletions not shown on right
+    return t
+  }).join('')
 }
 
 window.resolveConfirm=v=>{document.getElementById('confirm-overlay').classList.remove('open');if(confirmResolveRef){confirmResolveRef(v);confirmResolveRef=null}}
