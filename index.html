@@ -1583,7 +1583,7 @@ window.openEditor=async assignId=>{
     if(!storyId){
       // No story yet — create one and store its ID on the assignment
       const sRef=await addDoc(collection(db,'stories'),{
-        assignmentId,
+        assignmentId:assignId,
         authorId:ME.uid,
         title:CURRENT_ASSIGN.title||'',
         deck:'',content:'',
@@ -1592,7 +1592,7 @@ window.openEditor=async assignId=>{
       })
       storyId=sRef.id
       CURRENT_STORY={
-        id:storyId,assignmentId,authorId:ME.uid,
+        id:storyId,assignmentId:assignId,authorId:ME.uid,
         title:CURRENT_ASSIGN.title||'',deck:'',content:'',
         wordCount:0,status:'draft',versions:[]
       }
