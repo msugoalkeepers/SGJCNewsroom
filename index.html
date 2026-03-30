@@ -508,9 +508,16 @@ tr:hover td{background:var(--paper)}
 <!-- PENDING -->
 <div id="pending-screen">
   <div style="background:var(--white);border-radius:12px;padding:44px 38px;width:420px;max-width:100%;box-shadow:0 24px 64px rgba(0,0,0,.4);text-align:center;animation:fadeIn .3s ease">
-    <div style="width:56px;height:56px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 18px">⏳</div>
-    <div style="font-family:var(--fd);font-size:1.4rem;font-weight:700;margin-bottom:8px">Access Pending</div>
-    <div style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:22px">Your account has been created. An editor-in-chief needs to approve your access before you can enter the newsroom.</div>
+    <div id="pending-screen-inner">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 18px">⏳</div>
+      <div style="font-family:var(--fd);font-size:1.4rem;font-weight:700;margin-bottom:8px">Access Pending</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:22px">Your account has been created. An editor-in-chief needs to approve your access before you can enter the newsroom.</div>
+    </div>
+    <div id="removed-screen-inner" style="display:none">
+      <div style="width:56px;height:56px;border-radius:50%;background:#fdf2e9;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 18px">🔒</div>
+      <div style="font-family:var(--fd);font-size:1.4rem;font-weight:700;margin-bottom:8px;color:var(--accent)">Access Removed</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:22px">Your access to Goalkeepers Pressroom has been removed. Please contact your editor-in-chief if you believe this is an error.</div>
+    </div>
     <div style="background:var(--cream);border-radius:var(--r);padding:12px 14px;font-size:.76rem;color:var(--muted);margin-bottom:22px" id="pending-user-info"></div>
     <button onclick="pendingSignOut()" style="background:none;border:1px solid var(--rule);border-radius:var(--r);padding:8px 18px;font-family:var(--fb);font-size:.8rem;color:var(--muted);cursor:pointer">Sign out</button>
   </div>
@@ -831,6 +838,7 @@ tr:hover td{background:var(--paper)}
         <div class="section-title" style="margin-bottom:13px">Active Members</div>
         <hr class="section-rule">
         <div class="team-grid" id="team-grid"><div class="empty-state" style="grid-column:1/-1"><div class="spinner"></div></div></div>
+        <div id="removed-members-section" style="display:none"></div>
       </div>
 
       <!-- RUNDOWN -->
@@ -1333,7 +1341,7 @@ const gProv=new GoogleAuthProvider()
 gProv.setCustomParameters({prompt:'select_account'})
 
 // ── STATE ──
-let ME=null,TEAM=[],ASSIGNMENTS=[],MEDIA_ALL=[],NOTIFICATIONS=[],PENDING_USERS=[]
+let ME=null,TEAM=[],ASSIGNMENTS=[],MEDIA_ALL=[],NOTIFICATIONS=[],PENDING_USERS=[],REMOVED_USERS=[]
 let CURRENT_ASSIGN=null,CURRENT_STORY=null,CURRENT_SOURCES=[]
 let ASSIGN_FILTER='all',MEDIA_FILTER='all',DRAG_ID=null
 let saveTimer=null,commentUnsub=null,storyUnsub=null,sourceUnsub=null
@@ -1408,7 +1416,8 @@ onAuthStateChanged(auth,async user=>{
       showLogin()
       return
     }
-    if(ME.status==='pending')showPending()
+    if(ME.status==='pending')showPending(false)
+    else if(ME.status==='removed')showPending(true)
     else startApp()
   }else{
     // Signed out — always show login, never spin
@@ -1519,7 +1528,14 @@ window.pendingSignOut=async()=>{
 }
 window.togglePw=()=>{const el=document.getElementById('li-pw'),b=el.nextElementSibling;el.type=el.type==='password'?'text':'password';b.textContent=el.type==='password'?'Show':'Hide'}
 function showLogin(){document.getElementById('app').style.display='none';document.getElementById('pending-screen').style.display='none';const ls=document.getElementById('login-screen');ls.style.display='flex';ls.style.animation='fadeIn .25s ease';setLoginLoading(false);setTimeout(()=>document.getElementById('li-email')?.focus(),300)}
-function showPending(){document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='none';document.getElementById('pending-screen').style.display='flex';document.getElementById('pending-user-info').textContent=`Signed in as ${ME.name} (${ME.email})`}
+function showPending(isRemoved=false){
+  document.getElementById('app').style.display='none'
+  document.getElementById('login-screen').style.display='none'
+  document.getElementById('pending-screen').style.display='flex'
+  document.getElementById('pending-user-info').textContent=`Signed in as ${ME.name} (${ME.email})`
+  document.getElementById('pending-screen-inner').style.display=isRemoved?'none':''
+  document.getElementById('removed-screen-inner').style.display=isRemoved?'':'none'
+}
 function setLoginLoading(v){const b=document.getElementById('login-btn'),s=document.getElementById('login-spin'),t=document.getElementById('login-btn-txt');b.disabled=v;s.style.display=v?'block':'none';t.textContent=v?'Signing in…':'Sign in with email'}
 function showLoginErr(msg,field){const el=document.getElementById('login-err');el.style.cssText='';document.getElementById('login-err-msg').textContent=msg;el.classList.add('on');if(field==='email')document.getElementById('li-email').classList.add('err');if(field==='pw')document.getElementById('li-pw').classList.add('err')}
 function clearLoginErr(){document.getElementById('login-err').classList.remove('on');document.getElementById('li-email').classList.remove('err');document.getElementById('li-pw').classList.remove('err')}
@@ -1601,8 +1617,9 @@ function subscribeAssignments(){
 function subscribeTeam(){
   onSnapshot(collection(db,'users'),snap=>{
     const all=snap.docs.map(d=>({id:d.id,...d.data()}))
-    TEAM=all.filter(u=>u.status!=='pending')
+    TEAM=all.filter(u=>u.status==='approved')
     PENDING_USERS=all.filter(u=>u.status==='pending')
+    REMOVED_USERS=all.filter(u=>u.status==='removed')
     renderTeam();renderPendingApprovals();populateReporterSelects()
     document.getElementById('ds-team').textContent=TEAM.length
     const pc=PENDING_USERS.length,nb=document.getElementById('nb-pending')
@@ -2770,14 +2787,52 @@ function renderTeam(){
         <div style="text-align:center"><div class="team-stat-num">${pub}</div><div class="team-stat-lbl">Published</div></div>
         <div style="text-align:center"><div class="team-stat-num">${active}</div><div class="team-stat-lbl">Active</div></div>
       </div>
-      ${isEIC()?
-        `<button class="btn btn-outline" style="font-size:.67rem;margin-top:5px;padding:4px 10px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change role</button>`:
+      ${isEIC()&&!isMe?`
+        <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;justify-content:center">
+          <button class="btn btn-outline" style="font-size:.67rem;padding:4px 10px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change Role</button>
+          <button class="btn btn-danger" style="font-size:.67rem;padding:4px 10px" onclick="removeUser('${u.id}','${esc(u.name)}')">Remove</button>
+        </div>`:
         isEditor()&&!isMe&&!['editor','editor-in-chief'].includes(u.role)?
-        `<button class="btn btn-ghost" style="font-size:.67rem;color:var(--muted);margin-top:3px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change role</button>`:
+        `<button class="btn btn-ghost" style="font-size:.67rem;color:var(--muted);margin-top:3px" onclick="openRoleModal('${u.id}','${esc(u.name)}','${u.role||'reporter'}')">Change Role</button>`:
         isMe?`<span style="font-size:.62rem;color:var(--muted);margin-top:4px">That's you</span>`:''}
     </div>`
   }).join('')
   document.getElementById('team-grid').innerHTML=cards+`<div class="team-card invite-card" onclick="openModal('invite')"><div style="font-size:1.8rem">+</div><div style="font-size:.8rem;font-weight:500">Invite a journalist</div><div style="font-size:.68rem">Share the newsroom link</div></div>`
+
+  // ── Removed Members (EIC only) ──
+  const removedSection=document.getElementById('removed-members-section')
+  if(removedSection){
+    if(isEIC()&&REMOVED_USERS.length){
+      removedSection.style.display=''
+      removedSection.innerHTML=`
+        <div style="margin-top:28px">
+          <div class="section-hdr" style="margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="section-title" style="color:var(--muted)">Removed Members</div>
+              <span style="background:var(--muted);color:white;font-size:.6rem;font-family:var(--fm);padding:2px 7px;border-radius:10px">${REMOVED_USERS.length}</span>
+            </div>
+          </div>
+          <hr class="section-rule">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+            ${REMOVED_USERS.map(u=>{
+              const removedDate=u.removedAt?.toDate?u.removedAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):''
+              return`<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--cream);border:1px solid var(--rule);border-radius:var(--r);opacity:.75">
+                ${u.photoURL?`<img src="${u.photoURL}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;filter:grayscale(1)">`:
+                  `<div class="avatar" style="width:36px;height:36px;font-size:.8rem;background:var(--muted)">${inits(u.name)}</div>`}
+                <div style="flex:1;min-width:0">
+                  <div style="font-weight:500;font-size:.84rem">${esc(u.name)}</div>
+                  <div style="font-size:.68rem;color:var(--muted)">${esc(u.email)}${removedDate?' · Removed '+removedDate:''}</div>
+                </div>
+                <button class="btn btn-outline" style="font-size:.72rem;padding:5px 12px;flex-shrink:0" onclick="reactivateUser('${u.id}','${esc(u.name)}')">↩ Reactivate</button>
+              </div>`
+            }).join('')}
+          </div>
+        </div>`
+    }else{
+      removedSection.style.display='none'
+      removedSection.innerHTML=''
+    }
+  }
 }
 window.approveUser=async(uid,name)=>{
   // Read the role and section chosen by the approver
@@ -2805,6 +2860,63 @@ window.approveUser=async(uid,name)=>{
 window.denyUser=async(uid,name)=>{
   if(!await confirm2('Deny Access',`Deny ${name}'s request?`))return
   try{await deleteDoc(doc(db,'users',uid));toast(`${name}'s request denied`)}catch(e){toast('Failed','error')}
+}
+window.removeUser=async(uid,name)=>{
+  // Guard: EIC cannot remove themselves
+  if(uid===ME.uid){toast('You cannot remove yourself','error');return}
+  // Two-step confirm — first general, then type-name confirm for safety
+  const step1=await confirm2(
+    '⚠ Remove Team Member',
+    `You are about to remove ${name} from the newsroom.\n\nThey will immediately lose access. Their account and history are preserved — you can reactivate them from the Removed Members section on this page.`
+  )
+  if(!step1)return
+  const step2=await confirm2(
+    'Confirm Removal',
+    `Are you sure you want to remove ${name}? This will lock them out of the newsroom immediately.`
+  )
+  if(!step2)return
+  try{
+    await updateDoc(doc(db,'users',uid),{
+      status:'removed',
+      removedBy:ME.uid,
+      removedByName:ME.name,
+      removedAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+    })
+    // Notify the removed user (they'll see it if they re-open before being locked)
+    await addDoc(collection(db,'notifications'),{
+      userId:uid,
+      message:`Your access to Goalkeepers Pressroom has been removed by ${ME.name}. Contact your editor-in-chief with any questions.`,
+      type:'info',read:false,createdAt:serverTimestamp()
+    })
+    await logActivity('removed',`${ME.name} removed ${name} from the newsroom`)
+    toast(`${name} has been removed from the newsroom`)
+  }catch(e){
+    toast('Could not remove member — check your connection','error')
+    console.error('removeUser error:',e)
+  }
+}
+window.reactivateUser=async(uid,name)=>{
+  const confirmed=await confirm2(
+    'Reactivate Member',
+    `Reactivate ${name}? They will be set to "pending" status and will need to be approved before they can access the newsroom again. You can approve them immediately from the Pending Approvals section.`
+  )
+  if(!confirmed)return
+  try{
+    await updateDoc(doc(db,'users',uid),{
+      status:'pending',
+      removedBy:null,
+      removedAt:null,
+      reactivatedBy:ME.uid,
+      reactivatedAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+    })
+    await logActivity('approved',`${ME.name} reactivated ${name}`)
+    toast(`${name} reactivated — approve them from the Pending section ✓`)
+  }catch(e){
+    toast('Could not reactivate member','error')
+    console.error('reactivateUser error:',e)
+  }
 }
 window.openRoleModal=(uid,name,role)=>{
   editingRoleUid=uid
