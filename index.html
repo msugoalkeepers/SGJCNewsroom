@@ -59,6 +59,12 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 .diff-add{background:#d4edda;color:#155724;border-radius:2px;padding:0 2px}
 .diff-del{background:#f8d7da;color:#721c24;border-radius:2px;padding:0 2px;text-decoration:line-through}
 
+/* ── PRESENCE DOTS ── */
+.presence-dot{position:absolute;bottom:-1px;right:-1px;width:8px;height:8px;border-radius:50%;border:2px solid white}
+.presence-dot.online{background:#2ecc71}
+.presence-dot.recent{background:#bdc3c7}
+.presence-dot.offline{display:none}
+
 /* ── COMMENT REACTIONS ── */
 .reaction-bar{display:flex;align-items:center;gap:5px;margin-top:6px;flex-wrap:wrap}
 .reaction-btn{background:var(--cream);border:1px solid var(--rule);border-radius:20px;padding:2px 8px;font-size:.72rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:3px;line-height:1}
@@ -169,7 +175,7 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 
 /* ── APP LAYOUT ── */
 #app{display:none;height:100vh;overflow:hidden;flex-direction:row}
-.sidebar{width:220px;min-width:220px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar{width:240px;min-width:240px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;overflow-y:auto}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .topbar{height:56px;background:var(--white);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0}
 .content{flex:1;overflow-y:auto;padding:26px 30px;animation:fadeIn .2s ease}
@@ -578,9 +584,13 @@ tr:hover td{background:var(--paper)}
           <div class="stat-card green"><div class="stat-lbl">Published</div><div class="stat-num" id="ds-pub">—</div><div class="stat-sub">this semester</div></div>
           <div class="stat-card sky"><div class="stat-lbl">Team Members</div><div class="stat-num" id="ds-team">—</div><div class="stat-sub">active journalists</div></div>
         </div>
-        <div id="ds-team-roster" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:18px;padding:10px 14px;background:var(--white);border:1px solid var(--rule);border-radius:var(--r)">
-          <span style="font-size:.72rem;font-family:var(--fm);color:var(--muted);flex-shrink:0">Newsroom:</span>
-          <div id="ds-team-avatars" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+        <div id="ds-team-roster" style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;padding:12px 14px;background:var(--white);border:1px solid var(--rule);border-radius:var(--r)">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px">
+            <span style="font-size:.76rem;font-weight:600;color:var(--ink)">In the Newsroom</span>
+            <span style="font-size:.62rem;color:var(--muted);font-family:var(--fm)" id="ds-online-count"></span>
+          </div>
+          <div id="ds-team-avatars" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+          <div style="font-size:.62rem;color:var(--muted);line-height:1.4;margin-top:2px;font-style:italic">(Note: Recently logged-off users may still appear as active for up to 2 minutes.)</div>
         </div>
         <div id="deadline-pressure-bar" style="display:none;background:#fdf2e9;border:1px solid #f0a070;border-radius:var(--r);padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <span style="font-size:.8rem">⏰</span>
@@ -1531,6 +1541,8 @@ function startApp(){
   document.getElementById('btn-templates').style.display=canCreate?'':'none'
   // Subscriptions
   subscribeAssignments();subscribeTeam();subscribeMedia();subscribeNotifs();subscribeRundowns();subscribeCalendarEvents();subscribeActivity();subscribePitches()
+  // Presence heartbeat
+  startPresence()
   const h=new Date().getHours()
   toast(`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${ME.name.split(' ')[0]} — welcome back.`,'info')
 }
@@ -1596,6 +1608,7 @@ function subscribeTeam(){
     const pc=PENDING_USERS.length,nb=document.getElementById('nb-pending')
     const canSeeApprovals=isEIC()||isEditor()||isProducer()
     pc&&canSeeApprovals?(nb.style.display='',nb.textContent=pc):nb.style.display='none'
+    renderRoster()
   },err=>console.error('Team subscription error:',err.code,err.message))
 }
 function subscribeMedia(){
@@ -1634,17 +1647,8 @@ function renderDashboard(){
   document.getElementById('ds-review').textContent=ASSIGNMENTS.filter(a=>a.status==='review').length
   document.getElementById('ds-pub').textContent=ASSIGNMENTS.filter(a=>a.status==='published').length
 
-  // ── Team Roster Avatars ──
-  const avatarsEl=document.getElementById('ds-team-avatars')
-  if(avatarsEl&&TEAM.length){
-    avatarsEl.innerHTML=TEAM.map(u=>{
-      const roleLabel={reporter:'Reporter','section-editor':'Section Ed.',producer:'Producer',editor:'Editor','editor-in-chief':'EIC'}[u.role]||u.role
-      return`<div style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:default" title="${esc(u.name)} · ${esc(roleLabel)}">
-        <div class="avatar" style="width:28px;height:28px;font-size:.6rem;background:${aColor(u.name)};border:2px solid var(--white);box-shadow:0 0 0 1px ${aColor(u.name)}40">${inits(u.name)}</div>
-        <span style="font-size:.5rem;font-family:var(--fm);color:var(--muted);max-width:32px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">${esc(u.name.split(' ')[0])}</span>
-      </div>`
-    }).join('')
-  }
+  // ── Team Roster (presence-aware) ──
+  renderRoster()
 
   // ── Deadline Pressure ──
   const now=new Date()
@@ -3989,6 +3993,77 @@ function renderDiffSide(leftText,rightText,side){
     if(op.type==='add'&&side==='left')return'' // additions not shown on left
     if(op.type==='del'&&side==='right')return'' // deletions not shown on right
     return t
+  }).join('')
+}
+
+// ══════════════════════════════════════════════════════
+// PRESENCE SYSTEM — real-time "who's online"
+// ══════════════════════════════════════════════════════
+let presenceTimer=null
+let PRESENCE_DATA={} // uid -> {lastSeen: timestamp}
+
+async function startPresence(){
+  if(!ME?.uid)return
+  // Write presence immediately on open
+  await writePresence()
+  // Heartbeat every 60 seconds
+  presenceTimer=setInterval(writePresence,60000)
+  // Subscribe to all users' presence
+  onSnapshot(collection(db,'presence'),snap=>{
+    PRESENCE_DATA={}
+    snap.docs.forEach(d=>{PRESENCE_DATA[d.id]={...d.data()}})
+    // Re-render roster if dashboard is visible
+    if(document.getElementById('view-dashboard')?.classList.contains('active'))renderRoster()
+  },err=>console.warn('Presence error:',err.code))
+}
+async function writePresence(){
+  if(!ME?.uid)return
+  try{
+    await setDoc(doc(db,'presence',ME.uid),{
+      uid:ME.uid,name:ME.name,role:ME.role,
+      lastSeen:serverTimestamp()
+    })
+  }catch(e){console.warn('Presence write error:',e.code)}
+}
+function getPresenceStatus(uid){
+  const p=PRESENCE_DATA[uid]
+  if(!p?.lastSeen)return'offline'
+  const lastSeen=p.lastSeen.toDate?p.lastSeen.toDate():new Date(p.lastSeen)
+  const age=(Date.now()-lastSeen.getTime())/1000
+  if(age<120)return'online'      // within 2 minutes = online
+  if(age<600)return'recent'      // within 10 minutes = recently active
+  return'offline'
+}
+function renderRoster(){
+  const avatarsEl=document.getElementById('ds-team-avatars')
+  const countEl=document.getElementById('ds-online-count')
+  if(!avatarsEl||!TEAM.length)return
+
+  // Sort: online first, then recent, then offline
+  const sorted=[...TEAM].sort((a,b)=>{
+    const order={online:0,recent:1,offline:2}
+    return(order[getPresenceStatus(a.id)]||2)-(order[getPresenceStatus(b.id)]||2)
+  })
+
+  const onlineCount=TEAM.filter(u=>getPresenceStatus(u.id)==='online').length
+  const recentCount=TEAM.filter(u=>getPresenceStatus(u.id)==='recent').length
+  if(countEl){
+    if(onlineCount>0)countEl.textContent=`${onlineCount} online${recentCount>0?' · '+recentCount+' recently active':''}`
+    else if(recentCount>0)countEl.textContent=`${recentCount} recently active`
+    else countEl.textContent='No one currently active'
+  }
+
+  avatarsEl.innerHTML=sorted.map(u=>{
+    const status=getPresenceStatus(u.id)
+    const roleLabel={reporter:'Reporter','section-editor':'Section Ed.',producer:'Producer',editor:'Editor','editor-in-chief':'EIC'}[u.role]||u.role
+    const statusLabel={online:'Online now',recent:'Recently active',offline:'Offline'}[status]
+    return`<div style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:default" title="${esc(u.name)} · ${esc(roleLabel)} · ${statusLabel}">
+      <div style="position:relative;display:inline-block">
+        <div class="avatar" style="width:28px;height:28px;font-size:.6rem;background:${aColor(u.name)};opacity:${status==='offline'?.4:1};border:2px solid var(--white);box-shadow:0 0 0 1px ${aColor(u.name)}40">${inits(u.name)}</div>
+        <span class="presence-dot ${status}"></span>
+      </div>
+      <span style="font-size:.5rem;font-family:var(--fm);color:var(--muted);max-width:34px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">${esc(u.name.split(' ')[0])}</span>
+    </div>`
   }).join('')
 }
 
