@@ -1559,8 +1559,29 @@ function startApp(){
   subscribeAssignments();subscribeTeam();subscribeMedia();subscribeNotifs();subscribeRundowns();subscribeCalendarEvents();subscribeActivity();subscribePitches()
   // Presence heartbeat
   startPresence()
+  // One-time migration: stamp status:'approved' on existing user docs that have a role but no status
+  // This fixes users created before the status field was added
+  migrateUserStatus()
   const h=new Date().getHours()
   toast(`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${ME.name.split(' ')[0]} — welcome back.`,'info')
+}
+
+// Stamps status:'approved' on any approved user doc missing the field
+// Only runs for EIC/Editor so it only needs one privileged user to trigger it
+async function migrateUserStatus(){
+  if(!isEIC()&&!isEditor())return
+  try{
+    const snap=await getDocs(collection(db,'users'))
+    const stale=snap.docs.filter(d=>{
+      const data=d.data()
+      // Has a role (genuine member) but no status field or status isn't one of the known values
+      return data.role&&!['approved','pending','removed'].includes(data.status)
+    })
+    if(!stale.length)return
+    console.log(`Migrating ${stale.length} user doc(s) to status:approved`)
+    await Promise.all(stale.map(d=>updateDoc(d.ref,{status:'approved',updatedAt:serverTimestamp()})))
+    console.log('Migration complete')
+  }catch(e){console.warn('Migration error:',e.code)}
 }
 
 // ── NAV ──
@@ -1617,7 +1638,7 @@ function subscribeAssignments(){
 function subscribeTeam(){
   onSnapshot(collection(db,'users'),snap=>{
     const all=snap.docs.map(d=>({id:d.id,...d.data()}))
-    TEAM=all.filter(u=>u.status==='approved')
+    TEAM=all.filter(u=>u.status==='approved'||(!u.status&&u.role))
     PENDING_USERS=all.filter(u=>u.status==='pending')
     REMOVED_USERS=all.filter(u=>u.status==='removed')
     renderTeam();renderPendingApprovals();populateReporterSelects()
