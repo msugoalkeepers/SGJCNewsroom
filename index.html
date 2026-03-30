@@ -80,6 +80,15 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 .deadline-chip{background:var(--accent);color:white;border-radius:var(--r);padding:2px 8px;font-size:.67rem;font-family:var(--fm);cursor:pointer;white-space:nowrap}
 .deadline-chip.soon{background:var(--amber)}
 
+/* ── REPORTER PICKER ── */
+.reporter-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;border:1px solid var(--rule);background:var(--cream);font-size:.72rem;cursor:pointer;transition:all .15s;user-select:none}
+.reporter-chip:hover{border-color:var(--muted);background:var(--white)}
+.reporter-chip.selected{background:var(--sky);color:white;border-color:var(--sky)}
+.reporter-chip.selected:hover{background:#154360}
+.assignee-avatars{display:inline-flex;align-items:center}
+.assignee-avatars .avatar{margin-left:-6px;border:2px solid var(--white)}
+.assignee-avatars .avatar:first-child{margin-left:0}
+
 /* ── CALENDAR FILTER PILLS ── */
 .cal-filter-pill{padding:3px 10px;border-radius:20px;border:1px solid var(--rule);background:var(--white);font-size:.68rem;font-family:var(--fm);cursor:pointer;transition:all .15s;color:var(--muted);white-space:nowrap}
 .cal-filter-pill:hover{background:var(--cream);color:var(--ink)}
@@ -345,7 +354,6 @@ tr:hover td{background:var(--paper)}
 .comment:last-child{border-bottom:none}
 .comment-hdr{display:flex;align-items:center;gap:6px;margin-bottom:4px}
 .comment-body{font-size:.78rem;line-height:1.5}
-.comment-mention{background:#e8f4fd;color:#1a5276;border-radius:3px;padding:0 3px;font-weight:500}
 .version-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--cream);font-size:.73rem}
 .version-item:last-child{border-bottom:none}
 .version-dot{width:8px;height:8px;border-radius:50%;background:var(--rule);margin-top:3px;flex-shrink:0}
@@ -465,10 +473,7 @@ tr:hover td{background:var(--paper)}
 .confirm-box{background:var(--white);border-radius:var(--rl);padding:26px;width:380px;max-width:100%;box-shadow:var(--shadow-lg);animation:fadeIn .15s ease}
 
 /* ── MENTION DROPDOWN ── */
-.mention-dropdown{position:absolute;background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);box-shadow:var(--shadow-lg);z-index:300;min-width:180px;display:none;overflow:hidden}
-.mention-dropdown.open{display:block}
-.mention-item{padding:8px 13px;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:8px}
-.mention-item:hover{background:var(--cream)}
+
 
 /* ── ASSET CHIPS ── */
 .asset-chip{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;cursor:pointer;background:var(--cream);padding:6px 11px;border-radius:20px;border:1px solid var(--rule);transition:all .15s}
@@ -699,8 +704,7 @@ tr:hover td{background:var(--paper)}
                 <div class="toolbar-sep"></div>
                 <button class="toolbar-btn" onclick="fmtLink()">⌖ Link</button>
                 <button class="toolbar-btn" onclick="insertDrivePhoto()" title="Insert photo from Google Drive link">⊡ Photo</button>
-                <div class="toolbar-sep"></div>
-                <button class="toolbar-btn" onclick="insertMention()" title="@mention a team member">@ Mention</button>
+
                 <div class="toolbar-sep"></div>
                 <button class="toolbar-btn" onclick="runGrammarCheck()" id="btn-grammar" title="Check spelling and grammar">✓ Grammar</button>
               </div>
@@ -711,8 +715,7 @@ tr:hover td{background:var(--paper)}
               </div>
               <div class="upload-progress-strip" id="upload-progress-strip"><div class="upload-bar"><div class="upload-fill" id="upload-fill" style="width:0%"></div></div></div>
               <div class="editor-body" style="position:relative">
-                <div id="story-content" contenteditable="true" spellcheck="true" oninput="onEditorInput(event)" onkeyup="checkMention(event)"></div>
-                <div class="mention-dropdown" id="mention-dropdown"></div>
+                <div id="story-content" contenteditable="true" spellcheck="true" oninput="onEditorInput(event)"></div>
               </div>
             </div>
             <div>
@@ -744,10 +747,9 @@ tr:hover td{background:var(--paper)}
                 <div class="panel-body">
                   <div id="comment-list" style="margin-bottom:9px"></div>
                   <div style="display:flex;gap:7px;align-items:flex-end">
-                    <textarea id="new-comment" rows="2" class="form-textarea" placeholder="Add a comment… type @ to mention someone" style="flex:1;min-height:52px;position:relative" oninput="commentMentionCheck()" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment()}"></textarea>
+                    <textarea id="new-comment" rows="2" class="form-textarea" placeholder="Add a comment…" style="flex:1;min-height:52px;position:relative" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment()}"></textarea>
                     <button class="btn btn-primary" style="font-size:.72rem;padding:7px 10px;flex-shrink:0" onclick="postComment()">Send</button>
                   </div>
-                  <div class="mention-dropdown" id="comment-mention-dropdown" style="bottom:56px;left:0;right:52px"></div>
                 </div>
               </div>
               <div class="panel">
@@ -921,7 +923,12 @@ tr:hover td{background:var(--paper)}
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Assign To Reporter</label><select class="form-select" id="na-reporter" onchange="autoFillByline(this,'na-byline')"><option value="">— Select reporter —</option></select></div>
+        <div class="form-group"><label class="form-label">Assign To Reporters</label>
+          <div id="na-reporter-picker" style="border:1px solid var(--rule);border-radius:var(--r);padding:8px;max-height:130px;overflow-y:auto;background:var(--white);display:flex;flex-wrap:wrap;gap:5px">
+            <span style="font-size:.75rem;color:var(--muted);width:100%">Loading team…</span>
+          </div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:4px">Click names to select. At least one required.</div>
+        </div>
         <div class="form-group"><label class="form-label">Deadline</label><input class="form-input" type="date" id="na-deadline"></div>
       </div>
     </div>
@@ -955,7 +962,12 @@ tr:hover td{background:var(--paper)}
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Assign To Reporter</label><select class="form-select" id="ea-reporter"></select></div>
+        <div class="form-group"><label class="form-label">Assign To Reporters</label>
+          <div id="ea-reporter-picker" style="border:1px solid var(--rule);border-radius:var(--r);padding:8px;max-height:130px;overflow-y:auto;background:var(--white);display:flex;flex-wrap:wrap;gap:5px">
+            <span style="font-size:.75rem;color:var(--muted);width:100%">Loading team…</span>
+          </div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:4px">Click names to select. At least one required.</div>
+        </div>
         <div class="form-group"><label class="form-label">Deadline</label><input class="form-input" type="date" id="ea-deadline"></div>
       </div>
     </div>
@@ -1165,7 +1177,7 @@ tr:hover td{background:var(--paper)}
         <div class="form-group"><label class="form-label">End Date (optional)</label><input class="form-input" type="date" id="ce-end-date"></div>
         <div class="form-group"><label class="form-label">Type</label>
           <select class="form-select" id="ce-type">
-            <option value="custom">Custom Event</option>
+            <option value="custom">Black SoccerLab Event</option>
             <option value="holiday">Holiday / No School</option>
           </select>
         </div>
@@ -1348,7 +1360,6 @@ let saveTimer=null,commentUnsub=null,storyUnsub=null,sourceUnsub=null
 let confirmResolveRef=null,editingAssignId=null,editingRoleUid=null
 let calYear=new Date().getFullYear(),calMonth=new Date().getMonth()
 let calFilter='all'
-let mentionStart=-1,commentMentionStart=-1
 
 const AC=['#c0392b','#2c6e49','#e67e22','#1a5276','#6c3483','#7a7570','#16a085','#2980b9']
 const aColor=n=>AC[(n?.charCodeAt(0)||0)%AC.length]
@@ -1615,7 +1626,7 @@ function subscribeAssignments(){
     q=query(collection(db,'assignments'),where('section','==',ME.section))
   }else{
     // Reporter — simple single-field query, no composite index needed
-    q=query(collection(db,'assignments'),where('assignedTo','==',ME.uid))
+    q=query(collection(db,'assignments'),where('assignedTo','array-contains',ME.uid))
   }
   onSnapshot(q,snap=>{
     // Sort client-side by createdAt descending so reporters see newest first
@@ -1627,7 +1638,7 @@ function subscribeAssignments(){
         return tb-ta
       })
     renderDashboard();renderAssignments();renderBoard();renderArchive();renderCalendar()
-    const mine=ASSIGNMENTS.filter(a=>a.assignedTo===ME.uid&&['assigned','draft'].includes(a.status))
+    const mine=ASSIGNMENTS.filter(a=>isAssigned(a)&&['assigned','draft'].includes(a.status))
     const nb=document.getElementById('nb-assign')
     mine.length?(nb.style.display='',nb.textContent=mine.length):nb.style.display='none'
   },err=>{
@@ -1703,7 +1714,7 @@ function renderDashboard(){
     const overdue=urgent.filter(a=>new Date(a.deadline+'T23:59:59')<now)
     document.getElementById('deadline-pressure-list').innerHTML=urgent.map(a=>{
       const isOver=new Date(a.deadline+'T23:59:59')<now
-      const assignee=TEAM.find(u=>u.id===a.assignedTo)
+      const _uids=Array.isArray(a.assignedTo)?a.assignedTo:(a.assignedTo?[a.assignedTo]:[]);const assignee=TEAM.find(u=>u.id===_uids[0])
       const avatarInitials=assignee?inits(assignee.name):'?'
       const dateLabel=isOver?'⚠ OVERDUE':new Date(a.deadline+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})
       const tooltip=`${assignee?.name||'Unassigned'} — "${a.title||'Untitled'}" — ${isOver?'OVERDUE':dateLabel}`
@@ -1714,7 +1725,7 @@ function renderDashboard(){
   }
 
   // My assignments banner
-  const myActive=ASSIGNMENTS.filter(a=>a.assignedTo===ME.uid&&['assigned','draft','review'].includes(a.status))
+  const myActive=ASSIGNMENTS.filter(a=>isAssigned(a)&&['assigned','draft','review'].includes(a.status))
   const banner=document.getElementById('my-assign-banner')
   if(myActive.length){
     banner.style.display=''
@@ -1742,10 +1753,10 @@ function renderDashboard(){
 
   // Recent table
   const rows=ASSIGNMENTS.slice(0,6).map(a=>{
-    const r=TEAM.find(u=>u.id===a.assignedTo),ov=a.deadline&&isPast(a.deadline)&&a.status!=='published'
+    const ov=a.deadline&&isPast(a.deadline)&&a.status!=='published'
     return`<tr style="cursor:pointer" onclick="openEditor('${a.id}')">
       <td><div style="font-weight:500;font-size:.8rem;max-width:200px">${esc(a.title||'Untitled')}</div><div style="font-size:.62rem;color:var(--muted);font-family:var(--fm)">${esc(a.slug||'')}</div></td>
-      <td><div style="display:flex;align-items:center;gap:6px;font-size:.78rem">${r?`<div class="avatar" style="width:20px;height:20px;font-size:.56rem;background:${aColor(r.name)}">${inits(r.name)}</div>${esc(r.name.split(' ')[0])}`:'—'}</div></td>
+      <td>${assigneeAvatars(a.assignedTo)}</td>
       <td><span class="badge badge-${a.status||'draft'}">${a.status||'draft'}</span></td>
       <td style="font-family:var(--fm);font-size:.7rem;color:${ov?'var(--accent)':'var(--muted)'}">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}${ov?' ⚠':''}</td></tr>`
   }).join('')
@@ -1821,9 +1832,9 @@ window.autoFillByline=(sel,bylineId)=>{
   if(r&&el&&!el.value)el.value=`By ${r.name}`
 }
 window.createAssignment=async()=>{
-  const title=document.getElementById('na-title').value.trim(),reporter=document.getElementById('na-reporter').value
+  const title=document.getElementById('na-title').value.trim(),reporter=getSelectedReporters('na')
   if(!title){toast('Please enter a headline','error');return}
-  if(!reporter){toast('Please select a reporter','error');return}
+  if(!reporter||!reporter.length){toast('Please select at least one reporter','error');return}
   const slug=document.getElementById('na-slug').value.trim()||title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
   try{
     await addDoc(collection(db,'assignments'),{
@@ -1836,10 +1847,10 @@ window.createAssignment=async()=>{
       digitalAssets:getAssets('na'),status:'assigned',wordCount:0,
       createdBy:ME.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),readAt:null
     })
-    await notify(reporter,`📋 New assignment from ${ME.name}: "${title}"`)
+    for(const _uid of (Array.isArray(reporter)?reporter:[reporter]))await notify(_uid,`📋 New assignment from ${ME.name}: "${title}"`)
     closeModal('new-assign')
     ;['na-slug','na-title','na-byline','na-brief','na-deadline','na-words'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
-    document.getElementById('na-reporter').value='';document.getElementById('na-length').value='short';setAssets('na',[])
+    const naP=document.getElementById('na-reporter-picker');if(naP)naP.querySelectorAll('.reporter-chip').forEach(c=>c.classList.remove('selected'));document.getElementById('na-length').value='short';setAssets('na',[])
     toast('Assignment created and reporter notified ✓')
   }catch(e){toast('Failed to create assignment','error');console.error(e)}
 }
@@ -1849,7 +1860,7 @@ window.editAssignment=id=>{
   document.getElementById('ea-byline').value=a.byline||'';document.getElementById('ea-brief').value=a.brief||''
   document.getElementById('ea-section').value=a.section||'Campus News';document.getElementById('ea-length').value=a.length||'short'
   document.getElementById('ea-deadline').value=a.deadline||'';document.getElementById('ea-words').value=a.wordTarget||''
-  setAssets('ea',a.digitalAssets||[]);populateSelect('ea-reporter',a.assignedTo);openModal('edit-assign')
+  setAssets('ea',a.digitalAssets||[]);setTimeout(()=>setSelectedReporters('ea',a.assignedTo),50);openModal('edit-assign')
 }
 window.saveEditAssignment=async()=>{
   if(!editingAssignId)return;const title=document.getElementById('ea-title').value.trim()
@@ -1859,7 +1870,7 @@ window.saveEditAssignment=async()=>{
       slug:document.getElementById('ea-slug').value.trim()||title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),
       title,byline:document.getElementById('ea-byline').value.trim(),brief:document.getElementById('ea-brief').value.trim(),
       section:document.getElementById('ea-section').value,length:document.getElementById('ea-length').value,
-      assignedTo:document.getElementById('ea-reporter').value,deadline:document.getElementById('ea-deadline').value||null,
+      assignedTo:getSelectedReporters('ea'),deadline:document.getElementById('ea-deadline').value||null,
       wordTarget:parseInt(document.getElementById('ea-words').value)||600,digitalAssets:getAssets('ea'),updatedAt:serverTimestamp()
     })
     closeModal('edit-assign');toast('Assignment updated ✓')
@@ -1909,7 +1920,7 @@ function renderBoard(){
     const cards=ASSIGNMENTS.filter(a=>a.status===status)
     document.getElementById('kc-'+status).textContent=cards.length
     document.getElementById('cards-'+status).innerHTML=cards.map(a=>{
-      const r=TEAM.find(u=>u.id===a.assignedTo),ov=a.deadline&&isPast(a.deadline)&&status!=='published'
+      const ov=a.deadline&&isPast(a.deadline)&&status!=='published'
       return`<div class="kanban-card col-${status}" draggable="true" ondragstart="dragStart(event,'${a.id}')" ondragend="dragEnd(event)" onclick="openEditor('${a.id}')">
         <div class="kanban-card-title">${esc(a.title||'Untitled')}</div>
         <div style="margin-bottom:5px"><span class="badge badge-section" style="font-size:.56rem">${esc(a.section||'')}</span></div>
@@ -1933,7 +1944,7 @@ window.colDrop=async(e,status)=>{
     await updateDoc(doc(db,'assignments',DRAG_ID),{status,updatedAt:serverTimestamp()})
     const a=ASSIGNMENTS.find(x=>x.id===DRAG_ID)
     if(a){
-      if(status==='review')await notify(a.assignedTo,`Your story "${a.title}" is in review`)
+      if(status==='review')await notifyAssignees(a,`Your story "${a.title}" is in review`)
       if(status==='published')await notify(a.assignedTo,`🎉 "${a.title}" has been published!`)
     }
     toast(`Moved to ${status} ✓`)
@@ -1960,7 +1971,7 @@ window.openEditor=async assignId=>{
 
   // ── Step 2: Mark as read ──
   try{
-    if(CURRENT_ASSIGN.assignedTo===ME.uid&&!CURRENT_ASSIGN.readAt)
+    if(isAssigned(CURRENT_ASSIGN)&&!CURRENT_ASSIGN.readAt)
       await updateDoc(doc(db,'assignments',assignId),{readAt:serverTimestamp()})
   }catch(e){console.warn('Could not mark as read:',e)}
 
@@ -2052,9 +2063,9 @@ function _editorFail(msg){
 
 function renderEditorUI(){
   const a=CURRENT_ASSIGN,s=CURRENT_STORY,locked=a.status==='published'
-  const isAuthor=a.assignedTo===ME.uid,canRev=canReview(a)
+  const isAuthor=isAssigned(a),canRev=canReview(a)
   document.getElementById('ed-status-badge').className=`badge badge-${a.status||'draft'}`;document.getElementById('ed-status-badge').textContent=a.status||'draft'
-  const r=TEAM.find(u=>u.id===a.assignedTo);document.getElementById('ed-reporter-name').textContent=r?.name||'Unassigned'
+  const _rUids=Array.isArray(a.assignedTo)?a.assignedTo:(a.assignedTo?[a.assignedTo]:[]);document.getElementById('ed-reporter-name').textContent=_rUids.map(uid=>TEAM.find(u=>u.id===uid)?.name||'?').join(', ')||'Unassigned'
   document.getElementById('btn-submit-review').style.display=isAuthor&&a.status==='draft'?'':'none'
   document.getElementById('btn-send-back').style.display=canRev&&a.status==='review'?'':'none'
   document.getElementById('btn-publish').style.display=isEIC()&&a.status==='review'?'':'none'
@@ -2208,66 +2219,11 @@ window.saveDriveMedia=async()=>{
   }catch(e){toast('Could not save media','error');console.error(e)}
 }
 
-// @Mention system
-window.checkMention=e=>{
-  const sel=window.getSelection();if(!sel.rangeCount)return
-  const txt=sel.getRangeAt(0).startContainer.textContent||''
-  const pos=sel.getRangeAt(0).startOffset,at=txt.lastIndexOf('@',pos-1)
-  const dd=document.getElementById('mention-dropdown')
-  if(at>=0&&pos-at<=20){
-    mentionStart=at;const q=txt.slice(at+1,pos).toLowerCase()
-    const matches=TEAM.filter(u=>u.name.toLowerCase().includes(q)).slice(0,6)
-    if(matches.length){
-      dd.className='mention-dropdown open'
-      dd.style.cssText='position:absolute;top:100%;left:0;z-index:300;background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);box-shadow:var(--shadow-lg);min-width:180px;display:block'
-      dd.innerHTML=matches.map(u=>`<div class="mention-item" onclick="insertMentionUser('${u.id}','${esc(u.name)}')"><div class="avatar" style="width:20px;height:20px;font-size:.56rem;background:${aColor(u.name)}">${inits(u.name)}</div>${esc(u.name)}</div>`).join('')
-      return
-    }
-  }
-  mentionStart=-1;dd.className='mention-dropdown';dd.style.display='none'
-}
-window.insertMentionUser=(uid,name)=>{
-  const dd=document.getElementById('mention-dropdown');dd.style.display='none'
-  const sel=window.getSelection();if(!sel.rangeCount)return
-  const range=sel.getRangeAt(0),container=range.startContainer
-  const txt=container.textContent,at=txt.lastIndexOf('@',range.startOffset-1)
-  if(at<0)return
-  const before=txt.slice(0,at),after=txt.slice(range.startOffset)
-  const span=document.createElement('span');span.className='mention';span.dataset.uid=uid;span.contentEditable='false';span.textContent=`@${name}`
-  const afterNode=document.createTextNode(after+' ')
-  container.textContent=before
-  container.parentNode.insertBefore(span,container.nextSibling)
-  container.parentNode.insertBefore(afterNode,span.nextSibling)
-  const newRange=document.createRange();newRange.setStart(afterNode,1);newRange.collapse(true)
-  sel.removeAllRanges();sel.addRange(newRange)
-  onEditorInput()
-}
-window.insertMention=()=>{
-  document.getElementById('story-content').focus()
-  document.execCommand('insertText',false,'@')
-  checkMention({})
-}
-// Comment @mention
-window.commentMentionCheck=()=>{
-  const el=document.getElementById('new-comment'),val=el.value,pos=el.selectionStart
-  const at=val.lastIndexOf('@',pos-1),dd=document.getElementById('comment-mention-dropdown')
-  if(at>=0&&pos-at<=20){
-    commentMentionStart=at;const q=val.slice(at+1,pos).toLowerCase()
-    const matches=TEAM.filter(u=>u.name.toLowerCase().includes(q)).slice(0,5)
-    if(matches.length){
-      dd.style.cssText='position:absolute;background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);box-shadow:var(--shadow-lg);min-width:180px;display:block;bottom:56px;left:0;z-index:300'
-      dd.innerHTML=matches.map(u=>`<div class="mention-item" onclick="insertCommentMention('${u.id}','${esc(u.name)}')"><div class="avatar" style="width:18px;height:18px;font-size:.52rem;background:${aColor(u.name)}">${inits(u.name)}</div>${esc(u.name)}</div>`).join('')
-      return
-    }
-  }
-  commentMentionStart=-1;dd.style.display='none'
-}
-window.insertCommentMention=(uid,name)=>{
-  const el=document.getElementById('new-comment'),dd=document.getElementById('comment-mention-dropdown')
-  const at=el.value.lastIndexOf('@',el.selectionStart-1)
-  if(at>=0){const b=el.value.slice(0,at),a=el.value.slice(el.selectionStart);el.value=`${b}@${name} ${a}`;el.focus()}
-  dd.style.display='none';commentMentionStart=-1
-}
+
+
+
+
+
 
 // Workflow
 window.submitForReview=async()=>{
@@ -2345,7 +2301,7 @@ window.postComment=async()=>{
   txt.replace(/@([A-Za-z ]+)/g,(_,name)=>{const u=TEAM.find(x=>x.name.toLowerCase()===name.trim().toLowerCase());if(u)mentionedUids.push(u.id)})
   await addDoc(collection(db,'comments'),{storyId:CURRENT_STORY.id,authorId:ME.uid,authorName:ME.name,body:txt,createdAt:serverTimestamp()})
   document.getElementById('new-comment').value=''
-  if(CURRENT_ASSIGN.assignedTo!==ME.uid)await notify(CURRENT_ASSIGN.assignedTo,`${ME.name} commented on "${CURRENT_ASSIGN.title}"`)
+  if(!isAssigned(CURRENT_ASSIGN))await notifyAssignees(CURRENT_ASSIGN,`${ME.name} commented on "${CURRENT_ASSIGN.title}"`)
   for(const uid of mentionedUids)if(uid!==ME.uid)await notify(uid,`${ME.name} mentioned you in a comment on "${CURRENT_ASSIGN.title}"`)
 }
 function renderComments(comments){
@@ -2589,7 +2545,6 @@ function renderArchive(){
   const list=document.getElementById('archive-list')
   if(!published.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">⊟</div><div class="empty-title">No published stories</div><div class="empty-sub">Published stories will appear here.</div></div>';return}
   list.innerHTML=published.map(a=>{
-    const r=TEAM.find(u=>u.id===a.assignedTo)
     return`<div class="archive-row" onclick="openEditor('${a.id}')">
       <div style="flex:1;min-width:0">
         <div style="font-weight:600;font-size:.85rem;margin-bottom:2px">${esc(a.title||'Untitled')}</div>
@@ -2597,7 +2552,7 @@ function renderArchive(){
           ${a.slug?`<span style="font-family:var(--fm)">${esc(a.slug)}</span>`:''}
           <span>${esc(a.section||'')}</span>
           ${a.byline?`<span>${esc(a.byline)}</span>`:''}
-          ${r?`<span>${esc(r.name)}</span>`:''}
+          ${(Array.isArray(a.assignedTo)?a.assignedTo:[a.assignedTo||'']).map(uid=>{const u=TEAM.find(x=>x.id===uid);return u?`<span>${esc(u.name.split(' ')[0])}</span>`:''}).join(' ')}
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -2779,7 +2734,7 @@ function renderTeam(){
   renderPendingApprovals()
   // Workload
   document.getElementById('workload-view').innerHTML=TEAM.map(u=>{
-    const active=ASSIGNMENTS.filter(a=>a.assignedTo===u.id&&['assigned','draft','review'].includes(a.status)).length
+    const active=ASSIGNMENTS.filter(a=>(Array.isArray(a.assignedTo)?a.assignedTo:[a.assignedTo]).includes(u.id)&&['assigned','draft','review'].includes(a.status)).length
     const maxW=5,pct=Math.min(100,active/maxW*100)
     const col=active===0?'var(--rule)':active<=2?'var(--accent2)':active<=4?'var(--amber)':'var(--accent)'
     return`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--cream)">
@@ -2793,8 +2748,8 @@ function renderTeam(){
   // Member grid
   if(!TEAM.length){document.getElementById('team-grid').innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">◎</div><div class="empty-title">No team members yet</div></div>';return}
   const cards=TEAM.map(u=>{
-    const pub=ASSIGNMENTS.filter(a=>a.assignedTo===u.id&&a.status==='published').length
-    const active=ASSIGNMENTS.filter(a=>a.assignedTo===u.id&&['assigned','draft','review'].includes(a.status)).length
+    const pub=ASSIGNMENTS.filter(a=>(Array.isArray(a.assignedTo)?a.assignedTo:[a.assignedTo]).includes(u.id)&&a.status==='published').length
+    const active=ASSIGNMENTS.filter(a=>(Array.isArray(a.assignedTo)?a.assignedTo:[a.assignedTo]).includes(u.id)&&['assigned','draft','review'].includes(a.status)).length
     const isMe=u.id===ME.uid
     return`<div class="team-card">
       ${isMe?'<span style="position:absolute;top:9px;right:9px;font-size:.56rem;font-family:var(--fm);background:var(--cream);color:var(--muted);padding:2px 6px;border-radius:10px">You</span>':''}
@@ -2996,10 +2951,51 @@ window.openModal=id=>document.getElementById('modal-'+id)?.classList.add('open')
 window.closeModal=id=>document.getElementById('modal-'+id)?.classList.remove('open')
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}))
 function populateReporterSelects(){
-  ;['na-reporter','ea-reporter'].forEach(selId=>{
-    const sel=document.getElementById(selId);if(!sel)return;const cur=sel.value
-    sel.innerHTML='<option value="">— Select reporter —</option>'+TEAM.map(u=>`<option value="${u.id}"${u.id===cur?' selected':''}>${esc(u.name)} (${u.role})</option>`).join('')
+  ;['na','ea'].forEach(prefix=>{
+    const picker=document.getElementById(`${prefix}-reporter-picker`)
+    if(!picker)return
+    const selected=getSelectedReporters(prefix)
+    picker.innerHTML=TEAM.map(u=>{
+      const isSel=selected.includes(u.id)
+      return`<span class="reporter-chip${isSel?' selected':''}" data-uid="${u.id}" onclick="toggleReporterChip(this)" title="${esc(u.role)}"><span class="avatar" style="width:16px;height:16px;font-size:.45rem;background:${aColor(u.name)};flex-shrink:0">${inits(u.name)}</span>${esc(u.name.split(' ')[0])}</span>`
+    }).join('')||'<span style="font-size:.75rem;color:var(--muted)">No team members yet</span>'
   })
+}
+window.toggleReporterChip=(chip)=>{chip.classList.toggle('selected')}
+function getSelectedReporters(prefix){
+  const picker=document.getElementById(`${prefix}-reporter-picker`)
+  if(!picker)return[]
+  return Array.from(picker.querySelectorAll('.reporter-chip.selected')).map(c=>c.dataset.uid)
+}
+function setSelectedReporters(prefix,uids){
+  const arr=Array.isArray(uids)?uids:(uids?[uids]:[])
+  const picker=document.getElementById(`${prefix}-reporter-picker`)
+  if(!picker)return
+  picker.querySelectorAll('.reporter-chip').forEach(chip=>{
+    chip.classList.toggle('selected',arr.includes(chip.dataset.uid))
+  })
+}
+// Render a row of assignee avatars from an assignedTo array
+function assigneeAvatars(assignedTo,maxShow=4){
+  const uids=Array.isArray(assignedTo)?assignedTo:(assignedTo?[assignedTo]:[])
+  if(!uids.length)return'<span style="color:var(--muted);font-size:.75rem">Unassigned</span>'
+  const visible=uids.slice(0,maxShow)
+  const rest=uids.length-maxShow
+  return`<div class="assignee-avatars">${visible.map(uid=>{
+    const u=TEAM.find(x=>x.id===uid)
+    const name=u?.name||'?'
+    return`<div class="avatar" style="width:22px;height:22px;font-size:.52rem;background:${aColor(name)}" title="${esc(name)}">${inits(name)}</div>`
+  }).join('')}${rest>0?`<div class="avatar" style="width:22px;height:22px;font-size:.52rem;background:var(--muted)" title="${rest} more">+${rest}</div>`:''}</div>`
+}
+// Check if current user is assigned to an assignment
+function isAssigned(a){
+  const uids=Array.isArray(a.assignedTo)?a.assignedTo:(a.assignedTo?[a.assignedTo]:[])
+  return uids.includes(ME?.uid)
+}
+// Notify all assignees
+async function notifyAssignees(a,msg){
+  const uids=Array.isArray(a.assignedTo)?a.assignedTo:(a.assignedTo?[a.assignedTo]:[])
+  for(const uid of uids){if(uid!==ME?.uid)await notify(uid,msg)}
 }
 function populateSelect(selId,value){const sel=document.getElementById(selId);if(!sel)return;Array.from(sel.options).forEach(o=>o.selected=o.value===value)}
 window.toast=(msg,type='success')=>{
@@ -3613,7 +3609,7 @@ window.viewCalEvent=(id,isAssignment)=>{
     title.textContent=a.title||'Untitled'
     body.innerHTML=`
       <div class="seg-detail-row"><div class="seg-detail-label">Section</div><div class="seg-detail-value">${esc(a.section||'—')}</div></div>
-      <div class="seg-detail-row"><div class="seg-detail-label">Reporter</div><div class="seg-detail-value">${esc(TEAM.find(u=>u.id===a.assignedTo)?.name||'Unassigned')}</div></div>
+      <div class="seg-detail-row"><div class="seg-detail-label">Reporter</div><div class="seg-detail-value">${esc((Array.isArray(a.assignedTo)?a.assignedTo:[a.assignedTo||'']).map(uid=>TEAM.find(u=>u.id===uid)?.name||'?').join(', ')||'Unassigned')}</div></div>
       <div class="seg-detail-row"><div class="seg-detail-label">Status</div><div class="seg-detail-value"><span class="badge badge-${a.status}">${a.status}</span></div></div>
       <div class="seg-detail-row"><div class="seg-detail-label">Deadline</div><div class="seg-detail-value">${a.deadline?new Date(a.deadline+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'—'}</div></div>
       ${a.brief?`<div class="seg-detail-row"><div class="seg-detail-label">Brief</div><div class="seg-detail-value">${esc(a.brief)}</div></div>`:''}`
@@ -3627,7 +3623,7 @@ window.viewCalEvent=(id,isAssignment)=>{
       <div class="seg-detail-row"><div class="seg-detail-label">Date</div><div class="seg-detail-value">${ev.date?new Date(ev.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'—'}${timeStr}</div></div>
       ${ev.endDate?`<div class="seg-detail-row"><div class="seg-detail-label">End Date</div><div class="seg-detail-value">${new Date(ev.endDate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div></div>`:''}
       ${ev.freq?`<div class="seg-detail-row"><div class="seg-detail-label">Repeats</div><div class="seg-detail-value">${esc(ev.freq)}${ev.until?' until '+new Date(ev.until+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):''}</div></div>`:''}
-      <div class="seg-detail-row"><div class="seg-detail-label">Type</div><div class="seg-detail-value">${esc(ev.type||'custom')}</div></div>
+      <div class="seg-detail-row"><div class="seg-detail-label">Type</div><div class="seg-detail-value">${esc(ev.type==='custom'?'Black SoccerLab Event':ev.type==='holiday'?'Holiday':ev.type==='worldcup'?'World Cup 2026':ev.type||'custom')}</div></div>
       ${ev.notes?`<div class="seg-detail-row"><div class="seg-detail-label">Notes</div><div class="seg-detail-value">${esc(ev.notes)}</div></div>`:''}`
     const isEditable=ev.id&&!ev._hardcoded
     footer.innerHTML=`
@@ -3762,20 +3758,29 @@ function renderGrammarResults(text){
 }
 
 window.applyGrammarFix=(contextText,offset,length,replacement)=>{
-  // Find and replace the specific text in the editor
   const content=document.getElementById('story-content')
   if(!content)return
-  const fullText=content.innerText
-  // Find the context in the full text and replace the specific word
-  const ctxIdx=fullText.indexOf(contextText)
-  if(ctxIdx<0){toast('Could not locate text to replace — it may have changed','error');return}
-  const absoluteOffset=ctxIdx+offset
-  const before=fullText.slice(0,absoluteOffset)
-  const after=fullText.slice(absoluteOffset+length)
-  content.innerText=before+replacement+after
+  // Extract the exact error word from context using offset+length
+  const errorWord=contextText.slice(offset,offset+length)
+  if(!errorWord){toast('Could not identify the word to replace','error');return}
+  // Use a TreeWalker to find the text node containing the error word
+  // and replace it there — this works correctly with rich HTML content
+  const walker=document.createTreeWalker(content,NodeFilter.SHOW_TEXT,null)
+  let node,found=false
+  while((node=walker.nextNode())){
+    const idx=node.textContent.indexOf(errorWord)
+    if(idx>=0){
+      // Replace only the first occurrence in this text node
+      const before=node.textContent.slice(0,idx)
+      const after=node.textContent.slice(idx+errorWord.length)
+      node.textContent=before+replacement+after
+      found=true
+      break
+    }
+  }
+  if(!found){toast('Could not locate that text — it may have already been changed','error');return}
   onEditorInput()
-  toast(`Replaced with "${replacement}" ✓`)
-  // Re-run check to update results
+  toast(`Replaced with “${replacement}” ✓`)
   runGrammarCheck()
 }
 
@@ -3786,7 +3791,7 @@ window.exportStoryPDF=()=>{
   const a=CURRENT_ASSIGN,s=CURRENT_STORY
   if(!a||!s){toast('No story loaded','error');return}
 
-  const reporter=TEAM.find(u=>u.id===a.assignedTo)
+  const _pdfUids=Array.isArray(a.assignedTo)?a.assignedTo:(a.assignedTo?[a.assignedTo]:[]);const reporter=TEAM.find(u=>u.id===_pdfUids[0])
   const pubDate=a.publishedAt
     ?(a.publishedAt.toDate?a.publishedAt.toDate():new Date(a.publishedAt))
         .toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
@@ -4041,7 +4046,7 @@ window.pitchToAssignment=async(id)=>{
   try{
     const ref=await addDoc(collection(db,'assignments'),{
       title:p.title,slug:'',byline:'',section:p.section||'',brief:p.brief,
-      status:'assigned',assignedTo:p.submittedBy,
+      status:'assigned',assignedTo:[p.submittedBy],
       deadline:p.deadline||null,wordTarget:600,
       digitalAssets:[],createdBy:ME.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()
     })
