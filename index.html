@@ -597,7 +597,7 @@ tr:hover td{background:var(--paper)}
             <span style="font-size:.62rem;color:var(--muted);font-family:var(--fm)" id="ds-online-count"></span>
           </div>
           <div id="ds-team-avatars" style="display:flex;flex-wrap:wrap;gap:7px"></div>
-          <div style="font-size:.62rem;color:var(--muted);line-height:1.4;margin-top:2px;font-style:italic">(Note: Recently logged-off users may still appear as active for up to 2 minutes.)</div>
+          <div style="font-size:.62rem;color:var(--muted);line-height:1.4;margin-top:2px;font-style:italic">(Note: Recently logged-off users may still appear as active for up to 90 seconds.)</div>
         </div>
         <div id="deadline-pressure-bar" style="display:none;background:#fdf2e9;border:1px solid #f0a070;border-radius:var(--r);padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <span style="font-size:.8rem">⏰</span>
@@ -4118,14 +4118,15 @@ async function startPresence(){
   if(!ME?.uid)return
   // Write presence immediately on open
   await writePresence()
-  // Heartbeat every 60 seconds
-  presenceTimer=setInterval(writePresence,60000)
-  // Subscribe to all users' presence
+  // Heartbeat every 30 seconds (tighter window = more reliable online detection)
+  presenceTimer=setInterval(writePresence,30000)
+  // Subscribe to all users' presence — re-render roster on every change
   onSnapshot(collection(db,'presence'),snap=>{
     PRESENCE_DATA={}
     snap.docs.forEach(d=>{PRESENCE_DATA[d.id]={...d.data()}})
-    // Re-render roster if dashboard is visible
-    if(document.getElementById('view-dashboard')?.classList.contains('active'))renderRoster()
+    // Always re-render roster regardless of which view is active
+    // so it's fresh when user navigates to dashboard
+    renderRoster()
   },err=>console.warn('Presence error:',err.code))
 }
 async function writePresence(){
@@ -4142,7 +4143,7 @@ function getPresenceStatus(uid){
   if(!p?.lastSeen)return'offline'
   const lastSeen=p.lastSeen.toDate?p.lastSeen.toDate():new Date(p.lastSeen)
   const age=(Date.now()-lastSeen.getTime())/1000
-  if(age<120)return'online'      // within 2 minutes = online
+  if(age<90)return'online'       // within 90 seconds = online (heartbeat every 30s)
   if(age<600)return'recent'      // within 10 minutes = recently active
   return'offline'
 }
