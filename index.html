@@ -123,28 +123,195 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 ::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
 
 /* ── MOBILE BASE ── */
-@media(max-width:768px){
-  #app{flex-direction:column!important}
-  .sidebar{width:100%!important;min-width:unset!important;flex-direction:row!important;height:56px!important;overflow:hidden!important;align-items:center!important}
-  .sb-logo,.sb-user,.sb-bottom,.sb-section-lbl{display:none!important}
-  .sidebar nav{display:flex!important;flex-direction:row!important;overflow-x:auto!important;padding:0 8px!important;gap:0!important;flex:1}
-  .nav-item{padding:6px 10px!important;font-size:.68rem!important;flex-direction:column!important;gap:2px!important;border-left:none!important;border-bottom:2px solid transparent!important;white-space:nowrap}
-  .nav-item.active{border-bottom-color:var(--accent)!important;border-left:none!important}
-  .nav-badge{margin-left:0!important;font-size:.5rem!important}
-  .main{flex:1;min-height:0}
-  .content{padding:14px 12px!important}
-  .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
-  .kanban{grid-template-columns:1fr!important}
-  .editor-layout{grid-template-columns:1fr!important}
+/* ══════════════════════════════════════════════════════
+   MOBILE OVERLAY NAV (always present, hidden on desktop)
+══════════════════════════════════════════════════════ */
+#mobile-nav-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.55);z-index:299;
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+  transition:opacity .25s ease;opacity:0;pointer-events:none;
+}
+#mobile-nav-overlay.open{display:block;opacity:1;pointer-events:auto}
+
+/* ══════════════════════════════════════════════════════
+   TABLET (≤900px)
+══════════════════════════════════════════════════════ */
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:10px!important}
   .form-row{grid-template-columns:1fr!important}
-  .team-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important}
-  .media-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))!important}
-  .modal{width:98vw!important;margin:0 auto}
-  .topbar{padding:0 12px!important;gap:8px!important}
+  .editor-layout{grid-template-columns:1fr!important}
+  .kanban{grid-template-columns:1fr!important}
+}
+
+/* ══════════════════════════════════════════════════════
+   MOBILE (≤768px) — Hamburger nav + core layout
+══════════════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* ── App shell ── */
+  #app{flex-direction:column!important}
+
+  /* ── Sidebar becomes a slide-in overlay ── */
+  .sidebar{
+    position:fixed!important;top:0;left:0;height:100vh!important;
+    width:280px!important;min-width:280px!important;
+    transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+    z-index:300!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    box-shadow:none;
+  }
+  .sidebar.mobile-open{
+    transform:translateX(0)!important;
+    box-shadow:4px 0 24px rgba(0,0,0,.35)!important;
+  }
+
+  /* ── Hamburger visible ── */
+  #hamburger-btn{display:flex!important;align-items:center;justify-content:center}
+
+  /* ── Topbar ── */
+  .topbar{
+    height:52px!important;padding:0 10px!important;gap:8px!important;
+    position:sticky;top:0;z-index:100;
+    background:var(--dark)!important;
+  }
   .tb-date{display:none!important}
-  table{font-size:.72rem!important}
-  th,td{padding:7px 8px!important}
+  .font-slider-wrap{display:none!important}
+  .tb-title{font-size:.82rem!important}
+
+  /* ── Main area fills screen ── */
+  .main{
+    margin-top:0!important;flex:1;
+    overflow-y:auto;overflow-x:hidden;
+  }
+  .content{padding:12px 14px!important}
+
+  /* ── Stats grid: 2 columns ── */
+  .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  .stat-card{padding:14px!important}
+  .stat-num{font-size:1.6rem!important}
+
+  /* ── Section headers ── */
+  .section-hdr{flex-wrap:wrap;gap:8px!important}
+
+  /* ── Forms ── */
+  .form-row{grid-template-columns:1fr!important}
+  .modal{width:100vw!important;max-width:100vw!important;border-radius:16px 16px 0 0!important;
+    position:fixed!important;bottom:0!important;left:0!important;
+    max-height:88vh!important;animation:slideUpModal .22s ease!important;
+  }
+  .modal-overlay{align-items:flex-end!important;padding:0!important}
+
+  /* ── Kanban: single column ── */
+  .kanban{grid-template-columns:1fr!important;gap:14px!important}
+
+  /* ── Editor: single column, panels become tabs ── */
+  .editor-layout{grid-template-columns:1fr!important;gap:0!important}
+  .editor-right{display:none!important}
+  .editor-right.mobile-panel-active{display:block!important;position:fixed!important;
+    bottom:0;left:0;right:0;height:55vh;overflow-y:auto;
+    background:var(--white);border-top:2px solid var(--rule);z-index:200;
+    border-radius:16px 16px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.12);
+    padding:14px!important;animation:slideUpModal .22s ease;
+  }
+  #editor-panel-tabs{display:flex!important}
+
+  /* ── Story content area ── */
+  #story-content{min-height:200px!important;font-size:.9rem!important}
+
+  /* ── Tables → card layout ── */
+  .mobile-card-table thead{display:none!important}
+  .mobile-card-table tbody tr{
+    display:block!important;
+    background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);
+    margin-bottom:10px!important;padding:12px 14px!important;
+    cursor:pointer;
+  }
+  .mobile-card-table tbody td{
+    display:flex!important;justify-content:space-between;align-items:flex-start;
+    border:none!important;padding:4px 0!important;font-size:.82rem!important;
+  }
+  .mobile-card-table tbody td::before{
+    content:attr(data-label);
+    font-size:.62rem;font-family:var(--fm);text-transform:uppercase;
+    letter-spacing:.06em;color:var(--muted);flex-shrink:0;width:90px;
+    padding-top:2px;
+  }
+  .mobile-card-table tbody td:first-child{font-size:.88rem!important;font-weight:600;color:var(--dark)}
+  .mobile-card-table tbody td:first-child::before{display:none}
+
+  /* ── Calendar: compact ── */
   .cal-grid{grid-template-columns:repeat(7,1fr)!important;gap:1px!important}
+  .cal-day{min-height:52px!important;padding:4px 3px!important}
+  .cal-day-num{font-size:.65rem!important}
+  .cal-event{font-size:0!important;height:5px!important;border-radius:2px!important;
+    padding:0!important;margin-bottom:2px!important;opacity:.85;
+  }
+  .cal-filter-pill{font-size:.62rem!important;padding:2px 7px!important}
+  .cal-legend{display:none!important}
+  .cal-nav{flex-wrap:wrap;gap:6px!important}
+
+  /* ── Media grid ── */
+  .media-grid{grid-template-columns:repeat(2,1fr)!important}
+
+  /* ── Team grid ── */
+  .team-grid{grid-template-columns:repeat(2,1fr)!important}
+
+  /* ── Archive ── */
+  .archive-row{flex-direction:column!important;gap:6px!important;padding:12px!important}
+
+  /* ── Rundown table → card ── */
+  .rundown-table-wrap{overflow-x:auto!important}
+  .rundown-table{min-width:600px!important;font-size:.72rem!important}
+
+  /* ── Modals ── */
+  .modal-body{padding:14px 16px!important;max-height:60vh!important;overflow-y:auto!important}
+  .modal-hdr,.modal-footer{padding:12px 16px!important}
+
+  /* ── Confirm box ── */
+  .confirm-box{width:94vw!important;padding:20px!important;
+    position:fixed;bottom:20px;left:3vw;border-radius:var(--rl)!important;
+    animation:slideUpModal .2s ease!important;
+  }
+
+  /* ── Pitch board cards ── */
+  .pitch-card{padding:12px!important}
+
+  /* ── Diff modal ── */
+  #modal-diff .modal{height:90vh!important;max-height:90vh!important}
+  #diff-left,#diff-right{font-size:.76rem!important}
+
+  /* ── Dashboard roster ── */
+  #ds-team-roster{padding:10px 12px!important}
+
+  /* ── Dashboard deadline bar ── */
+  #deadline-pressure-bar{flex-direction:column!important;align-items:flex-start!important;gap:6px!important}
+  #deadline-pressure-list{flex-wrap:wrap!important}
+}
+
+/* ══════════════════════════════════════════════════════
+   PHONE (≤480px) — tightest screens (iPhone SE, etc.)
+══════════════════════════════════════════════════════ */
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)!important}
+  .stat-card{padding:10px 12px!important}
+  .stat-num{font-size:1.4rem!important}
+  .team-grid{grid-template-columns:1fr 1fr!important}
+  .media-grid{grid-template-columns:repeat(2,1fr)!important}
+  .content{padding:10px 12px!important}
+  .section-title{font-size:1rem!important}
+  .my-assign-card{padding:10px 12px!important}
+  .topbar .tb-title{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cal-day{min-height:44px!important}
+  .cal-day-hdr{font-size:.52rem!important;padding:3px 0!important}
+}
+
+/* ── Slide-up animation for mobile modals ── */
+@keyframes slideUpModal{
+  from{transform:translateY(100%);opacity:0}
+  to{transform:translateY(0);opacity:1}
 }
 
 /* ── SPLASH ── */
@@ -530,7 +697,7 @@ tr:hover td{background:var(--paper)}
 
 <!-- APP -->
 <div id="app">
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sb-logo"><div class="sb-masthead">Goalkeepers Pressroom</div><div class="sb-edition">MSU SGJC · Black SoccerLab</div></div>
     <div class="sb-user">
       <div class="avatar" id="sb-avatar" style="width:29px;height:29px;font-size:.68rem"></div>
@@ -550,15 +717,22 @@ tr:hover td{background:var(--paper)}
       <div class="nav-item" onclick="nav('media')"><span class="nav-icon">⊡</span>Media Library</div>
       <div class="sb-section-lbl">Team</div>
       <div class="nav-item" onclick="nav('team')"><span class="nav-icon">◎</span>Team<span class="nav-badge" id="nb-pending" style="display:none;background:var(--amber)">0</span></div>
+      <div style="padding:6px 14px 2px;border-top:1px solid rgba(255,255,255,.07);margin-top:2px">
+        <div style="font-size:.55rem;font-family:var(--fm);text-transform:uppercase;letter-spacing:.08em;color:#555;margin-bottom:4px">Guides</div>
+        <a href="guide-student.html" target="_blank" style="display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:var(--r);font-size:.68rem;color:#888;text-decoration:none;transition:color .15s,background .15s" onmouseover="this.style.color='white';this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.color='#888';this.style.background='transparent'"><span>📖</span>Student Guide</a>
+        <a href="guide-admin.html" target="_blank" style="display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:var(--r);font-size:.68rem;color:#888;text-decoration:none;transition:color .15s,background .15s" onmouseover="this.style.color='white';this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.color='#888';this.style.background='transparent'"><span>📋</span>Admin Guide</a>
+      </div>
     </nav>
     <div class="sb-bottom">
       <button class="btn btn-primary" id="btn-new-assign-sb" style="width:100%;justify-content:center;margin-bottom:2px" onclick="openModal('new-assign')">+ New Assignment</button>
       <button class="signout-btn" onclick="doSignOut()">Sign out</button>
     </div>
   </aside>
+  <div id="mobile-nav-overlay" onclick="closeMobileNav()"></div>
 
   <div class="main">
     <header class="topbar">
+      <button id="hamburger-btn" onclick="toggleMobileNav()" aria-label="Open navigation" style="display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--paper);font-size:1.3rem;line-height:1;flex-shrink:0">☰</button>
       <div class="tb-title" id="tb-title">Daily Briefing</div>
       <div class="tb-date" id="tb-date"></div>
       <div class="font-slider-wrap" title="Adjust font size">
@@ -614,7 +788,7 @@ tr:hover td{background:var(--paper)}
           <div>
             <div class="section-hdr"><div class="section-title">Recent Assignments</div><button class="btn btn-ghost" style="font-size:.73rem" onclick="nav('assignments')">View all →</button></div>
             <hr class="section-rule">
-            <div class="card"><table id="dash-table"><tbody><tr><td colspan="4" style="text-align:center;padding:24px"><div class="spinner" style="margin:auto"></div></td></tr></tbody></table></div>
+            <div class="card"><table id="dash-table" class="mobile-card-table"><tbody><tr><td colspan="4" style="text-align:center;padding:24px"><div class="spinner" style="margin:auto"></div></td></tr></tbody></table></div>
           </div>
           <div>
             <div class="section-title" style="margin-bottom:13px">Section Progress</div><hr class="section-rule">
@@ -707,6 +881,7 @@ tr:hover td{background:var(--paper)}
 
                 <div class="toolbar-sep"></div>
                 <button class="toolbar-btn" onclick="runGrammarCheck()" id="btn-grammar" title="Check spelling and grammar">✓ Grammar</button>
+                <button class="toolbar-btn" id="btn-mobile-panels" onclick="openEditorPanel('details')" style="display:none" title="Open panels">≡ Panels</button>
               </div>
               <div class="word-progress-wrap">
                 <span style="font-size:.62rem;font-family:var(--fm);color:var(--muted);white-space:nowrap" id="word-progress-label">0 / 0 words</span>
@@ -718,11 +893,23 @@ tr:hover td{background:var(--paper)}
                 <div id="story-content" contenteditable="true" spellcheck="true" oninput="onEditorInput(event)"></div>
               </div>
             </div>
-            <div>
+            <div class="editor-right" id="editor-right">
+              <!-- Mobile panel tab bar (hidden on desktop) -->
+              <div id="editor-panel-tabs" style="display:none;border-bottom:1px solid var(--rule);background:var(--white);padding:0;margin-bottom:0;gap:0;position:sticky;top:0;z-index:5">
+                <button class="ed-panel-tab active" onclick="showEditorPanel('details',this)" style="flex:1;padding:10px 6px;background:none;border:none;border-bottom:2px solid var(--accent);font-size:.65rem;font-family:var(--fm);cursor:pointer;color:var(--accent);text-transform:uppercase;letter-spacing:.06em">Details</button>
+                <button class="ed-panel-tab" onclick="showEditorPanel('sources',this)" style="flex:1;padding:10px 6px;background:none;border:none;border-bottom:2px solid transparent;font-size:.65rem;font-family:var(--fm);cursor:pointer;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Sources</button>
+                <button class="ed-panel-tab" onclick="showEditorPanel('comments',this)" style="flex:1;padding:10px 6px;background:none;border:none;border-bottom:2px solid transparent;font-size:.65rem;font-family:var(--fm);cursor:pointer;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Comments</button>
+                <button class="ed-panel-tab" onclick="showEditorPanel('media',this)" style="flex:1;padding:10px 6px;background:none;border:none;border-bottom:2px solid transparent;font-size:.65rem;font-family:var(--fm);cursor:pointer;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Media</button>
+                <button class="ed-panel-tab" onclick="showEditorPanel('versions',this)" style="flex:1;padding:10px 6px;background:none;border:none;border-bottom:2px solid transparent;font-size:.65rem;font-family:var(--fm);cursor:pointer;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">History</button>
+                <button onclick="closeEditorPanel()" style="padding:10px 12px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;flex-shrink:0">✕</button>
+              </div>
+              <div id="ed-panel-details">
               <div class="panel">
                 <div class="panel-hdr"><span class="panel-title">Story Details</span></div>
                 <div class="panel-body" id="ed-meta"></div>
               </div>
+              </div>
+              <div id="ed-panel-sources">
               <div class="panel">
                 <div class="panel-hdr"><span class="panel-title">Sources</span>
                   <button class="btn btn-ghost" style="font-size:.67rem;padding:2px 6px" onclick="openModal('add-source')">+ Add</button>
@@ -736,12 +923,16 @@ tr:hover td{background:var(--paper)}
                   </div>
                 </div>
               </div>
+              </div>
+              <div id="ed-panel-media">
               <div class="panel">
                 <div class="panel-hdr"><span class="panel-title">Media</span>
                   <button class="btn btn-ghost" style="font-size:.67rem;padding:2px 7px" onclick="openModal('add-drive-media')">+ Add</button>
                 </div>
                 <div class="panel-body" id="ed-media"></div>
               </div>
+              </div>
+              <div id="ed-panel-comments">
               <div class="panel">
                 <div class="panel-hdr"><span class="panel-title">Comments</span><span class="nav-badge" id="comment-count" style="display:none"></span></div>
                 <div class="panel-body">
@@ -752,9 +943,12 @@ tr:hover td{background:var(--paper)}
                   </div>
                 </div>
               </div>
+              </div>
+              <div id="ed-panel-versions">
               <div class="panel">
                 <div class="panel-hdr"><span class="panel-title">Version History</span><button id="btn-diff" class="btn btn-ghost" style="font-size:.67rem;padding:2px 6px;display:none" onclick="openDiff()" title="Compare reporter draft vs editor version">⇄ Compare</button></div>
                 <div class="panel-body" id="version-list"></div>
+              </div>
               </div>
             </div>
           </div>
@@ -1755,10 +1949,10 @@ function renderDashboard(){
   const rows=ASSIGNMENTS.slice(0,6).map(a=>{
     const ov=a.deadline&&isPast(a.deadline)&&a.status!=='published'
     return`<tr style="cursor:pointer" onclick="openEditor('${a.id}')">
-      <td><div style="font-weight:500;font-size:.8rem;max-width:200px">${esc(a.title||'Untitled')}</div><div style="font-size:.62rem;color:var(--muted);font-family:var(--fm)">${esc(a.slug||'')}</div></td>
-      <td>${assigneeAvatars(a.assignedTo)}</td>
-      <td><span class="badge badge-${a.status||'draft'}">${a.status||'draft'}</span></td>
-      <td style="font-family:var(--fm);font-size:.7rem;color:${ov?'var(--accent)':'var(--muted)'}">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}${ov?' ⚠':''}</td></tr>`
+      <td data-label="Story"><div style="font-weight:500;font-size:.8rem;max-width:200px">${esc(a.title||'Untitled')}</div><div style="font-size:.62rem;color:var(--muted);font-family:var(--fm)">${esc(a.slug||'')}</div></td>
+      <td data-label="Reporter">${assigneeAvatars(a.assignedTo)}</td>
+      <td data-label="Status"><span class="badge badge-${a.status||'draft'}">${a.status||'draft'}</span></td>
+      <td data-label="Deadline" style="font-family:var(--fm);font-size:.7rem;color:${ov?'var(--accent)':'var(--muted)'}">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}${ov?' ⚠':''}</td></tr>`
   }).join('')
   document.getElementById('dash-table').innerHTML=`<thead><tr><th>Story</th><th>Reporter</th><th>Status</th><th>Deadline</th></tr></thead><tbody>${rows||'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">No assignments yet</td></tr>'}</tbody>`
   // Section progress
@@ -4207,6 +4401,110 @@ function renderRoster(){
       <span style="font-size:.5rem;font-family:var(--fm);color:var(--muted);max-width:34px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">${esc(u.name.split(' ')[0])}</span>
     </div>`
   }).join('')
+}
+
+// ══════════════════════════════════════════════════════
+// MOBILE NAVIGATION
+// ══════════════════════════════════════════════════════
+const isMobile=()=>window.innerWidth<=768
+
+window.toggleMobileNav=()=>{
+  const sb=document.getElementById('sidebar')
+  const ov=document.getElementById('mobile-nav-overlay')
+  if(!sb||!ov)return
+  const isOpen=sb.classList.contains('mobile-open')
+  if(isOpen){closeMobileNav()}
+  else{
+    sb.classList.add('mobile-open')
+    ov.classList.add('open')
+    document.body.style.overflow='hidden'
+  }
+}
+window.closeMobileNav=()=>{
+  const sb=document.getElementById('sidebar')
+  const ov=document.getElementById('mobile-nav-overlay')
+  if(sb)sb.classList.remove('mobile-open')
+  if(ov)ov.classList.remove('open')
+  document.body.style.overflow=''
+}
+
+// Close mobile nav when a nav item is selected — hook into nav via sidebar click
+document.addEventListener('click',e=>{
+  if(isMobile()&&e.target.closest('.nav-item')){
+    setTimeout(closeMobileNav,120)
+  }
+})
+
+// Show/hide hamburger on resize
+function handleResize(){
+  const hb=document.getElementById('hamburger-btn')
+  const sb=document.getElementById('sidebar')
+  const ov=document.getElementById('mobile-nav-overlay')
+  if(!hb||!sb)return
+  if(window.innerWidth>768){
+    hb.style.display='none'
+    sb.classList.remove('mobile-open')
+    sb.style.transform=''
+    if(ov)ov.classList.remove('open')
+    document.body.style.overflow=''
+    // Show all panels on desktop
+    const right=document.getElementById('editor-right')
+    if(right){right.style.display='';right.classList.remove('mobile-panel-active')}
+    document.getElementById('btn-mobile-panels')&&(document.getElementById('btn-mobile-panels').style.display='none')
+  }else{
+    hb.style.display='flex'
+    document.getElementById('btn-mobile-panels')&&(document.getElementById('btn-mobile-panels').style.display='')
+  }
+}
+window.addEventListener('resize',handleResize)
+// Run on load
+document.addEventListener('DOMContentLoaded',handleResize)
+
+// ── EDITOR MOBILE PANELS ──────────────────────────────
+const PANEL_IDS=['details','sources','media','comments','versions']
+window.openEditorPanel=(panelId)=>{
+  if(!isMobile())return
+  const right=document.getElementById('editor-right')
+  if(!right)return
+  right.classList.add('mobile-panel-active')
+  // Show correct sub-panel
+  showEditorPanel(panelId,null)
+}
+window.closeEditorPanel=()=>{
+  const right=document.getElementById('editor-right')
+  if(right)right.classList.remove('mobile-panel-active')
+}
+window.showEditorPanel=(panelId,btn)=>{
+  // Update tab active state
+  document.querySelectorAll('.ed-panel-tab').forEach(t=>{
+    t.style.borderBottomColor='transparent'
+    t.style.color='var(--muted)'
+  })
+  if(btn){
+    btn.style.borderBottomColor='var(--accent)'
+    btn.style.color='var(--accent)'
+  }
+  // Show/hide panel sections
+  PANEL_IDS.forEach(id=>{
+    const el=document.getElementById(`ed-panel-${id}`)
+    if(el)el.style.display=id===panelId?'':'none'
+  })
+  // On mobile, open the panel drawer if not already open
+  if(isMobile()&&panelId)openEditorPanel(panelId)
+}
+
+// ── DATA-LABEL for mobile card tables ─────────────────
+// Adds data-label attributes to table cells for CSS display
+function mobilizeTable(tableId,headers){
+  const table=document.getElementById(tableId)
+  if(!table)return
+  const rows=table.querySelectorAll('tbody tr')
+  rows.forEach(row=>{
+    const cells=row.querySelectorAll('td')
+    cells.forEach((cell,i)=>{
+      if(headers[i])cell.setAttribute('data-label',headers[i])
+    })
+  })
 }
 
 window.resolveConfirm=v=>{document.getElementById('confirm-overlay').classList.remove('open');if(confirmResolveRef){confirmResolveRef(v);confirmResolveRef=null}}

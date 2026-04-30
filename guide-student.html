@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Quick-Start Guide — Goalkeepers Pressroom</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#c0392b;--dark:#0f0e0c;--ink:#1a1a1a;--gray:#5a5a5a;
+    --cream:#f5f2eb;--white:#ffffff;--rule:#d4cfc3;--sky:#1a5276;
+    --green:#2c6e49;--orange:#e67e22;--amber:#e67e22;
+    --sidebar-w:260px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);display:flex;min-height:100vh;font-size:15px;line-height:1.7}
+
+  /* ── SIDEBAR ── */
+  .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--dark);color:#d4cfc3;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
+  .sidebar-brand{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .sidebar-brand-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--red);line-height:1.2}
+  .sidebar-brand-sub{font-size:.62rem;color:#888;margin-top:3px;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}
+  .guide-badge{display:inline-block;background:var(--red);color:white;font-size:.56rem;font-family:'IBM Plex Mono',monospace;padding:2px 6px;border-radius:3px;margin-top:6px;letter-spacing:.06em;text-transform:uppercase}
+  .nav-section{padding:16px 0 8px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .nav-section-label{font-size:.58rem;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:#666;padding:0 20px 8px}
+  .nav-link{display:flex;align-items:center;gap:9px;padding:8px 20px;font-size:.78rem;color:#aaa;text-decoration:none;transition:all .15s;border-left:2px solid transparent;cursor:pointer}
+  .nav-link:hover{color:white;background:rgba(255,255,255,.05)}
+  .nav-link.active{color:white;border-left-color:var(--red);background:rgba(192,57,43,.12)}
+  .nav-link .nav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0}
+  .nav-link.active .nav-dot{opacity:1;background:var(--red)}
+  .nav-link.sub{padding-left:36px;font-size:.73rem}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,.06)}
+  .other-guide-link{display:block;font-size:.72rem;color:#888;text-decoration:none;padding:6px 0;transition:color .15s}
+  .other-guide-link:hover{color:white}
+
+  /* ── MAIN CONTENT ── */
+  .main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px;max-width:860px}
+  
+  /* ── HERO ── */
+  .hero{margin-bottom:48px;padding-bottom:32px;border-bottom:2px solid var(--rule)}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+  .hero-title{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:700;color:var(--dark);line-height:1.15;margin-bottom:12px}
+  .hero-sub{font-size:1rem;color:var(--gray);line-height:1.6;max-width:540px}
+
+  /* ── SECTIONS ── */
+  .section{margin-bottom:56px;scroll-margin-top:32px}
+  .section-label{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+  .section-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--dark);margin-bottom:16px;line-height:1.2}
+  .section-sub{font-size:1rem;font-weight:600;color:var(--dark);margin:20px 0 8px}
+  p{color:var(--gray);margin-bottom:14px;font-size:.9rem}
+
+  /* ── STEP TABLE ── */
+  .steps{border-radius:8px;overflow:hidden;border:1px solid var(--rule);margin:16px 0 24px}
+  .steps-header{background:var(--dark);color:white;padding:10px 16px;font-size:.78rem;font-weight:600;letter-spacing:.03em}
+  .step-row{display:grid;grid-template-columns:40px 1fr;border-bottom:1px solid var(--rule)}
+  .step-row:last-child{border-bottom:none}
+  .step-row:nth-child(even){background:#faf9f6}
+  .step-num{background:var(--red);color:white;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;display:flex;align-items:center;justify-content:center;padding:12px 0}
+  .step-text{padding:12px 16px;font-size:.84rem;color:var(--gray);line-height:1.5;align-self:center}
+  .step-text strong{color:var(--dark)}
+
+  /* ── REFERENCE TABLE ── */
+  .ref-table{width:100%;border-collapse:collapse;margin:16px 0 24px;border-radius:8px;overflow:hidden;border:1px solid var(--rule)}
+  .ref-table thead tr{background:var(--dark)}
+  .ref-table thead th{color:white;text-align:left;padding:10px 14px;font-size:.76rem;font-weight:600;letter-spacing:.03em}
+  .ref-table tbody tr:nth-child(even){background:#faf9f6}
+  .ref-table tbody td{padding:10px 14px;font-size:.82rem;color:var(--gray);border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+  .ref-table tbody tr:last-child td{border-bottom:none}
+  .ref-table tbody td:first-child{font-weight:600;color:var(--dark);white-space:nowrap}
+
+  /* ── CALLOUTS ── */
+  .callout{display:flex;gap:12px;padding:13px 16px;border-radius:8px;margin:16px 0 24px;font-size:.84rem;color:var(--gray);line-height:1.5}
+  .callout-tip{background:#fdf2e9;border-left:3px solid var(--orange)}
+  .callout-info{background:#e8f4fd;border-left:3px solid var(--sky)}
+  .callout-success{background:#e8f8f0;border-left:3px solid var(--green)}
+  .callout-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+
+  /* ── STATUS BADGES ── */
+  .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.7rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle}
+  .badge-blue{background:#d6eaf8;color:#1a5276}
+  .badge-yellow{background:#fef9e7;color:#7d6608}
+  .badge-orange{background:#fdf2e9;color:#784212}
+  .badge-green{background:#e9f7ef;color:#1e8449}
+
+  /* ── BULLET LIST ── */
+  .guide-list{list-style:none;padding:0;margin:0 0 20px}
+  .guide-list li{display:flex;gap:9px;padding:6px 0;font-size:.86rem;color:var(--gray);border-bottom:1px solid rgba(212,207,195,.4);line-height:1.5}
+  .guide-list li:last-child{border-bottom:none}
+  .guide-list li::before{content:'\2022';color:var(--red);font-size:1.1rem;flex-shrink:0;line-height:1.4}
+
+  /* ── HR ── */
+  hr{border:none;border-top:1px solid var(--rule);margin:40px 0}
+
+  /* ── BACK TO TOP ── */
+  .back-top{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-family:'IBM Plex Mono',monospace;color:var(--red);text-decoration:none;margin-top:8px;opacity:.7;transition:opacity .15s}
+  .back-top:hover{opacity:1}
+
+  /* ── KEYBOARD SHORTCUT ── */
+  kbd{background:var(--dark);color:white;padding:2px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:.72rem}
+
+  @media(max-width:768px){
+    .sidebar{transform:translateX(-100%)}
+    .main{margin-left:0;padding:24px 20px}
+    .hero-title{font-size:1.8rem}
+  }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-name">Goalkeepers Pressroom</div>
+    <div class="sidebar-brand-sub">MSU SGJC · Black SoccerLab</div>
+    <span class="guide-badge">Student Guide</span>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Getting Started</div>
+    <a class="nav-link active" href="#sign-in"><span class="nav-dot"></span>Sign In</a>
+    <a class="nav-link" href="#dashboard"><span class="nav-dot"></span>Your Dashboard</a>
+    <a class="nav-link" href="#status-colors"><span class="nav-dot"></span>Status Colors</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Writing</div>
+    <a class="nav-link" href="#story-editor"><span class="nav-dot"></span>Story Editor</a>
+    <a class="nav-link sub" href="#grammar"><span class="nav-dot"></span>Grammar Check</a>
+    <a class="nav-link sub" href="#sources"><span class="nav-dot"></span>Sources Panel</a>
+    <a class="nav-link sub" href="#comments"><span class="nav-dot"></span>Comments</a>
+    <a class="nav-link sub" href="#media"><span class="nav-dot"></span>Adding Media</a>
+    <a class="nav-link sub" href="#submit"><span class="nav-dot"></span>Submit for Review</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Other Features</div>
+    <a class="nav-link" href="#navigation"><span class="nav-dot"></span>App Navigation</a>
+    <a class="nav-link" href="#pitch"><span class="nav-dot"></span>Pitch Board</a>
+    <a class="nav-link" href="#calendar"><span class="nav-dot"></span>Calendar</a>
+    <a class="nav-link" href="#tips"><span class="nav-dot"></span>Quick Tips</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a class="other-guide-link" href="guide-admin.html">→ Admin & Editor Guide</a>
+    <a class="other-guide-link" href="index.html">← Back to Newsroom</a>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Goalkeepers Pressroom · Quick-Start Guide</div>
+    <h1 class="hero-title">Welcome to the Newsroom</h1>
+    <p class="hero-sub">Everything you need to start writing, submitting stories, and collaborating with your team — in one place, from any browser.</p>
+  </div>
+
+  <!-- SIGN IN -->
+  <section class="section" id="sign-in">
+    <div class="section-label">Getting Started</div>
+    <h2 class="section-title">Signing In</h2>
+    <p>You don't need to create an account. Just sign in with your Google account — the same one you use for university email — and your editor will approve you.</p>
+    <div class="steps">
+      <div class="steps-header">First-Time Sign In</div>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text">Open your browser and go to: <strong>https://msugoalkeepers.github.io/SGJCNewsroom/</strong></div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text">Click <strong>"Continue with Google"</strong> and sign in with your university Google account.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">You'll see an <strong>"Access Pending"</strong> screen. This is normal — your editor needs to approve you first.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-text">Once approved, you'll get a notification and can log in to see your assignments.</div></div>
+    </div>
+    <div class="callout callout-tip"><span class="callout-icon">⚠</span><span>If you see <strong>"Access Removed"</strong> instead of "Access Pending" — your account was deactivated. Contact your editor-in-chief directly.</span></div>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <hr>
+
+  <!-- DASHBOARD -->
+  <section class="section" id="dashboard">
+    <div class="section-label">Getting Started</div>
+    <h2 class="section-title">Your Dashboard</h2>
+    <p>When you log in you land on the Dashboard. At the top you'll see your active assignments highlighted in colored cards, along with newsroom stats and a live panel showing who is currently online.</p>
+    <div class="callout callout-info"><span class="callout-icon">💡</span><span>The <strong>"In the Newsroom"</strong> panel shows avatar icons for every team member. A <strong>green dot</strong> means they're currently active. A gray dot means recently active.</span></div>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <hr>
+
+  <!-- STATUS COLORS -->
+  <section class="section" id="status-colors">
+    <div class="section-label">Getting Started</div>
+    <h2 class="section-title">Assignment Status Colors</h2>
+    <p>Every assignment card has a colored left border that tells you its current stage at a glance.</p>
+    <table class="ref-table">
+      <thead><tr><th>Color</th><th>Status</th><th>What it means</th><th>Your action</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-blue">Blue</span></td><td>Assigned</td><td>New — just assigned to you</td><td>Open it and start writing</td></tr>
+        <tr><td><span class="badge badge-yellow">Yellow</span></td><td>Draft</td><td>You're actively working on it</td><td>Keep writing — autosaves every 2 seconds</td></tr>
+        <tr><td><span class="badge badge-orange">Red-Orange</span></td><td>In Review</td><td>Your editor is reading it</td><td>Wait for feedback</td></tr>
+        <tr><td><span class="badge badge-green">Green</span></td><td>Published</td><td>Story is live</td><td>Read-only — celebrate!</td></tr>
+      </tbody>
+    </table>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <hr>
+
+  <!-- STORY EDITOR -->
+  <section class="section" id="story-editor">
+    <div class="section-label">Writing</div>
+    <h2 class="section-title">The Story Editor</h2>
+    <p>Click any assignment to open the Story Editor. If you're co-assigned with other reporters, all of you can write and submit. Your work saves automatically every 2 seconds — you will never lose content.</p>
+    <div class="steps">
+      <div class="steps-header">Writing Your Story</div>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text">Type your <strong>headline</strong> at the top. The <strong>deck</strong> (subheadline) goes in the second field.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text">Write in the main body area. The <strong>word count bar</strong> fills toward your target and turns green when you hit it.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">Use the toolbar for <strong>Bold</strong>, <em>Italic</em>, Headings, Pull Quotes, and Links.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-text">Click <strong>✓ Grammar</strong> in the toolbar to check spelling and grammar (see below).</div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-text">Add sources, leave comments, and attach media using the panels on the right side.</div></div>
+      <div class="step-row"><div class="step-num">6</div><div class="step-text">When ready, click <strong>"Submit for Review."</strong> Your editor is notified instantly.</div></div>
+    </div>
+    <div class="callout callout-success"><span class="callout-icon">💾</span><span>Your story autosaves every 2 seconds. The "Saved" indicator in the top right confirms it. You will never lose your work.</span></div>
+  </section>
+
+  <!-- GRAMMAR -->
+  <section class="section" id="grammar">
+    <div class="section-label">Writing</div>
+    <h2 class="section-title">Grammar & Spelling Check</h2>
+    <p>Click the <strong>✓ Grammar</strong> button in the story editor toolbar at any time. The app sends your text to a grammar checking service and returns a list of issues grouped by type.</p>
+    <ul class="guide-list">
+      <li>Each issue shows the <strong>error type</strong>, a description, and the sentence in context with the problem word highlighted in red</li>
+      <li>Click any <strong>suggestion button</strong> under an issue to apply the fix directly in your story</li>
+      <li>After applying a fix, the check runs again automatically</li>
+      <li>Browser <strong>spell check is always on</strong> — red underlines appear in real time as you type, just like in a word processor</li>
+    </ul>
+    <div class="callout callout-tip"><span class="callout-icon">💡</span><span>Run the grammar check right before clicking "Submit for Review." Catching errors early saves your editor time and reflects well on your work.</span></div>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <!-- SOURCES -->
+  <section class="section" id="sources">
+    <div class="section-label">Writing</div>
+    <h2 class="section-title">Sources Panel</h2>
+    <p>The Sources panel is on the right side of the story editor. Track every source you use — editors can see this during review.</p>
+    <table class="ref-table">
+      <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Contacted</td><td>You've reached out but haven't heard back</td></tr>
+        <tr><td>Interviewed</td><td>You've spoken with them</td></tr>
+        <tr><td>Confirmed</td><td>Information is verified and on the record</td></tr>
+      </tbody>
+    </table>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <!-- COMMENTS -->
+  <section class="section" id="comments">
+    <div class="section-label">Writing</div>
+    <h2 class="section-title">Comments & Reactions</h2>
+    <p>The Comments panel (right side of editor) is for back-and-forth with your editor. Use it to ask questions, flag concerns, or respond to feedback.</p>
+    <ul class="guide-list">
+      <li>Type your comment and press <kbd>Enter</kbd> or click <strong>Send</strong></li>
+      <li>Click the <strong>＋</strong> button under any comment to add a reaction: ❤ 👍 👎. Click it again to remove.</li>
+      <li>Use the <strong>✎</strong> button to edit your own comment after posting</li>
+      <li>Use the <strong>✕</strong> button to delete your own comment</li>
+      <li>If an editor leaves a note in red in your story body (Editor Markup), click <strong>⇄ Compare</strong> in the Version History panel to see exactly what changed</li>
+    </ul>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <!-- MEDIA -->
+  <section class="section" id="media">
+    <div class="section-label">Writing</div>
+    <h2 class="section-title">Adding Media</h2>
+    <p>Photos and media are added via Google Drive links — no file uploads needed.</p>
+    <div class="steps">
+      <div class="steps-header">Add a Photo from Google Drive</div>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text">Upload your photo to Google Drive.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text">Right-click the file → <strong>Share</strong> → change to <strong>"Anyone with the link"</strong> → <strong>Copy link</strong>.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">In your story, click the <strong>⊡ Photo</strong> button in the toolbar and paste the link.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-text">Or, in the <strong>Media panel</strong> on the right, click "+ Add" and paste any link (YouTube, Drive, SoundCloud, etc.).</div></div>
+    </div>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <!-- SUBMIT -->
+  <section class="section" id="submit">
+    <div class="section-label">Writing</div>
+    <h2 class="section-title">Submitting for Review</h2>
+    <p>When your story is ready, click <strong>"Submit for Review"</strong> in the top right of the story editor. Any reporter co-assigned to the story can submit it.</p>
+    <ul class="guide-list">
+      <li>Your editor receives an instant notification</li>
+      <li>The story status changes from <span class="badge badge-yellow">Draft</span> to <span class="badge badge-orange">In Review</span></li>
+      <li>If your editor sends it back, you'll get a notification and it returns to Draft</li>
+      <li>When it's approved, it becomes <span class="badge badge-green">Published</span> and moves to the Archive — read-only</li>
+    </ul>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <hr>
+
+  <!-- NAVIGATION -->
+  <section class="section" id="navigation">
+    <div class="section-label">Other Features</div>
+    <h2 class="section-title">App Navigation</h2>
+    <p>Use the left sidebar to move between sections of the app.</p>
+    <table class="ref-table">
+      <thead><tr><th>Section</th><th>What you can do there</th></tr></thead>
+      <tbody>
+        <tr><td>Dashboard</td><td>Active assignments, stats, deadline reminders, and who's online</td></tr>
+        <tr><td>Assignments</td><td>All your assignments. Open any to start or continue writing.</td></tr>
+        <tr><td>Story Board</td><td>Drag-and-drop kanban board showing all stories by status</td></tr>
+        <tr><td>Calendar</td><td>Deadlines, holidays, World Cup 2026, Black SoccerLab events</td></tr>
+        <tr><td>Pitch Board</td><td>Submit a story idea for your editor to approve</td></tr>
+        <tr><td>Archive</td><td>All published stories — click any to read in full</td></tr>
+        <tr><td>Media Library</td><td>Add and browse media for the newsroom</td></tr>
+        <tr><td>Rundowns</td><td>Broadcast producers build newscasts here</td></tr>
+        <tr><td>Team</td><td>See teammates, workload, and who's online</td></tr>
+      </tbody>
+    </table>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <!-- PITCH -->
+  <section class="section" id="pitch">
+    <div class="section-label">Other Features</div>
+    <h2 class="section-title">Pitch Board</h2>
+    <p>Have a story idea? Go to <strong>Pitch Board</strong> in the sidebar and click <strong>"+ Submit Pitch."</strong></p>
+    <ul class="guide-list">
+      <li>Fill in your working headline, section, story type, and idea brief</li>
+      <li>Add the sources you plan to interview and whether you have access</li>
+      <li>Set a proposed deadline</li>
+      <li>Your editor will Approve, Hold, or Pass — you get a notification either way</li>
+      <li>Approved pitches can be converted directly into a full assignment</li>
+    </ul>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="section" id="calendar">
+    <div class="section-label">Other Features</div>
+    <h2 class="section-title">Calendar</h2>
+    <p>The calendar shows assignment deadlines, U.S. holidays, World Cup 2026 fixtures, and Black SoccerLab events all in one view.</p>
+    <ul class="guide-list">
+      <li>Use the <strong>filter pills</strong> below the navigation bar to show only one category at a time</li>
+      <li><strong>Orange</strong> = Assignment deadlines · <strong>Purple</strong> = U.S. Holidays · <strong>Dark green</strong> = World Cup 2026 · <strong>Black</strong> = Black SoccerLab Events</li>
+      <li>Click any event to see full details</li>
+      <li>Any team member can click <strong>"+ Add Event"</strong> to add a Black SoccerLab Event or custom entry</li>
+      <li>Recurring events show a <strong>↻</strong> symbol on each occurrence</li>
+    </ul>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+  <!-- TIPS -->
+  <section class="section" id="tips">
+    <div class="section-label">Other Features</div>
+    <h2 class="section-title">Quick Tips</h2>
+    <ul class="guide-list">
+      <li><strong>Font size:</strong> drag the A– A+ slider in the top bar to make text larger or smaller — it saves your preference</li>
+      <li><strong>Version history:</strong> every significant save creates a version — click Restore to go back to any of them</li>
+      <li><strong>Story diff:</strong> when a story is In Review, click ⇄ Compare in the Version History panel to see your draft vs the editor's version side by side</li>
+      <li><strong>Read receipts:</strong> your editor can see when you first opened your assignment</li>
+      <li><strong>Deadline reminders:</strong> an amber bar appears on the Dashboard when any of your stories are due within 48 hours</li>
+      <li><strong>Notifications:</strong> the bell icon shows all recent notifications — click any to act on it</li>
+    </ul>
+    <div class="callout callout-info"><span class="callout-icon">🆘</span><span>Need help? Contact your editor-in-chief. For technical issues, press <kbd>F12</kbd> → Console, take a screenshot of any red errors, and share them.</span></div>
+    <a href="#" class="back-top">↑ Back to top</a>
+  </section>
+
+</main>
+
+<script>
+// Highlight active nav link based on scroll position
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
