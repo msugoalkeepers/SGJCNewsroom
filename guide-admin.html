@@ -3,546 +3,403 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin & Editor Guide — Goalkeepers Pressroom</title>
+<title>Editor &amp; EIC Guide &#8212; Goalkeepers Pressroom</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --red:#c0392b;--dark:#0f0e0c;--ink:#1a1a1a;--gray:#5a5a5a;
-    --cream:#f5f2eb;--white:#ffffff;--rule:#d4cfc3;--sky:#1a5276;
-    --green:#2c6e49;--orange:#e67e22;--purple:#6c3483;
-    --sidebar-w:268px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);display:flex;min-height:100vh;font-size:15px;line-height:1.7}
-
-  .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--dark);color:#d4cfc3;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
-  .sidebar-brand{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-  .sidebar-brand-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--red);line-height:1.2}
-  .sidebar-brand-sub{font-size:.62rem;color:#888;margin-top:3px;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}
-  .guide-badge{display:inline-block;background:var(--sky);color:white;font-size:.56rem;font-family:'IBM Plex Mono',monospace;padding:2px 6px;border-radius:3px;margin-top:6px;letter-spacing:.06em;text-transform:uppercase}
-  .nav-section{padding:14px 0 6px;border-bottom:1px solid rgba(255,255,255,.06)}
-  .nav-section-label{font-size:.58rem;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:#666;padding:0 18px 7px}
-  .nav-link{display:flex;align-items:center;gap:9px;padding:7px 18px;font-size:.76rem;color:#aaa;text-decoration:none;transition:all .15s;border-left:2px solid transparent}
-  .nav-link:hover{color:white;background:rgba(255,255,255,.05)}
-  .nav-link.active{color:white;border-left-color:var(--sky);background:rgba(26,82,118,.18)}
-  .nav-link .nav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0}
-  .nav-link.active .nav-dot{opacity:1;background:var(--sky)}
-  .nav-link.sub{padding-left:32px;font-size:.71rem}
-  .sidebar-footer{margin-top:auto;padding:14px 18px;border-top:1px solid rgba(255,255,255,.06)}
-  .other-guide-link{display:block;font-size:.72rem;color:#888;text-decoration:none;padding:5px 0;transition:color .15s}
-  .other-guide-link:hover{color:white}
-
-  .main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px;max-width:900px}
-
-  .hero{margin-bottom:48px;padding-bottom:32px;border-bottom:2px solid var(--rule)}
-  .hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);margin-bottom:10px}
-  .hero-title{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--dark);line-height:1.15;margin-bottom:12px}
-  .hero-sub{font-size:.95rem;color:var(--gray);line-height:1.6;max-width:580px}
-  .hero-toc{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .toc-item{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--gray);text-decoration:none;padding:6px 10px;border-radius:5px;background:rgba(255,255,255,.6);border:1px solid var(--rule);transition:all .15s}
-  .toc-item:hover{background:white;color:var(--sky)}
-  .toc-num{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--sky);font-weight:600;min-width:20px}
-
-  .section{margin-bottom:56px;scroll-margin-top:28px}
-  .section-label{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sky);margin-bottom:8px}
-  .section-title{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:700;color:var(--dark);margin-bottom:16px;line-height:1.2}
-  .section-sub{font-size:.95rem;font-weight:600;color:var(--dark);margin:22px 0 8px;padding-top:4px;border-top:1px solid var(--rule)}
-  p{color:var(--gray);margin-bottom:14px;font-size:.88rem}
-
-  .steps{border-radius:8px;overflow:hidden;border:1px solid var(--rule);margin:14px 0 22px}
-  .steps-header{background:var(--dark);color:white;padding:10px 16px;font-size:.78rem;font-weight:600}
-  .step-row{display:grid;grid-template-columns:40px 1fr;border-bottom:1px solid var(--rule)}
-  .step-row:last-child{border-bottom:none}
-  .step-row:nth-child(even){background:#faf9f6}
-  .step-num{background:var(--sky);color:white;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;display:flex;align-items:center;justify-content:center}
-  .step-text{padding:12px 16px;font-size:.83rem;color:var(--gray);line-height:1.5}
-  .step-text strong{color:var(--dark)}
-  .step-text code{background:#f0ece3;padding:1px 5px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:.8em;color:var(--red)}
-
-  .ref-table{width:100%;border-collapse:collapse;margin:14px 0 22px;border-radius:8px;overflow:hidden;border:1px solid var(--rule)}
-  .ref-table thead tr{background:var(--dark)}
-  .ref-table thead th{color:white;text-align:left;padding:10px 14px;font-size:.74rem;font-weight:600;letter-spacing:.03em}
-  .ref-table tbody tr:nth-child(even){background:#faf9f6}
-  .ref-table tbody td{padding:9px 14px;font-size:.81rem;color:var(--gray);border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
-  .ref-table tbody tr:last-child td{border-bottom:none}
-  .ref-table tbody td:first-child{font-weight:600;color:var(--dark);white-space:nowrap}
-
-  .callout{display:flex;gap:12px;padding:12px 16px;border-radius:8px;margin:14px 0 22px;font-size:.83rem;color:var(--gray);line-height:1.5}
-  .callout-tip{background:#fdf2e9;border-left:3px solid var(--orange)}
-  .callout-info{background:#e8f4fd;border-left:3px solid var(--sky)}
-  .callout-warn{background:#fdf2e9;border-left:3px solid var(--red)}
-  .callout-success{background:#e8f8f0;border-left:3px solid var(--green)}
-  .callout-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
-
-  .code-block{background:var(--dark);color:#a8d8a8;padding:16px 20px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;line-height:1.7;margin:12px 0 20px;overflow-x:auto;white-space:pre}
-
-  .email-block{background:#f8f8f8;border:1px solid var(--rule);border-radius:8px;padding:20px 24px;margin:14px 0 22px;font-size:.84rem;color:var(--gray);line-height:1.7}
-  .email-block .email-subject{font-weight:600;color:var(--dark);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
-
-  .guide-list{list-style:none;padding:0;margin:0 0 18px}
-  .guide-list li{display:flex;gap:9px;padding:6px 0;font-size:.84rem;color:var(--gray);border-bottom:1px solid rgba(212,207,195,.4);line-height:1.5}
-  .guide-list li:last-child{border-bottom:none}
-  .guide-list li::before{content:'\2022';color:var(--sky);font-size:1.1rem;flex-shrink:0;line-height:1.4}
-
-  .role-grid{display:grid;gap:10px;margin:14px 0 22px}
-  .role-card{background:white;border:1px solid var(--rule);border-radius:8px;padding:14px 16px;border-left:3px solid var(--sky)}
-  .role-name{font-weight:700;font-size:.88rem;color:var(--dark);margin-bottom:4px}
-  .role-can{font-size:.78rem;color:var(--gray);line-height:1.6}
-  .role-cannot{font-size:.74rem;color:#999;margin-top:4px;font-style:italic}
-
-  hr{border:none;border-top:1px solid var(--rule);margin:40px 0}
-  .back-top{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-family:'IBM Plex Mono',monospace;color:var(--sky);text-decoration:none;margin-top:8px;opacity:.7;transition:opacity .15s}
-  .back-top:hover{opacity:1}
-  kbd{background:var(--dark);color:white;padding:2px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:.72rem}
+:root{--red:#c0392b;--dark:#0f0e0c;--ink:#1a1a1a;--gray:#5a5a5a;--cream:#f5f2eb;--white:#ffffff;--rule:#d4cfc3;--sky:#1a5276;--green:#2c6e49;--orange:#e67e22;--purple:#6c3483;--amber:#e67e22;--sidebar-w:268px}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);display:flex;min-height:100vh;font-size:15px;line-height:1.7}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--dark);color:#d4cfc3;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
+.sidebar-brand{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--red)}
+.sidebar-brand-sub{font-size:.62rem;color:#888;margin-top:3px;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}
+.guide-badge{display:inline-block;background:var(--sky);color:white;font-size:.56rem;font-family:'IBM Plex Mono',monospace;padding:2px 6px;border-radius:3px;margin-top:6px;letter-spacing:.06em;text-transform:uppercase}
+.nav-section{padding:14px 0 6px;border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-section-label{font-size:.58rem;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:#666;padding:0 18px 7px}
+.nav-link{display:flex;align-items:center;gap:9px;padding:7px 18px;font-size:.76rem;color:#aaa;text-decoration:none;transition:all .15s;border-left:2px solid transparent}
+.nav-link:hover{color:white;background:rgba(255,255,255,.05)}
+.nav-link.active{color:white;border-left-color:var(--sky);background:rgba(26,82,118,.18)}
+.nav-link .nav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0}
+.nav-link.active .nav-dot{opacity:1;background:var(--sky)}
+.sidebar-footer{margin-top:auto;padding:14px 18px;border-top:1px solid rgba(255,255,255,.06)}
+.other-guide-link{display:block;font-size:.72rem;color:#888;text-decoration:none;padding:5px 0;transition:color .15s}
+.other-guide-link:hover{color:white}
+.main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px;max-width:900px}
+.hero{margin-bottom:48px;padding-bottom:32px;border-bottom:2px solid var(--rule)}
+.hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);margin-bottom:10px}
+.hero-title{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--dark);line-height:1.15;margin-bottom:12px}
+.hero-sub{font-size:.95rem;color:var(--gray);line-height:1.6;max-width:580px}
+.hero-toc{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.toc-item{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--gray);text-decoration:none;padding:6px 10px;border-radius:5px;background:rgba(255,255,255,.6);border:1px solid var(--rule);transition:all .15s}
+.toc-item:hover{background:white;color:var(--sky)}
+.toc-num{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--sky);font-weight:600;min-width:20px}
+.section{margin-bottom:56px;scroll-margin-top:28px}
+.section-label{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sky);margin-bottom:8px}
+.section-title{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:700;color:var(--dark);margin-bottom:16px;line-height:1.2}
+.section-sub{font-size:.95rem;font-weight:600;color:var(--dark);margin:22px 0 8px;padding-top:4px;border-top:1px solid var(--rule)}
+p{color:var(--gray);margin-bottom:14px;font-size:.88rem}
+.steps{border-radius:8px;overflow:hidden;border:1px solid var(--rule);margin:14px 0 22px}
+.steps-header{background:var(--dark);color:white;padding:10px 16px;font-size:.78rem;font-weight:600}
+.step-row{display:grid;grid-template-columns:40px 1fr;border-bottom:1px solid var(--rule)}
+.step-row:last-child{border-bottom:none}
+.step-row:nth-child(even){background:#faf9f6}
+.step-num{background:var(--sky);color:white;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;display:flex;align-items:center;justify-content:center}
+.step-text{padding:12px 16px;font-size:.83rem;color:var(--gray);line-height:1.5}
+.step-text strong{color:var(--dark)}
+.ref-table{width:100%;border-collapse:collapse;margin:14px 0 22px;border-radius:8px;overflow:hidden;border:1px solid var(--rule)}
+.ref-table thead tr{background:var(--dark)}
+.ref-table thead th{color:white;text-align:left;padding:10px 14px;font-size:.74rem;font-weight:600;letter-spacing:.03em}
+.ref-table tbody tr:nth-child(even){background:#faf9f6}
+.ref-table tbody td{padding:9px 14px;font-size:.81rem;color:var(--gray);border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+.ref-table tbody tr:last-child td{border-bottom:none}
+.ref-table tbody td:first-child{font-weight:600;color:var(--dark)}
+.callout{display:flex;gap:12px;padding:12px 16px;border-radius:8px;margin:14px 0 22px;font-size:.83rem;color:var(--gray);line-height:1.5}
+.callout-tip{background:#fdf2e9;border-left:3px solid var(--orange)}
+.callout-info{background:#e8f4fd;border-left:3px solid var(--sky)}
+.callout-success{background:#e8f8f0;border-left:3px solid var(--green)}
+.callout-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.guide-list{list-style:none;padding:0;margin:0 0 18px}
+.guide-list li{display:flex;gap:9px;padding:6px 0;font-size:.84rem;color:var(--gray);border-bottom:1px solid rgba(212,207,195,.4);line-height:1.5}
+.guide-list li:last-child{border-bottom:none}
+.guide-list li::before{content:"\2022";color:var(--sky);font-size:1.1rem;flex-shrink:0;line-height:1.4}
+.role-card{background:white;border:1px solid var(--rule);border-radius:8px;padding:14px 16px;margin-bottom:10px}
+.role-name{font-weight:700;font-size:.88rem;color:var(--dark);margin-bottom:4px}
+.role-can{font-size:.78rem;color:var(--gray);line-height:1.6}
+.role-cannot{font-size:.74rem;color:#999;margin-top:4px;font-style:italic}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.7rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle}
+.badge-blue{background:#d6eaf8;color:#1a5276}.badge-yellow{background:#fef9e7;color:#7d6608}
+.badge-orange{background:#fdf2e9;color:#784212}.badge-green{background:#e9f7ef;color:#1e8449}
+hr{border:none;border-top:1px solid var(--rule);margin:40px 0}
+.back-top{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-family:'IBM Plex Mono',monospace;color:var(--sky);text-decoration:none;margin-top:8px;opacity:.7;transition:opacity .15s}
+.back-top:hover{opacity:1}
+kbd{background:var(--dark);color:white;padding:2px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:.72rem}
+code{background:#f0ece3;padding:1px 5px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:.8em;color:var(--red)}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);transition:transform .28s ease}.main{margin-left:0;padding:24px 18px}.hero-title{font-size:1.8rem}.hero-toc{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <nav class="sidebar">
   <div class="sidebar-brand">
     <div class="sidebar-brand-name">Goalkeepers Pressroom</div>
-    <div class="sidebar-brand-sub">MSU SGJC · Black SoccerLab</div>
-    <span class="guide-badge">Admin & Editor Guide</span>
+    <div class="sidebar-brand-sub">MSU SGJC &#183; Black SoccerLab</div>
+    <span class="guide-badge">Editor &amp; EIC Guide</span>
   </div>
-
-  <div class="nav-section">
-    <div class="nav-section-label">Setup</div>
-    <a class="nav-link active" href="#how-it-works"><span class="nav-dot"></span>How It Works</a>
-    <a class="nav-link" href="#github"><span class="nav-dot"></span>GitHub Hosting</a>
-    <a class="nav-link sub" href="#github-setup"><span class="nav-dot"></span>First-Time Setup</a>
-    <a class="nav-link sub" href="#github-update"><span class="nav-dot"></span>Pushing Updates</a>
-    <a class="nav-link" href="#firebase"><span class="nav-dot"></span>Firebase Setup</a>
-    <a class="nav-link sub" href="#firestore-rules"><span class="nav-dot"></span>Firestore Rules</a>
-  </div>
-
   <div class="nav-section">
     <div class="nav-section-label">Users</div>
-    <a class="nav-link" href="#inviting"><span class="nav-dot"></span>Inviting Students</a>
-    <a class="nav-link" href="#approving"><span class="nav-dot"></span>Approving Users</a>
-    <a class="nav-link" href="#removing"><span class="nav-dot"></span>Remove & Reactivate</a>
-    <a class="nav-link" href="#roles"><span class="nav-dot"></span>Roles & Permissions</a>
+    <a class="nav-link active" href="#approving"><span class="nav-dot"></span>Approving Users</a>
+    <a class="nav-link" href="#removing"><span class="nav-dot"></span>Remove &amp; Reactivate</a>
+    <a class="nav-link" href="#roles"><span class="nav-dot"></span>Roles &amp; Permissions</a>
   </div>
-
   <div class="nav-section">
-    <div class="nav-section-label">Running the Newsroom</div>
-    <a class="nav-link" href="#assignments"><span class="nav-dot"></span>Assignments</a>
+    <div class="nav-section-label">Assignments</div>
+    <a class="nav-link" href="#creating"><span class="nav-dot"></span>Creating Assignments</a>
     <a class="nav-link" href="#workflow"><span class="nav-dot"></span>Story Workflow</a>
     <a class="nav-link" href="#editor-markup"><span class="nav-dot"></span>Editor Markup</a>
-    <a class="nav-link" href="#rundowns"><span class="nav-dot"></span>Rundowns</a>
+    <a class="nav-link" href="#publishing"><span class="nav-dot"></span>Publishing &amp; PDF</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Newsroom</div>
+    <a class="nav-link" href="#rundowns"><span class="nav-dot"></span>Broadcast Rundowns</a>
     <a class="nav-link" href="#calendar"><span class="nav-dot"></span>Calendar</a>
     <a class="nav-link" href="#pitch-board"><span class="nav-dot"></span>Pitch Board</a>
-    <a class="nav-link" href="#dashboard"><span class="nav-dot"></span>Dashboard Features</a>
+    <a class="nav-link" href="#dashboard"><span class="nav-dot"></span>Dashboard</a>
   </div>
-
   <div class="nav-section">
     <div class="nav-section-label">Reference</div>
     <a class="nav-link" href="#troubleshooting"><span class="nav-dot"></span>Troubleshooting</a>
-    <a class="nav-link" href="#duplicating"><span class="nav-dot"></span>Duplicating the App</a>
   </div>
-
   <div class="sidebar-footer">
-    <a class="other-guide-link" href="guide-student.html">→ Student Quick-Start Guide</a>
-    <a class="other-guide-link" href="index.html">← Back to Newsroom</a>
+    <a class="other-guide-link" href="guide-student.html">&#8594; Student Quick-Start Guide</a>
+    <a class="other-guide-link" href="index.html">&#8592; Back to Newsroom</a>
   </div>
 </nav>
 
 <main class="main">
 
-  <div class="hero">
-    <div class="hero-eyebrow">Goalkeepers Pressroom · Admin & Editor Guide</div>
-    <h1 class="hero-title">Full Reference Guide</h1>
-    <p class="hero-sub">Everything you need to set up, manage, and run the newsroom — from GitHub and Firebase to daily editorial operations.</p>
-    <div class="hero-toc">
-      <a class="toc-item" href="#how-it-works"><span class="toc-num">01</span>How It Works</a>
-      <a class="toc-item" href="#github"><span class="toc-num">02</span>GitHub Hosting</a>
-      <a class="toc-item" href="#firebase"><span class="toc-num">03</span>Firebase Setup</a>
-      <a class="toc-item" href="#inviting"><span class="toc-num">04</span>Inviting Students</a>
-      <a class="toc-item" href="#roles"><span class="toc-num">05</span>Roles & Permissions</a>
-      <a class="toc-item" href="#workflow"><span class="toc-num">06</span>Story Workflow</a>
-      <a class="toc-item" href="#dashboard"><span class="toc-num">07</span>Dashboard Features</a>
-      <a class="toc-item" href="#troubleshooting"><span class="toc-num">08</span>Troubleshooting</a>
-    </div>
+<div class="hero">
+  <div class="hero-eyebrow">Goalkeepers Pressroom &#183; Editor &amp; EIC Guide</div>
+  <h1 class="hero-title">Editor &amp; EIC Reference</h1>
+  <p class="hero-sub">Everything editors and editors-in-chief need to manage users, assign stories, run the editorial workflow, and keep the newsroom running smoothly.</p>
+  <div class="hero-toc">
+    <a class="toc-item" href="#approving"><span class="toc-num">01</span>Approving Users</a>
+    <a class="toc-item" href="#roles"><span class="toc-num">02</span>Roles &amp; Permissions</a>
+    <a class="toc-item" href="#creating"><span class="toc-num">03</span>Creating Assignments</a>
+    <a class="toc-item" href="#workflow"><span class="toc-num">04</span>Story Workflow</a>
+    <a class="toc-item" href="#rundowns"><span class="toc-num">05</span>Broadcast Rundowns</a>
+    <a class="toc-item" href="#calendar"><span class="toc-num">06</span>Calendar</a>
+    <a class="toc-item" href="#pitch-board"><span class="toc-num">07</span>Pitch Board</a>
+    <a class="toc-item" href="#troubleshooting"><span class="toc-num">08</span>Troubleshooting</a>
   </div>
+</div>
 
-  <!-- HOW IT WORKS -->
-  <section class="section" id="how-it-works">
-    <div class="section-label">Setup</div>
-    <h2 class="section-title">How the App Works</h2>
-    <p>Goalkeepers Pressroom is a single HTML file hosted on GitHub Pages. All data — users, stories, assignments, rundowns, calendar events, pitches — is stored in Google Firebase Firestore (a free cloud database). Authentication uses Google Sign-In. There is no server, no monthly cost, and nothing to install.</p>
-    <table class="ref-table">
-      <thead><tr><th>Component</th><th>What it does</th><th>Cost</th></tr></thead>
-      <tbody>
-        <tr><td>GitHub Pages</td><td>Hosts the HTML file at a public URL</td><td>Free forever</td></tr>
-        <tr><td>Firebase Firestore</td><td>Cloud database for all newsroom data</td><td>Free (Spark plan)</td></tr>
-        <tr><td>Firebase Auth</td><td>Google Sign-In for all users</td><td>Free</td></tr>
-        <tr><td>LanguageTool API</td><td>Powers the in-app grammar checker</td><td>Free (public API)</td></tr>
-      </tbody>
-    </table>
-    <div class="callout callout-success"><span class="callout-icon">✅</span><span>The app runs entirely within free service tiers. No credit card is required for normal operation. The only thing that needs periodic attention is your Firestore rules (see below).</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="approving">
+  <div class="section-label">Users</div>
+  <h2 class="section-title">Approving New Users</h2>
+  <p>When a student signs in for the first time their account is placed in a pending queue. They see an "Access Pending" screen and cannot enter the newsroom until approved. A badge on the Team nav item shows how many are waiting.</p>
+  <div class="steps">
+    <div class="steps-header">Approve a Pending Student</div>
+    <div class="step-row"><div class="step-num">1</div><div class="step-text">Click <strong>Team</strong> in the left sidebar. A number badge shows how many are pending.</div></div>
+    <div class="step-row"><div class="step-num">2</div><div class="step-text">At the top of the Team page find the <strong>Pending Approvals</strong> section.</div></div>
+    <div class="step-row"><div class="step-num">3</div><div class="step-text">Choose their <strong>Role</strong> (Reporter, Section Editor, Producer, Editor) and <strong>Section</strong>.</div></div>
+    <div class="step-row"><div class="step-num">4</div><div class="step-text">Click <strong>Approve</strong>. They are notified immediately and can enter the newsroom.</div></div>
+  </div>
+  <div class="callout callout-info"><span class="callout-icon">&#x2139;</span><span>To deny a request click <strong>Deny</strong>. Their pending record is deleted. They can sign in again to resubmit if it was a mistake.</span></div>
+  <div class="callout callout-tip"><span class="callout-icon">&#128204;</span><span>The <strong>first person to sign in</strong> is automatically made Editor-in-Chief with full access. Every subsequent user is pending until approved.</span></div>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <hr>
+<hr>
 
-  <!-- GITHUB -->
-  <section class="section" id="github">
-    <div class="section-label">Setup</div>
-    <h2 class="section-title">GitHub — Hosting the App</h2>
-  </section>
+<section class="section" id="removing">
+  <div class="section-label">Users</div>
+  <h2 class="section-title">Remove &amp; Reactivate Members</h2>
+  <p>Only the <strong>Editor-in-Chief</strong> can remove members. Removal is a soft delete &#8212; the account is locked immediately but the data and story history are fully preserved.</p>
+  <div class="section-sub">Removing a Member</div>
+  <ul class="guide-list">
+    <li>On the Team page each member card has a red <strong>Remove</strong> button &#8212; visible to EIC only, and not on your own card</li>
+    <li>Two confirmation dialogs appear before removal is committed &#8212; you cannot do this by accident</li>
+    <li>The removed user is locked out immediately and receives a notification</li>
+    <li>If they try to open the app they see an "Access Removed" screen</li>
+  </ul>
+  <div class="section-sub">Reactivating a Member</div>
+  <ul class="guide-list">
+    <li>A <strong>Removed Members</strong> section appears at the bottom of the Team page (EIC only)</li>
+    <li>Click <strong>&#8617; Reactivate</strong> to restore them to pending status</li>
+    <li>Then approve them from the Pending Approvals section &#8212; assign their role and section as normal</li>
+  </ul>
+  <div class="callout callout-success"><span class="callout-icon">&#128737;</span><span>The Remove button does not appear on your own team card &#8212; you can never accidentally remove yourself.</span></div>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <section class="section" id="github-setup">
-    <div class="section-sub">First-Time Setup</div>
-    <div class="steps">
-      <div class="steps-header">Create Your GitHub Repository</div>
-      <div class="step-row"><div class="step-num">1</div><div class="step-text">Go to <strong>github.com</strong> and sign in (create a free account if needed).</div></div>
-      <div class="step-row"><div class="step-num">2</div><div class="step-text">Click <strong>"New repository."</strong> Give it a name (e.g. <code>SGJCNewsroom</code>). Set it to <strong>Public</strong>.</div></div>
-      <div class="step-row"><div class="step-num">3</div><div class="step-text">Upload your <code>index.html</code> file to the repository root.</div></div>
-      <div class="step-row"><div class="step-num">4</div><div class="step-text">Go to <strong>Settings → Pages →</strong> set Source to <strong>"Deploy from branch"</strong> → branch: <strong>main</strong>, folder: <strong>/ (root)</strong>.</div></div>
-      <div class="step-row"><div class="step-num">5</div><div class="step-text">Click Save. Your URL will be: <code>https://yourusername.github.io/RepositoryName/</code></div></div>
-      <div class="step-row"><div class="step-num">6</div><div class="step-text">Share this URL with students — it's the permanent address of your newsroom.</div></div>
-    </div>
-  </section>
+<hr>
 
-  <section class="section" id="github-update">
-    <div class="section-sub">Pushing an Update</div>
-    <div class="steps">
-      <div class="steps-header">Upload a New Version of the App</div>
-      <div class="step-row"><div class="step-num">1</div><div class="step-text">Download the new <code>index.html</code> from Claude.</div></div>
-      <div class="step-row"><div class="step-num">2</div><div class="step-text">Go to your GitHub repository in your browser. Click <strong>index.html</strong> in the file list.</div></div>
-      <div class="step-row"><div class="step-num">3</div><div class="step-text">Click the <strong>pencil icon</strong> (Edit) → then the <strong>upload button</strong> to replace the file, or delete and re-upload.</div></div>
-      <div class="step-row"><div class="step-num">4</div><div class="step-text">Scroll down and click <strong>"Commit changes."</strong></div></div>
-      <div class="step-row"><div class="step-num">5</div><div class="step-text">GitHub Pages updates within 1–3 minutes. Do a <strong>hard refresh</strong> (<kbd>Ctrl+Shift+R</kbd> or <kbd>Cmd+Shift+R</kbd>) to see changes.</div></div>
-    </div>
-    <div class="callout callout-tip"><span class="callout-icon">⚡</span><span>For faster updates, install <strong>GitHub Desktop</strong> (free app) which lets you drag-and-drop files without using the browser interface.</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="roles">
+  <div class="section-label">Users</div>
+  <h2 class="section-title">Roles &amp; Permissions</h2>
+  <p>Roles control what each team member can see and do. Editors can change reporter and section-editor roles. Only the EIC can change editor-level roles or remove members.</p>
+  <div class="role-card" style="border-left:3px solid var(--green)">
+    <div class="role-name">Reporter</div>
+    <div class="role-can">Write stories &#183; Submit for review &#183; Submit pitches &#183; Add comments and reactions &#183; See own assignments only (plus any co-assigned)</div>
+    <div class="role-cannot">Cannot: see other reporters&#8217; assignments &#183; create assignments &#183; approve users</div>
+  </div>
+  <div class="role-card" style="border-left:3px solid var(--sky)">
+    <div class="role-name">Section Editor</div>
+    <div class="role-can">All reporter abilities &#183; Assign stories within their section &#183; Review and send back stories within their section</div>
+    <div class="role-cannot">Cannot: review stories outside their section &#183; publish stories</div>
+  </div>
+  <div class="role-card" style="border-left:3px solid var(--purple)">
+    <div class="role-name">Producer</div>
+    <div class="role-can">Build and manage broadcast rundowns &#183; Assign segments &#183; View all rundowns</div>
+    <div class="role-cannot">Cannot: assign print or digital stories &#183; publish stories</div>
+  </div>
+  <div class="role-card" style="border-left:3px solid var(--amber)">
+    <div class="role-name">Editor</div>
+    <div class="role-can">Assign stories to anyone &#183; Review all sections &#183; Approve and deny pending users &#183; Change reporter and section-editor roles</div>
+    <div class="role-cannot">Cannot: publish stories &#183; remove members &#183; change editor-level roles</div>
+  </div>
+  <div class="role-card" style="border-left:3px solid var(--red)">
+    <div class="role-name">Editor-in-Chief</div>
+    <div class="role-can">Full access &#8212; publish stories &#183; unlock published content &#183; change any role &#183; remove and reactivate members &#183; export stories as PDF</div>
+    <div class="role-cannot">No restrictions &#8212; full control over all newsroom features</div>
+  </div>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <hr>
+<hr>
 
-  <!-- FIREBASE -->
-  <section class="section" id="firebase">
-    <div class="section-label">Setup</div>
-    <h2 class="section-title">Firebase — Database & Auth</h2>
-    <div class="steps">
-      <div class="steps-header">First-Time Firebase Setup</div>
-      <div class="step-row"><div class="step-num">1</div><div class="step-text">Go to <strong>console.firebase.google.com</strong>. Sign in with a Google account.</div></div>
-      <div class="step-row"><div class="step-num">2</div><div class="step-text">Click <strong>"Add project."</strong> Give it a name. Disable Google Analytics if prompted — it's not needed.</div></div>
-      <div class="step-row"><div class="step-num">3</div><div class="step-text">Left sidebar: <strong>Firestore Database → Create database → Start in production mode →</strong> choose a US region → <strong>Enable</strong>.</div></div>
-      <div class="step-row"><div class="step-num">4</div><div class="step-text">Click the <strong>Rules</strong> tab. Paste the rule below and click <strong>Publish</strong>.</div></div>
-      <div class="step-row"><div class="step-num">5</div><div class="step-text">Left sidebar: <strong>Authentication → Get started → Enable Google</strong> as a sign-in provider.</div></div>
-      <div class="step-row"><div class="step-num">6</div><div class="step-text">Project Settings (gear icon) → Your apps → click <strong>&lt;/&gt; (web)</strong> → register app → copy the <strong>firebaseConfig</strong> block.</div></div>
-      <div class="step-row"><div class="step-num">7</div><div class="step-text">Paste the <code>firebaseConfig</code> into your HTML file (replacing the existing one) and upload to GitHub.</div></div>
-    </div>
-  </section>
+<section class="section" id="creating">
+  <div class="section-label">Assignments</div>
+  <h2 class="section-title">Creating Assignments</h2>
+  <p>Go to <strong>Assignments</strong> in the sidebar and click <strong>+ New Assignment</strong>. Editors and EICs can create assignments for anyone. Section Editors can create assignments within their section.</p>
+  <table class="ref-table">
+    <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Slug</td><td>Short internal identifier, e.g. <code>soccer-preview-0501</code></td></tr>
+      <tr><td>Headline</td><td>Working title &#8212; reporters can edit it in the story editor</td></tr>
+      <tr><td>Assign To Reporters</td><td>Click one or more name chips. All selected reporters are notified immediately.</td></tr>
+      <tr><td>Section</td><td>Campus News, Sports, Features, Opinion, Multimedia, Broadcast</td></tr>
+      <tr><td>Brief</td><td>Story direction &#8212; the angle, sources needed, and the news hook</td></tr>
+      <tr><td>Word Target</td><td>Reporters see a progress bar filling toward this number</td></tr>
+      <tr><td>Deadline</td><td>Appears on the calendar and triggers deadline reminders 48 hours before</td></tr>
+      <tr><td>Digital Assets</td><td>Check what media is needed: Photo, Video, Audio, Graphics, etc.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout callout-tip"><span class="callout-icon">&#128101;</span><span><strong>Multiple reporters:</strong> Click more than one name chip to co-assign a story. All selected reporters can write and any one of them can submit for review. Their initials appear as stacked avatars everywhere the assignment is shown.</span></div>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <section class="section" id="firestore-rules">
-    <div class="section-sub">Firestore Rules — Critical</div>
-    <p>This is the most important Firebase setting. If the rules are wrong or expired, <strong>no one can log in.</strong> The correct rule to use — paste this exactly into Firebase → Firestore → Rules, then click Publish:</p>
-    <div class="code-block">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}</div>
-    <div class="callout callout-warn"><span class="callout-icon">⚠</span><span><strong>This rule never expires.</strong> If you used Firebase's "test mode" during setup, the original rule had an expiry date baked in. When that date passed, all logins stopped working. The rule above has no expiry — it simply requires the user to be signed in with Google. Keep a copy of it somewhere safe.</span></div>
-    <p>If users suddenly can't log in, the Firestore rules are the first thing to check. Go to <strong>console.firebase.google.com → your project → Firestore → Rules</strong> and confirm the rule says <code>if request.auth != null</code>.</p>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<hr>
 
-  <hr>
+<section class="section" id="workflow">
+  <div class="section-label">Assignments</div>
+  <h2 class="section-title">Story Workflow</h2>
+  <p>Every story moves through a clear set of stages. Status updates automatically as reporters and editors take action.</p>
+  <table class="ref-table">
+    <thead><tr><th>Stage</th><th>Who acts</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-blue">Assigned</span></td><td>Editor</td><td>Create the assignment and select one or more reporters. They are notified immediately.</td></tr>
+      <tr><td><span class="badge badge-yellow">Draft</span></td><td>Reporter(s)</td><td>Reporter writes the story. Autosaves every 2 seconds.</td></tr>
+      <tr><td><span class="badge badge-orange">In Review</span></td><td>Any reporter &#8594; Editor</td><td>Any assigned reporter clicks "Submit for Review." All editors receive a notification.</td></tr>
+      <tr><td>Editor Markup</td><td>Editor / EIC</td><td>Toggle &#9999; Editor Markup to type changes in red directly in the story body.</td></tr>
+      <tr><td>Sent Back</td><td>Editor</td><td>Click "Send Back" to return story to Draft. The reporter is notified.</td></tr>
+      <tr><td><span class="badge badge-green">Published</span></td><td>EIC only</td><td>Click "Approve &amp; Publish." Story is locked in Archive. Anyone can export it as PDF.</td></tr>
+    </tbody>
+  </table>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <!-- INVITING -->
-  <section class="section" id="inviting">
-    <div class="section-label">Users</div>
-    <h2 class="section-title">Inviting Students</h2>
-    <p>Students do not need accounts created for them. They sign in with Google and are placed in a pending queue. You approve them from inside the app. Send them this email:</p>
-    <div class="email-block">
-      <div class="email-subject">Subject: Join the Goalkeepers Pressroom Newsroom</div>
-      Hi [Student Name],<br><br>
-      You've been invited to join Goalkeepers Pressroom — the MSU SGJC student newsroom for the Black SoccerLab.<br><br>
-      <strong>To get started:</strong><br>
-      1. Go to: https://msugoalkeepers.github.io/SGJCNewsroom/<br>
-      2. Click "Continue with Google" and sign in with your university Google account.<br>
-      3. You'll see an "Access Pending" screen — this is normal. I will approve your account shortly.<br>
-      4. Once approved, you'll receive a notification and can log in to see your assignments.<br><br>
-      Your role: <strong>[Reporter / Section Editor / Producer]</strong><br><br>
-      Questions? Reply to this email. See you in the newsroom!<br>
-      [Your name]
-    </div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<hr>
 
-  <!-- APPROVING -->
-  <section class="section" id="approving">
-    <div class="section-label">Users</div>
-    <h2 class="section-title">Approving Users</h2>
-    <div class="steps">
-      <div class="steps-header">Approve a Pending Student</div>
-      <div class="step-row"><div class="step-num">1</div><div class="step-text">Log in to the newsroom. Click <strong>Team</strong> in the left sidebar. A badge shows the number of pending requests.</div></div>
-      <div class="step-row"><div class="step-num">2</div><div class="step-text">At the top of the Team page, find the <strong>"Pending Approvals"</strong> section.</div></div>
-      <div class="step-row"><div class="step-num">3</div><div class="step-text">Choose their <strong>Role</strong> (Reporter, Section Editor, Producer, Editor) and their <strong>Section</strong>.</div></div>
-      <div class="step-row"><div class="step-num">4</div><div class="step-text">Click <strong>"Approve."</strong> The student is notified immediately and can enter the newsroom.</div></div>
-    </div>
-    <div class="callout callout-info"><span class="callout-icon">ℹ</span><span>To deny a request (wrong person, non-student), click <strong>"Deny."</strong> Their account record is deleted. They can sign in again and resubmit if needed.</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="editor-markup">
+  <div class="section-label">Assignments</div>
+  <h2 class="section-title">Editor Markup Mode</h2>
+  <p>When a story is In Review, editors and EICs see a <strong>&#9999; Editor Markup</strong> toggle button in the story editor toolbar. Turning it on lets you type changes directly in the story &#8212; everything you type appears in red so the reporter can clearly see what changed.</p>
+  <ul class="guide-list">
+    <li>An orange banner at the top of the editor confirms markup mode is active</li>
+    <li>The reporter sees red-highlighted text when they open the story</li>
+    <li>Each markup session is saved as a version in Version History</li>
+    <li>The reporter can click <strong>&#8644; Compare</strong> in the Version History panel to see their original draft next to the edited version side by side</li>
+    <li>Turn markup mode off to return to normal editing</li>
+  </ul>
+  <div class="callout callout-tip"><span class="callout-icon">&#128161;</span><span>Use the <strong>Comments panel</strong> alongside markup mode &#8212; markup shows what changed, comments explain why. Together they give reporters clear, actionable feedback.</span></div>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <!-- REMOVING -->
-  <section class="section" id="removing">
-    <div class="section-label">Users</div>
-    <h2 class="section-title">Remove & Reactivate Members</h2>
-    <p>Only the Editor-in-Chief can remove members. Removal is a <strong>soft delete</strong> — the account is locked but the data and story history are preserved.</p>
-    <div class="section-sub">Removing a Member</div>
-    <ul class="guide-list">
-      <li>On the Team page, each member card has a red <strong>"Remove"</strong> button (does not appear on your own card)</li>
-      <li>Two confirmation dialogs appear before removal is committed — you cannot do this accidentally</li>
-      <li>The removed user is locked out immediately and receives a notification</li>
-      <li>They see an "Access Removed" screen if they try to open the app</li>
-    </ul>
-    <div class="section-sub">Reactivating by Accident</div>
-    <ul class="guide-list">
-      <li>A <strong>"Removed Members"</strong> section appears at the bottom of the Team page (EIC only)</li>
-      <li>Click <strong>↩ Reactivate</strong> to restore them to pending status</li>
-      <li>Then approve them from the Pending Approvals section — assign their role and section again</li>
-    </ul>
-    <div class="callout callout-success"><span class="callout-icon">🛡</span><span>You can never accidentally remove yourself — the Remove button does not appear on your own team card.</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<hr>
 
-  <!-- ROLES -->
-  <section class="section" id="roles">
-    <div class="section-label">Users</div>
-    <h2 class="section-title">Roles & Permissions</h2>
-    <div class="callout callout-info"><span class="callout-icon">📌</span><span>The <strong>first person to sign in</strong> is automatically made Editor-in-Chief. Every subsequent user is pending until approved.</span></div>
-    <div class="role-grid">
-      <div class="role-card" style="border-left-color:#2c6e49">
-        <div class="role-name">Reporter</div>
-        <div class="role-can">Write stories · Submit for review · Submit pitches · Add comments & reactions · See own assignments only</div>
-        <div class="role-cannot">Cannot: see others' assignments (unless co-assigned) · create assignments · approve users</div>
-      </div>
-      <div class="role-card" style="border-left-color:#1a5276">
-        <div class="role-name">Section Editor</div>
-        <div class="role-can">All reporter abilities · Assign stories within their section · Review stories within their section</div>
-        <div class="role-cannot">Cannot: review outside section · publish stories</div>
-      </div>
-      <div class="role-card" style="border-left-color:#6c3483">
-        <div class="role-name">Producer</div>
-        <div class="role-can">Build and manage broadcast rundowns · Assign segments · View all rundowns</div>
-        <div class="role-cannot">Cannot: assign print/digital stories · publish</div>
-      </div>
-      <div class="role-card" style="border-left-color:#e67e22">
-        <div class="role-name">Editor</div>
-        <div class="role-can">Assign all stories · Review all sections · Approve/deny pending users · Change reporter roles</div>
-        <div class="role-cannot">Cannot: publish stories · remove members · change editor roles</div>
-      </div>
-      <div class="role-card" style="border-left-color:#c0392b">
-        <div class="role-name">Editor-in-Chief</div>
-        <div class="role-can">Full access — publish stories · unlock published content · change any role · remove & reactivate members · PDF export</div>
-        <div class="role-cannot">Cannot: nothing — full control</div>
-      </div>
-    </div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="publishing">
+  <div class="section-label">Assignments</div>
+  <h2 class="section-title">Publishing &amp; PDF Export</h2>
+  <p>Only the <strong>Editor-in-Chief</strong> can publish stories. Once published, a story moves to the Archive and is locked from further editing.</p>
+  <ul class="guide-list">
+    <li>Open the story in the Story Editor. When status is In Review the <strong>Approve &amp; Publish</strong> button appears in the top right.</li>
+    <li>A confirmation dialog appears before publishing is committed</li>
+    <li>The reporter receives a &#127881; notification when their story is published</li>
+    <li>Published stories appear in the Archive &#8212; anyone can click to read them in full</li>
+    <li>If a correction is needed after publishing, click <strong>Unlock</strong> (EIC only) to return it to Draft</li>
+  </ul>
+  <div class="section-sub">Exporting as PDF</div>
+  <p>Any team member can export a published story as a formatted PDF. Open any published story and click <strong>&#8615; Export PDF</strong> in the toolbar. In the browser print dialog, set the destination to <strong>Save as PDF</strong>.</p>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <hr>
+<hr>
 
-  <!-- ASSIGNMENTS -->
-  <section class="section" id="assignments">
-    <div class="section-label">Running the Newsroom</div>
-    <h2 class="section-title">Creating Assignments</h2>
-    <p>Go to <strong>Assignments</strong> in the sidebar → click <strong>"+ New Assignment."</strong></p>
-    <table class="ref-table">
-      <thead><tr><th>Field</th><th>Notes</th></tr></thead>
-      <tbody>
-        <tr><td>Slug</td><td>Short internal identifier, e.g. <code>soccer-preview-0501</code></td></tr>
-        <tr><td>Headline</td><td>Working title — reporters can change it in the editor</td></tr>
-        <tr><td>Assign To Reporters</td><td>Click one or more name chips. All selected reporters see the assignment and are notified.</td></tr>
-        <tr><td>Section</td><td>News, Sports, Features, Opinion, Multimedia, Broadcast</td></tr>
-        <tr><td>Brief</td><td>Story direction — what angle, what sources, what's the news hook</td></tr>
-        <tr><td>Word Target</td><td>Reporters see a progress bar toward this number</td></tr>
-        <tr><td>Deadline</td><td>Shows on the calendar and triggers deadline reminders 48h before</td></tr>
-        <tr><td>Digital Assets</td><td>Check what media is needed: Photo, Video, Audio, Graphics, etc.</td></tr>
-      </tbody>
-    </table>
-    <div class="callout callout-tip"><span class="callout-icon">👥</span><span><strong>Multi-reporter assignments:</strong> Click multiple name chips to co-assign a story. All assigned reporters can write and any one of them can submit for review. Their initials appear as stacked avatars everywhere the assignment is shown.</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="rundowns">
+  <div class="section-label">Newsroom</div>
+  <h2 class="section-title">Broadcast Rundowns</h2>
+  <p>Producers, Editors, and EICs can create and manage rundowns. Reporters can view rundowns and see their own segments.</p>
+  <div class="steps">
+    <div class="steps-header">Create a Rundown</div>
+    <div class="step-row"><div class="step-num">1</div><div class="step-text">Go to <strong>Rundowns</strong> in the sidebar. Click <strong>+ New Rundown</strong>.</div></div>
+    <div class="step-row"><div class="step-num">2</div><div class="step-text">Fill in show name, air date, air time, total duration, and producer notes.</div></div>
+    <div class="step-row"><div class="step-num">3</div><div class="step-text">Click the show pill to open the rundown. Click <strong>+ Add Segment</strong> for each segment.</div></div>
+    <div class="step-row"><div class="step-num">4</div><div class="step-text">Fill in segment type (VO, SOT, LIVE, READER, TOSS, BREAK, WEATHER, SPORTS, OPEN/CLOSE), duration, reporter/anchor, intro copy, chyron, video source, audio type, and outcue.</div></div>
+    <div class="step-row"><div class="step-num">5</div><div class="step-text">Drag rows to reorder. Click any row to view full details in a popup.</div></div>
+  </div>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <!-- WORKFLOW -->
-  <section class="section" id="workflow">
-    <div class="section-label">Running the Newsroom</div>
-    <h2 class="section-title">Story Workflow</h2>
-    <table class="ref-table">
-      <thead><tr><th>Stage</th><th>Who acts</th><th>How</th></tr></thead>
-      <tbody>
-        <tr><td>Assigned</td><td>Editor</td><td>Create assignment and assign to reporter(s). They are notified immediately.</td></tr>
-        <tr><td>Draft</td><td>Reporter(s)</td><td>Write the story. Autosaves every 2 seconds.</td></tr>
-        <tr><td>In Review</td><td>Any reporter → Editor</td><td>Any assigned reporter clicks "Submit for Review." All editors notified.</td></tr>
-        <tr><td>Editor Markup</td><td>Editor / EIC</td><td>Toggle "✏ Editor Markup" to type changes in red. Reporter sees them highlighted.</td></tr>
-        <tr><td>Diff View</td><td>Reporter / Editor</td><td>Click "⇄ Compare" in Version History to see reporter draft vs editor version side by side.</td></tr>
-        <tr><td>Send Back</td><td>Editor</td><td>Click "Send Back" to return story to Draft. Reporter is notified.</td></tr>
-        <tr><td>Published</td><td>EIC only</td><td>Click "Approve & Publish." Story is locked in Archive. Any role can export as PDF.</td></tr>
-      </tbody>
-    </table>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<hr>
 
-  <!-- EDITOR MARKUP -->
-  <section class="section" id="editor-markup">
-    <div class="section-label">Running the Newsroom</div>
-    <h2 class="section-title">Editor Markup Mode</h2>
-    <p>When a story is In Review, editors and EICs see a <strong>✏ Editor Markup</strong> toggle button in the story editor toolbar. Turning it on lets you type changes directly in the story body — everything you type appears in red so the reporter can clearly see what was changed.</p>
-    <ul class="guide-list">
-      <li>An orange banner appears at the top of the editor confirming markup mode is active</li>
-      <li>The reporter sees the red text when they open the story</li>
-      <li>Each markup session creates a version in Version History — the reporter can compare using ⇄ Compare</li>
-      <li>Turn markup mode off to return to normal editing</li>
-    </ul>
-    <div class="callout callout-tip"><span class="callout-icon">💡</span><span>Use the Comments panel alongside markup mode — markup shows what changed in the text, comments explain why. Together they give reporters clear, actionable feedback.</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="calendar">
+  <div class="section-label">Newsroom</div>
+  <h2 class="section-title">Calendar</h2>
+  <p>The calendar is pre-loaded with U.S. Federal Holidays (2025&#8211;2026) and FIFA World Cup 2026 fixtures (June 11 &#8211; July 19). Assignment deadlines appear automatically in orange.</p>
+  <table class="ref-table">
+    <thead><tr><th>Color</th><th>Category</th><th>Who adds it</th></tr></thead>
+    <tbody>
+      <tr><td>&#127840; Orange</td><td>Assignments</td><td>Automatic &#8212; generated from assignment deadlines</td></tr>
+      <tr><td>&#128995; Purple</td><td>U.S. Federal Holidays</td><td>Pre-loaded for 2025&#8211;2026</td></tr>
+      <tr><td>&#129001; Dark Green</td><td>World Cup 2026</td><td>Pre-loaded &#8212; all fixtures through July 19</td></tr>
+      <tr><td>&#9899; Black</td><td>Black SoccerLab Events</td><td>Any team member can add these</td></tr>
+    </tbody>
+  </table>
+  <ul class="guide-list">
+    <li>Any team member can click <strong>+ Add Event</strong> to create a Black SoccerLab Event</li>
+    <li>Set a <strong>Repeating</strong> frequency (Daily, Weekly, Every 2 weeks, Monthly, Yearly) for recurring events</li>
+    <li>Click <strong>&#8853; Import .ics</strong> to import a full calendar from Google Calendar, Outlook, or any external organization</li>
+    <li>Click any event on the calendar to see full details. Assignment events open the story directly.</li>
+    <li>Use the <strong>filter pills</strong> below the navigation bar to show only one category at a time</li>
+  </ul>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <!-- RUNDOWNS -->
-  <section class="section" id="rundowns">
-    <div class="section-label">Running the Newsroom</div>
-    <h2 class="section-title">Broadcast Rundowns</h2>
-    <p>Go to <strong>Rundowns</strong> in the sidebar. Producers, Editors, and EICs can create and edit rundowns.</p>
-    <div class="steps">
-      <div class="steps-header">Create a Rundown</div>
-      <div class="step-row"><div class="step-num">1</div><div class="step-text">Click <strong>"+ New Rundown."</strong> Fill in show name, air date, air time, duration, and producer notes.</div></div>
-      <div class="step-row"><div class="step-num">2</div><div class="step-text">Click the show pill to open it. Click <strong>"+ Add Segment"</strong> for each segment.</div></div>
-      <div class="step-row"><div class="step-num">3</div><div class="step-text">Fill in segment type (VO, SOT, LIVE, READER, etc.), duration, reporter/anchor, intro copy, chyron, outcue.</div></div>
-      <div class="step-row"><div class="step-num">4</div><div class="step-text">Drag segment rows to reorder. Click any row to view full details in a popup.</div></div>
-    </div>
-    <p>Reporters can view rundowns and see their own segments. Only Producers, Editors, and EICs can edit.</p>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<hr>
 
-  <!-- CALENDAR -->
-  <section class="section" id="calendar">
-    <div class="section-label">Running the Newsroom</div>
-    <h2 class="section-title">Calendar</h2>
-    <p>The calendar is pre-loaded with U.S. Federal Holidays (2025–2026) and FIFA World Cup 2026 fixtures (June 11 – July 19). Assignment deadlines appear automatically in orange.</p>
-    <table class="ref-table">
-      <thead><tr><th>Color</th><th>Category</th><th>Source</th></tr></thead>
-      <tbody>
-        <tr><td>🟠 Orange</td><td>Assignments</td><td>Auto from assignment deadlines</td></tr>
-        <tr><td>🟣 Purple</td><td>U.S. Holidays</td><td>Pre-loaded</td></tr>
-        <tr><td>🟢 Dark Green</td><td>World Cup 2026</td><td>Pre-loaded</td></tr>
-        <tr><td>⚫ Black</td><td>Black SoccerLab Events</td><td>Added by any team member</td></tr>
-      </tbody>
-    </table>
-    <ul class="guide-list">
-      <li>Use the <strong>filter pills</strong> to show only one category at a time</li>
-      <li>Any team member can click <strong>"+ Add Event"</strong> to add a Black SoccerLab Event</li>
-      <li>Set a <strong>Repeating</strong> frequency (daily/weekly/monthly/yearly) and an end date for recurring events</li>
-      <li>Click <strong>"⊕ Import .ics"</strong> to import a full calendar from Google Calendar or any other organization</li>
-      <li>Click any event to see full details. Click an assignment event to open the story directly.</li>
-    </ul>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="pitch-board">
+  <div class="section-label">Newsroom</div>
+  <h2 class="section-title">Pitch Board</h2>
+  <p>Any team member can submit a story pitch. Editors and EICs manage the board. A badge on the Pitch Board nav item shows how many pitches are pending review.</p>
+  <table class="ref-table">
+    <thead><tr><th>Action</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td>&#10003; Approve</td><td>Pitch moves to Approved. A "Create Assignment" button appears.</td></tr>
+      <tr><td>&#9208; Hold</td><td>Pitch saved for later. The reporter is notified.</td></tr>
+      <tr><td>&#10005; Pass</td><td>Pitch not moving forward. Add an optional note explaining why.</td></tr>
+      <tr><td>&#8594; Create Assignment</td><td>Converts the approved pitch directly into a full assignment. Reporter is notified.</td></tr>
+    </tbody>
+  </table>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <!-- PITCH BOARD -->
-  <section class="section" id="pitch-board">
-    <div class="section-label">Running the Newsroom</div>
-    <h2 class="section-title">Pitch Board</h2>
-    <p>Any team member can submit a story pitch. Editors and EICs manage the board.</p>
-    <table class="ref-table">
-      <thead><tr><th>Action</th><th>What happens</th></tr></thead>
-      <tbody>
-        <tr><td>Approve</td><td>Pitch moves to Approved. A "→ Create Assignment" button appears.</td></tr>
-        <tr><td>Hold</td><td>Pitch is saved for later consideration. Reporter is notified.</td></tr>
-        <tr><td>Pass</td><td>Pitch is declined. You can add an optional note for the reporter.</td></tr>
-        <tr><td>Create Assignment</td><td>Converts the approved pitch directly into a full assignment. Reporter is notified.</td></tr>
-      </tbody>
-    </table>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<hr>
 
-  <!-- DASHBOARD -->
-  <section class="section" id="dashboard">
-    <div class="section-label">Running the Newsroom</div>
-    <h2 class="section-title">Dashboard Features</h2>
-    <table class="ref-table">
-      <thead><tr><th>Feature</th><th>What it shows</th></tr></thead>
-      <tbody>
-        <tr><td>Stats cards</td><td>Active stories, In Review count, Published count, Team member count</td></tr>
-        <tr><td>Deadline Reminders</td><td>Amber/red chips for stories due within 48 hours, with assignee initials. Click to open the story.</td></tr>
-        <tr><td>Recent Assignments</td><td>Table of the 6 most recent assignments with status, assignees, and deadline</td></tr>
-        <tr><td>Section Progress</td><td>Bar chart showing published vs total per section</td></tr>
-        <tr><td>Activity Feed</td><td>Live log of the last 20 newsroom actions — submissions, publications, pitches, approvals</td></tr>
-        <tr><td>In the Newsroom</td><td>Avatar icons for all team members. Green dot = online. Gray = recently active. Dimmed = offline.</td></tr>
-      </tbody>
-    </table>
-    <div class="callout callout-info"><span class="callout-icon">🟢</span><span>The presence system updates every 30 seconds. A member appears online within 30 seconds of opening the app, and shows as recently-active within 90 seconds of closing it.</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="dashboard">
+  <div class="section-label">Newsroom</div>
+  <h2 class="section-title">Dashboard</h2>
+  <table class="ref-table">
+    <thead><tr><th>Feature</th><th>What it shows</th></tr></thead>
+    <tbody>
+      <tr><td>Stats cards</td><td>Active stories, In Review count, Published count, and total team members</td></tr>
+      <tr><td>Deadline Reminders</td><td>Chips for stories due within 48 hours with the assignee&#8217;s initials. Click any chip to open the story.</td></tr>
+      <tr><td>Recent Assignments</td><td>The 6 most recent assignments with status, assignee avatars, and deadline</td></tr>
+      <tr><td>Section Progress</td><td>Bar chart showing published vs. total stories per section</td></tr>
+      <tr><td>Activity Feed</td><td>Live log of the last 20 newsroom actions &#8212; submissions, publications, pitch decisions, approvals</td></tr>
+      <tr><td>In the Newsroom</td><td>Avatar icons for all team members. Green dot = online now. Gray dot = recently active. Dimmed = offline. Updates every 30 seconds.</td></tr>
+    </tbody>
+  </table>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
-  <hr>
+<hr>
 
-  <!-- TROUBLESHOOTING -->
-  <section class="section" id="troubleshooting">
-    <div class="section-label">Reference</div>
-    <h2 class="section-title">Troubleshooting</h2>
-    <table class="ref-table">
-      <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
-      <tbody>
-        <tr><td>Spinning circle / login screen doesn't appear</td><td>JavaScript crash on load</td><td>Hard refresh (Ctrl+Shift+R). Open F12 → Console for red error text. Contact Claude with the message.</td></tr>
-        <tr><td>Users can't log in — "Missing or insufficient permissions"</td><td>Firestore rules expired or incorrect</td><td>Go to Firebase Console → Firestore → Rules and re-paste the correct rule (see Firestore Rules section above).</td></tr>
-        <tr><td>User stuck on "Access Pending"</td><td>Not yet approved</td><td>Team → Pending Approvals → Approve them.</td></tr>
-        <tr><td>User stuck on "Access Removed"</td><td>Account deactivated</td><td>Team → Removed Members → Reactivate.</td></tr>
-        <tr><td>Team page only shows the EIC</td><td>Legacy user docs missing the status field</td><td>Log in as EIC or Editor — auto-migration runs and fixes all docs within seconds.</td></tr>
-        <tr><td>Story won't open ("Failed to load")</td><td>Firestore or connectivity issue</td><td>Check F12 Console for error code. Confirm user is approved. Check Firestore rules.</td></tr>
-        <tr><td>Grammar check fails</td><td>No internet or LanguageTool API unavailable</td><td>Browser spell check (red underlines) still works. Try again later.</td></tr>
-        <tr><td>"+  New Rundown" not visible</td><td>User role is not Producer/Editor/EIC</td><td>Change role on Team page.</td></tr>
-        <tr><td>PDF export opens blank popup</td><td>Pop-ups blocked in browser</td><td>Allow pop-ups for the newsroom domain in browser settings.</td></tr>
-        <tr><td>"In the Newsroom" shows fewer members than expected</td><td>Presence takes time to appear</td><td>Wait 30–60 seconds after signing in. All approved members always display — only the presence dots depend on timing.</td></tr>
-      </tbody>
-    </table>
-    <div class="callout callout-tip"><span class="callout-icon">💻</span><span><strong>F12 → Console</strong> is always the fastest path to understanding a technical issue. The error code tells you exactly what failed. Screenshot it and share with Claude for a targeted fix.</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
-
-  <!-- DUPLICATING -->
-  <section class="section" id="duplicating">
-    <div class="section-label">Reference</div>
-    <h2 class="section-title">Duplicating the App for a New Project</h2>
-    <p>The entire newsroom can be cloned for a new cohort or project in about 15 minutes. Each instance is completely independent with its own database and users.</p>
-    <table class="ref-table">
-      <thead><tr><th>Step</th><th>What to do</th></tr></thead>
-      <tbody>
-        <tr><td>1. New Firebase project</td><td>console.firebase.google.com → Add project → set up Firestore + Auth (see Section 3)</td></tr>
-        <tr><td>2. Update firebaseConfig</td><td>Replace the 6-line config block in the HTML with the new project's credentials</td></tr>
-        <tr><td>3. Replace app name</td><td>"Goalkeepers Pressroom" appears in ~8 places — use find-and-replace</td></tr>
-        <tr><td>4. Replace subtitle</td><td>"MSU SGJC Student Newsroom for the Black SoccerLab" — update to new tagline</td></tr>
-        <tr><td>5. Update invite URL</td><td>The invite link appears once — update to new GitHub Pages URL</td></tr>
-        <tr><td>6. Update calendar data</td><td>Delete or replace the World Cup 2026 fixtures and base camp arrays in the JS (optional)</td></tr>
-        <tr><td>7. New GitHub repo</td><td>Upload the modified HTML as index.html, enable Pages</td></tr>
-        <tr><td>8. Done</td><td>New instance is live, empty, and ready for a new cohort</td></tr>
-      </tbody>
-    </table>
-    <div class="callout callout-info"><span class="callout-icon">💡</span><span>Ask Claude to make all substitutions in one pass — provide the new name, subtitle, accent color, and GitHub URL and it can produce a ready-to-deploy file in minutes.</span></div>
-    <a href="#" class="back-top">↑ Back to top</a>
-  </section>
+<section class="section" id="troubleshooting">
+  <div class="section-label">Reference</div>
+  <h2 class="section-title">Troubleshooting</h2>
+  <p>Most issues can be resolved without any technical intervention. Here are the most common situations and what to do.</p>
+  <table class="ref-table">
+    <thead><tr><th>What you see</th><th>Likely cause</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td>User stuck on "Access Pending"</td><td>Not yet approved</td><td>Team &#8594; Pending Approvals &#8594; Approve them</td></tr>
+      <tr><td>User stuck on "Access Removed"</td><td>Account was deactivated</td><td>Team &#8594; Removed Members &#8594; click &#8617; Reactivate</td></tr>
+      <tr><td>Team page only shows EIC</td><td>Older accounts missing an internal status field</td><td>Log in as EIC or Editor &#8212; a background fix runs automatically within seconds and all members reappear</td></tr>
+      <tr><td>Story won&#8217;t open ("Failed to load")</td><td>Connectivity issue or user not fully approved</td><td>Confirm user status is "approved" on Team page. Have them refresh and try again.</td></tr>
+      <tr><td>Grammar check fails</td><td>No internet or service temporarily unavailable</td><td>Browser spell check (red underlines in editor) still works. Try grammar check again in a few minutes.</td></tr>
+      <tr><td>"+ New Rundown" not visible</td><td>User role doesn&#8217;t include rundown access</td><td>Go to Team, find the user, change role to Producer, Editor, or EIC</td></tr>
+      <tr><td>PDF export opens blank popup</td><td>Browser blocking pop-ups</td><td>Allow pop-ups for the newsroom URL in browser settings, then try again</td></tr>
+      <tr><td>"In the Newsroom" shows fewer members</td><td>Presence dots take up to 30 seconds to appear</td><td>Wait 30&#8211;60 seconds. All approved members always show &#8212; only the colored dots depend on timing.</td></tr>
+      <tr><td>Nobody can log in at all</td><td>A backend configuration issue</td><td>Contact your technical administrator &#8212; this cannot be resolved from inside the app.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout callout-info"><span class="callout-icon">&#128187;</span><span>For any issue that persists, press <kbd>F12</kbd> in your browser, click the <strong>Console</strong> tab, and take a screenshot of any red error messages. Share these with your technical administrator.</span></div>
+  <a href="#" class="back-top">&#8593; Back to top</a>
+</section>
 
 </main>
-
 <script>
-const sections = document.querySelectorAll('.section');
-const navLinks = document.querySelectorAll('.nav-link');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      navLinks.forEach(l => l.classList.remove('active'));
-      const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
-      if (active) active.classList.add('active');
+const sections=document.querySelectorAll('.section');
+const navLinks=document.querySelectorAll('.nav-link');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const a=document.querySelector('.nav-link[href="#'+entry.target.id+'"]');
+      if(a)a.classList.add('active');
     }
   });
-}, { rootMargin: '-15% 0px -70% 0px' });
-sections.forEach(s => observer.observe(s));
+},{rootMargin:'-15% 0px -70% 0px'});
+sections.forEach(s=>observer.observe(s));
 </script>
 </body>
 </html>
