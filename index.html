@@ -149,10 +149,25 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 ══════════════════════════════════════════════════════ */
 @media(max-width:768px){
 
-  /* ── App shell ── */
-  #app{flex-direction:column!important}
-
-  /* ── Sidebar becomes a slide-in overlay ── */
+  /* ── App shell: release desktop overflow constraints ── */
+  #app{
+    flex-direction:column!important;
+    height:auto!important;
+    min-height:100vh!important;
+    overflow:visible!important;
+  }
+  .main{
+    overflow:visible!important;
+    min-width:0;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+  .content{
+    overflow:visible!important;
+    padding:12px 14px!important;
+    flex:1;
+  }  /* ── Sidebar becomes a slide-in overlay ── */
   .sidebar{
     position:fixed!important;top:0;left:0;height:100vh!important;
     width:280px!important;min-width:280px!important;
@@ -186,13 +201,6 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
   .notif-btn{color:var(--paper)!important}
   .notif-btn svg,.notif-btn path{stroke:var(--paper)!important}
   .tb-right{color:var(--paper)!important}
-
-  /* ── Main area fills screen ── */
-  .main{
-    margin-top:0!important;flex:1;
-    overflow-y:auto;overflow-x:hidden;
-  }
-  .content{padding:12px 14px!important}
 
   /* ── Stats grid: 2 columns ── */
   .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
@@ -1759,7 +1767,14 @@ function clearLoginErr(){document.getElementById('login-err').classList.remove('
 function startApp(){
   document.getElementById('login-screen').style.display='none'
   document.getElementById('pending-screen').style.display='none'
-  const app=document.getElementById('app');app.style.display='flex';app.style.animation='fadeIn .2s ease'
+  const app=document.getElementById('app')
+  app.style.display='flex'
+  app.style.animation='fadeIn .2s ease'
+  // On mobile, release the height constraint so layout flows naturally
+  if(window.innerWidth<=768){
+    app.style.height='auto'
+    app.style.overflow='visible'
+  }
   // Sidebar avatar
   const av=document.getElementById('sb-avatar')
   if(ME.photoURL){const img=document.createElement('img');img.src=ME.photoURL;img.style.cssText='width:29px;height:29px;border-radius:50%;object-fit:cover';av.innerHTML='';av.appendChild(img)}
