@@ -168,8 +168,10 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
     box-shadow:4px 0 24px rgba(0,0,0,.35)!important;
   }
 
-  /* ── Hamburger visible via CSS (no JS dependency) ── */
-  #hamburger-btn{display:flex!important;align-items:center;justify-content:center}
+  /* ── Hamburger: visible on mobile ── */
+  #hamburger-btn{display:flex!important}
+  /* ── Mobile panels button: visible in editor on mobile ── */
+  #btn-mobile-panels{display:inline-flex!important}
 
   /* ── Topbar ── */
   .topbar{
@@ -177,9 +179,13 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
     position:sticky;top:0;z-index:100;
     background:var(--dark)!important;
   }
+  .tb-title{font-size:.82rem!important;color:var(--paper)!important}
   .tb-date{display:none!important}
   .font-slider-wrap{display:none!important}
-  .tb-title{font-size:.82rem!important}
+  /* Notification bell visible on dark topbar */
+  .notif-btn{color:var(--paper)!important}
+  .notif-btn svg,.notif-btn path{stroke:var(--paper)!important}
+  .tb-right{color:var(--paper)!important}
 
   /* ── Main area fills screen ── */
   .main{
@@ -354,6 +360,10 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 .sidebar{width:265px;min-width:265px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;overflow-y:auto;padding-top:env(safe-area-inset-top)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .topbar{height:56px;background:var(--white);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;padding-top:max(0px,env(safe-area-inset-top))}
+/* Hamburger: hidden on desktop by default, shown by mobile media query */
+#hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:8px 10px;color:var(--paper);font-size:1.4rem;line-height:1;flex-shrink:0;align-items:center;justify-content:center}
+/* Mobile panels button: hidden on desktop by default */
+#btn-mobile-panels{display:none}
 .content{flex:1;overflow-y:auto;padding:26px 30px;animation:fadeIn .2s ease}
 
 /* ── SIDEBAR ── */
@@ -732,7 +742,7 @@ tr:hover td{background:var(--paper)}
 
   <div class="main">
     <header class="topbar">
-      <button id="hamburger-btn" onclick="toggleMobileNav()" aria-label="Open navigation" style="display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--paper);font-size:1.3rem;line-height:1;flex-shrink:0">☰</button>
+      <button id="hamburger-btn" onclick="toggleMobileNav()" aria-label="Open navigation">☰</button>
       <div class="tb-title" id="tb-title">Daily Briefing</div>
       <div class="tb-date" id="tb-date"></div>
       <div class="font-slider-wrap" title="Adjust font size">
@@ -881,7 +891,7 @@ tr:hover td{background:var(--paper)}
 
                 <div class="toolbar-sep"></div>
                 <button class="toolbar-btn" onclick="runGrammarCheck()" id="btn-grammar" title="Check spelling and grammar">✓ Grammar</button>
-                <button class="toolbar-btn" id="btn-mobile-panels" onclick="openEditorPanel('details')" style="display:none" title="Open panels">≡ Panels</button>
+                <button class="toolbar-btn" id="btn-mobile-panels" onclick="openEditorPanel('details')" title="Open panels">≡ Panels</button>
               </div>
               <div class="word-progress-wrap">
                 <span style="font-size:.62rem;font-family:var(--fm);color:var(--muted);white-space:nowrap" id="word-progress-label">0 / 0 words</span>
@@ -4439,25 +4449,23 @@ document.addEventListener('click',e=>{
 
 // Show/hide hamburger on resize
 function handleResize(){
-  const hb=document.getElementById('hamburger-btn')
   const sb=document.getElementById('sidebar')
   const ov=document.getElementById('mobile-nav-overlay')
   const panelsBtn=document.getElementById('btn-mobile-panels')
-  if(!hb||!sb)return
+  if(!sb)return
   if(window.innerWidth>768){
-    // Desktop: hide hamburger, close any open mobile nav, show editor panels
-    hb.style.display='none'
+    // Desktop: close any open mobile nav, restore editor panels
     sb.classList.remove('mobile-open')
     sb.style.transform=''
-    if(ov){ov.classList.remove('open')}
+    if(ov)ov.classList.remove('open')
     document.body.style.overflow=''
     const right=document.getElementById('editor-right')
     if(right){right.style.display='';right.classList.remove('mobile-panel-active')}
-    if(panelsBtn)panelsBtn.style.display='none'
+    // Let CSS control hamburger and panels button visibility — never set inline styles
+    if(panelsBtn)panelsBtn.style.cssText=''
   }else{
-    // Mobile: let CSS handle hamburger visibility, just remove any desktop inline override
-    hb.style.display=''
-    if(panelsBtn)panelsBtn.style.display=''
+    // Mobile: CSS handles hamburger, just ensure panels button has no conflicting inline style
+    if(panelsBtn)panelsBtn.style.cssText=''
   }
 }
 window.addEventListener('resize',handleResize)
