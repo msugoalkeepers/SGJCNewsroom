@@ -367,7 +367,7 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 #app{display:none;height:100vh;overflow:hidden;flex-direction:row}
 .sidebar{width:265px;min-width:265px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;overflow-y:auto;padding-top:env(safe-area-inset-top)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;padding-top:max(0px,env(safe-area-inset-top))}
+header.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;padding-top:max(0px,env(safe-area-inset-top))}
 /* Hamburger: hidden on desktop by default, shown by mobile media query */
 #hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:8px 10px;color:var(--paper);font-size:1.4rem;line-height:1;flex-shrink:0;align-items:center;justify-content:center}
 /* Mobile panels button: hidden on desktop by default */
@@ -2013,7 +2013,7 @@ function renderAssignments(){
   const list=ASSIGN_FILTER==='all'?ASSIGNMENTS:ASSIGNMENTS.filter(a=>a.status===ASSIGN_FILTER)
   if(!list.length){document.getElementById('assign-table-wrap').innerHTML='<div class="empty-state"><div class="empty-icon">◻</div><div class="empty-title">No assignments</div><div class="empty-sub">Editors can create assignments from the button above.</div></div>';return}
   const rows=list.map(a=>{
-    const r=TEAM.find(u=>u.id===a.assignedTo),ov=a.deadline&&isPast(a.deadline)&&a.status!=='published'
+    const ov=a.deadline&&isPast(a.deadline)&&a.status!=='published'
     const canEdit=isEditor()||(isSectionEditor()&&a.section===ME.section)||(a.createdBy===ME.uid)
     const assets=a.digitalAssets||[]
     return`<tr>
@@ -2024,7 +2024,7 @@ function renderAssignments(){
         ${assets.length?`<div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap">${assets.map(t=>`<span class="badge badge-section" style="font-size:.54rem">${t}</span>`).join('')}</div>`:''}
       </td>
       <td><span class="badge badge-section">${esc(a.section||'')}</span>${a.length?`<div style="font-size:.6rem;color:var(--muted);font-family:var(--fm);margin-top:2px">${esc(a.length)}</div>`:''}</td>
-      <td><div style="display:flex;align-items:center;gap:6px;font-size:.78rem">${r?`<div class="avatar" style="width:20px;height:20px;font-size:.56rem;background:${aColor(r.name)}">${inits(r.name)}</div>${esc(r.name.split(' ')[0])}`:'Unassigned'}</div></td>
+      <td><div style="display:flex;align-items:center;gap:4px">${assigneeAvatars(a.assignedTo,3)}</div></td>
       <td><span class="badge badge-${a.status||'draft'}">${a.status||'draft'}</span></td>
       <td style="font-family:var(--fm);font-size:.7rem;color:${ov?'var(--accent)':'var(--muted)'}">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}${ov?' ⚠':''}</td>
       <td style="font-family:var(--fm);font-size:.7rem;color:var(--muted)">${a.wordCount||0}</td>
@@ -2146,7 +2146,7 @@ function renderBoard(){
         <div class="kanban-card-title">${esc(a.title||'Untitled')}</div>
         <div style="margin-bottom:5px"><span class="badge badge-section" style="font-size:.56rem">${esc(a.section||'')}</span></div>
         <div class="kanban-card-meta">
-          <div class="kanban-card-reporter">${r?`<div class="avatar" style="width:16px;height:16px;font-size:.5rem;background:${aColor(r.name)}">${inits(r.name)}</div>${esc(r.name.split(' ')[0])}`:'Unassigned'}</div>
+          <div class="kanban-card-reporter">${assigneeAvatars(a.assignedTo,2)}</div>
           ${a.deadline?`<span class="kanban-deadline${ov?' overdue':''}">${new Date(a.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'})}${ov?' ⚠':''}</span>`:''}
         </div></div>`
     }).join('')
@@ -2323,7 +2323,7 @@ function renderEditorUI(){
     ['Slug',a.slug?`<span style="font-family:var(--fm);font-size:.72rem">${esc(a.slug)}</span>`:'—'],
     ['Section',`<span class="badge badge-section">${esc(a.section||'')}</span>`],
     ['Byline',esc(a.byline||'—')],['Length',esc(a.length||'—')],
-    ['Reporter',r?`<div style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div class="avatar" style="width:18px;height:18px;font-size:.54rem;background:${aColor(r.name)}">${inits(r.name)}</div>${esc(r.name.split(' ')[0])}</div>`:'—'],
+    ['Reporter',assigneeAvatars(a.assignedTo,4)],
     ['Status',`<span class="badge badge-${a.status||'draft'}">${a.status||'draft'}</span>`],
     ['Deadline',`<span style="color:${ov?'var(--accent)':'var(--ink)'}">${a.deadline?new Date(a.deadline).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—'}${ov?' ⚠':''}</span>`],
     ['Target',`${a.wordTarget||0} words`],
