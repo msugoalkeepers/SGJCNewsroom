@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Goalkeepers Pressroom — MSU SGJC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -129,10 +131,8 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 #mobile-nav-overlay{
   display:none;position:fixed;inset:0;
   background:rgba(0,0,0,.55);z-index:299;
-  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
-  transition:opacity .25s ease;opacity:0;pointer-events:none;
 }
-#mobile-nav-overlay.open{display:block;opacity:1;pointer-events:auto}
+#mobile-nav-overlay.open{display:block}
 
 /* ══════════════════════════════════════════════════════
    TABLET (≤900px)
@@ -168,7 +168,7 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
     box-shadow:4px 0 24px rgba(0,0,0,.35)!important;
   }
 
-  /* ── Hamburger visible ── */
+  /* ── Hamburger visible via CSS (no JS dependency) ── */
   #hamburger-btn{display:flex!important;align-items:center;justify-content:center}
 
   /* ── Topbar ── */
@@ -202,7 +202,7 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
     position:fixed!important;bottom:0!important;left:0!important;
     max-height:88vh!important;animation:slideUpModal .22s ease!important;
   }
-  .modal-overlay{align-items:flex-end!important;padding:0!important}
+  .modal-overlay{align-items:flex-end!important;padding:0!important;padding-bottom:env(safe-area-inset-bottom)!important}
 
   /* ── Kanban: single column ── */
   .kanban{grid-template-columns:1fr!important;gap:14px!important}
@@ -351,9 +351,9 @@ body{font-family:var(--fb);background:var(--paper);color:var(--ink);min-height:1
 
 /* ── APP LAYOUT ── */
 #app{display:none;height:100vh;overflow:hidden;flex-direction:row}
-.sidebar{width:265px;min-width:265px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar{width:265px;min-width:265px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;overflow-y:auto;padding-top:env(safe-area-inset-top)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0}
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;padding-top:max(0px,env(safe-area-inset-top))}
 .content{flex:1;overflow-y:auto;padding:26px 30px;animation:fadeIn .2s ease}
 
 /* ── SIDEBAR ── */
@@ -1767,6 +1767,8 @@ function startApp(){
   // One-time migration: stamp status:'approved' on existing user docs that have a role but no status
   // This fixes users created before the status field was added
   migrateUserStatus()
+  // Mobile nav — run after app UI is visible so hamburger displays correctly on phones
+  setTimeout(handleResize,0)
   const h=new Date().getHours()
   toast(`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${ME.name.split(' ')[0]} — welcome back.`,'info')
 }
@@ -4440,25 +4442,26 @@ function handleResize(){
   const hb=document.getElementById('hamburger-btn')
   const sb=document.getElementById('sidebar')
   const ov=document.getElementById('mobile-nav-overlay')
+  const panelsBtn=document.getElementById('btn-mobile-panels')
   if(!hb||!sb)return
   if(window.innerWidth>768){
+    // Desktop: hide hamburger, close any open mobile nav, show editor panels
     hb.style.display='none'
     sb.classList.remove('mobile-open')
     sb.style.transform=''
-    if(ov)ov.classList.remove('open')
+    if(ov){ov.classList.remove('open')}
     document.body.style.overflow=''
-    // Show all panels on desktop
     const right=document.getElementById('editor-right')
     if(right){right.style.display='';right.classList.remove('mobile-panel-active')}
-    document.getElementById('btn-mobile-panels')&&(document.getElementById('btn-mobile-panels').style.display='none')
+    if(panelsBtn)panelsBtn.style.display='none'
   }else{
-    hb.style.display='flex'
-    document.getElementById('btn-mobile-panels')&&(document.getElementById('btn-mobile-panels').style.display='')
+    // Mobile: let CSS handle hamburger visibility, just remove any desktop inline override
+    hb.style.display=''
+    if(panelsBtn)panelsBtn.style.display=''
   }
 }
 window.addEventListener('resize',handleResize)
-// Run on load
-document.addEventListener('DOMContentLoaded',handleResize)
+// handleResize is also called from startApp() once the UI is visible
 
 // ── EDITOR MOBILE PANELS ──────────────────────────────
 const PANEL_IDS=['details','sources','media','comments','versions']
